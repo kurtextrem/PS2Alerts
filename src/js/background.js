@@ -107,7 +107,7 @@
 				var popups = chrome.extension.getViews({type: 'popup'})
 				if (0 < popups.length)
 					popups[0].app.updated(server)
-			})
+			}.bind(this))
 		},
 
 		update: function() {
@@ -150,9 +150,10 @@
 								type: typeData[event.type],
 								zone: zoneData[event.zone],
 								notified: false,
-								faction_nc: event.faction_nc,
-								faction_tr: event.faction_tr,
-								faction_vs: event.faction_vs
+								faction_nc: data.faction_nc,
+								faction_tr: data.faction_tr,
+								faction_vs: data.faction_vs,
+								experience_bonus: data.experience_bonus
 							}
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)

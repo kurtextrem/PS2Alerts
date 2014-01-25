@@ -68,15 +68,15 @@
 				var video = $server.find('.server-name')
 				if (video.find('video').length === 0)
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
-				$server.find('.type').html(server.alert.type)
+				$server.find('.type').text(server.alert.type+' (+'+server.alert.experience_bonus+'%)')
 				if (server.alert.type === 'Territory') {
-					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-info" style="width:'+server.alert.faction_tr+'%"></div><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_nc+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+server.alert.faction_vs+'%"></div></div></div></div>')
+					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+Math.round(server.alert.faction_tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+Math.round(server.alert.faction_nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+Math.ceil(server.alert.faction_vs)+'%"></div></div></div></div>')
 					$('.collapse').collapse({toggle: false})
 					$server.find('.server-name > button').removeAttr('disabled')
 				} else {
 					$server.find('.server-name > button').attr('disabled', true)
 				}
-				$server.find('.continent').html(server.alert.zone)
+				$server.find('.continent').text(server.alert.zone)
 				$server.find('.remaining').removeClass('inactive')
 
 				this.updateTime(server)
@@ -85,8 +85,8 @@
 				$server.removeClass()
 				$server.find('.server-name video').remove()
 				$server.find('.server-name > button').attr('disabled', true)
-				$server.find('.type').html('')
-				$server.find('.continent').html('')
+				$server.find('.type').text('')
+				$server.find('.continent').text('')
 				$server.find('.remaining').addClass('inactive')
 
 				if (this.intervals[main])
