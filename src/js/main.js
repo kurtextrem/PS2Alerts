@@ -2,7 +2,7 @@
 	'use strict'
 
 	var App = function() {
-		chrome.storage.local.get({servers: {}}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13}, function(data) {
 			this.servers = data.servers
 			this.addHTML()
 			$.each(data.servers, function(index, server) {
@@ -17,13 +17,20 @@
 			$('table').on('tablesort:complete', function(e, tablesort) {
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
+			$('#server-'+data.main).css('background-color', '#d0e9c6')
 		}.bind(this))
 	}
 	App.prototype = {
 		servers: {},
 		intervals: {},
 		constructor: App,
-		updated: function() {
+		updated: function(server) {
+			if (!server)
+				return this._updateAll()
+			this.updateAlerts(server)
+		},
+
+		_updateAll: function() {
 			chrome.storage.local.get({servers: {}}, function(data) {
 				this.servers = data.servers
 				$.each(data.servers, function(index, server) {

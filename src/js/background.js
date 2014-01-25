@@ -63,6 +63,7 @@
 		url: 'http://census.soe.com/get/ps2:v2/',
 
 		constructor: Alert,
+		servers: {},
 
 		init: function() {
 			chrome.storage.local.get({main: 13, flare: 0, lastUpdate: 0, servers: '', notification: 13}, function(data) {
@@ -70,8 +71,9 @@
 					var serverObj = {}
 					$.each(servers, function(i, server) {
 						serverObj['s'+server.id] = server
+						serverObj['s'+server.id].alert = {}
 					})
-					data.servers = serverObj
+					this.servers = data.servers = serverObj
 					chrome.storage.local.set({servers: data.servers})
 				}
 				this.main = data.main
@@ -90,10 +92,11 @@
 		sendToPopup: function(server) {
 			chrome.storage.local.get({servers: {}}, function(data) {
 				data.servers['s'+server.id] = server
+				this.servers = data.server
 				chrome.storage.local.set({servers: data.servers})
 				var popups = chrome.extension.getViews({type: 'popup'})
 				if (0 < popups.length)
-					popups[0].app.updated()
+					popups[0].app.updated(server)
 			})
 		},
 
@@ -134,12 +137,16 @@
 								start: +(data.timestamp + '000'),
 								type: typeData[event.type],
 								zone: zoneData[event.zone],
+								notified: false
 							}
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)
 							}
-							if (server.id === this.notification || server.id === 0) {
-								this.createNotification(server)
+							if (server.id === this.notification || this.notification === 0) {
+								if (!this.servers['s'+server.id].alert.notified) {
+									this.createNotification(server)
+									server.alert.notified = true
+								}
 							}
 						} else {
 							server.status = 'no alert'
