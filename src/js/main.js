@@ -70,7 +70,7 @@
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 				$server.find('.type').html(server.alert.type)
 				if (server.alert.type === 'Territory') {
-					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="progress"><div class="progress-bar progress-bar-info" style="width:'+server.alert.faction_tr+'%"></div><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_nc+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+server.alert.faction_vs+'%"></div></div></div>')
+					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-info" style="width:'+server.alert.faction_tr+'%"></div><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_nc+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+server.alert.faction_vs+'%"></div></div></div></div>')
 					$('.collapse').collapse({toggle: false})
 					$server.find('.server-name > button').removeAttr('disabled')
 				} else {

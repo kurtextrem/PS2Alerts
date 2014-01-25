@@ -68,3 +68,7 @@ video {
 .progress-bar-nanite {
 	background-color: rgba(255, 238, 0, 255); /* ALL NANITE! */
 }
+
+.progress-bar {
+	margin-bottom: 0;
+}
