@@ -68,9 +68,11 @@
 		flare: 0,
 		notification: 13,
 		hide: 0,
+		remember: false,
+		count: 0,
 
 		init: function() {
-			chrome.storage.local.get({main: 13, flare: 0, lastUpdate: 0, servers: '', notification: 13, hide: 0}, function(data) {
+			chrome.storage.local.get({main: 13, flare: 0, lastUpdate: 0, servers: '', notification: 13, hide: 0, count: 0}, function(data) {
 				if (data.servers === '') {
 					var serverObj = {}
 					$.each(servers, function(i, server) {
@@ -84,6 +86,7 @@
 				this.flare = data.flare
 				this.notification = data.notification
 				this.hide = data.hide
+				this.count = data.count
 				if ($.now()-data.lastUpdate > 300000)
 					this.update()
 				else {
@@ -147,9 +150,12 @@
 								faction_tr: event.faction_tr,
 								faction_vs: event.faction_vs
 							}
+							this.count++
+							chrome.storage.local.set({count: this.count})
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)
 							}
+							this.servers['s'+server.id] = server
 							if (server.id === this.notification || this.notification === 0) {
 								if (!this.servers['s'+server.id].alert.notified) {
 									this.createNotification(server)
@@ -158,6 +164,8 @@
 							}
 						} else {
 							server.status = 'no alert'
+							this.count--
+							chrome.storage.local.set({count: this.count})
 						}
 
 						this.sendToPopup(server)
@@ -217,7 +225,7 @@
 
 		_updateBadge: function(server) {
 			if (server.status === 'no alert') {
-				chrome.browserAction.setIcon({path: 'img/notification_tray_empty.png'})
+				this.updateIcon('img/notification_tray_empty.png')
 				chrome.browserAction.setBadgeText({text: ''})
 				chrome.alarms.clear('update-badge')
 				if (this.hide)
@@ -237,7 +245,7 @@
 				var m = ('0' + date.getUTCMinutes()).slice(-2)
 
 				if (h > 2 || (h + +m) < 0) {
-					chrome.browserAction.setIcon({path: 'img/notification_tray_empty.png'})
+					this.updateIcon('img/notification_tray_empty.png')
 					chrome.browserAction.setBadgeText({text: ''})
 					chrome.alarms.clear('update-badge')
 					if (this.hide)
@@ -248,11 +256,33 @@
 						this.createNotification(server, true)
 						this.remember = false
 					}
-					chrome.browserAction.setIcon({path: 'img/notification_tray_attention.png'})
+					this.updateIcon('img/notification_tray_attention.png')
 					chrome.browserAction.setBadgeText({text: h + ':' + m})
 					chrome.browserAction.setBadgeBackgroundColor({color: flares[this.flare]})
 				}
 			}
+		},
+
+		updateIcon: function(path) {
+			var canvas = $('canvas')
+			if (canvas.length < 1) {
+				canvas = $('<canvas width="19" height="19"></canvas>')
+				$('body').append(canvas)
+			}
+			var context = canvas[0].getContext('2d'),
+			imageObj = new Image()
+
+			context.clearRect(0, 0, 19, 19)
+
+			imageObj.onload = function() {
+				context.drawImage(imageObj, 0, 0, 19, 19)
+				context.fillStyle = '#888'
+				context.fillText(this.count, 6.5, 12)
+				var details = { imageData: 0 }
+				details.imageData = context.getImageData(0, 0, 19, 19)
+				chrome.browserAction.setIcon(details)
+			}.bind(this)
+			imageObj.src = path
 		}
 	}
 
