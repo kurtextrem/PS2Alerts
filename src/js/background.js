@@ -89,10 +89,10 @@
 				this.notification = data.notification
 				this.hide = data.hide
 				this.count = data.count
-				if (force || $.now()-data.lastUpdate > 300000)
+				var main = data.servers['s'+this.main]
+				if (force || $.now()-data.lastUpdate > 300000) {
 					this.update()
-				else {
-					var main = data.servers['s'+this.main]
+				} else {
 					this.setBadgeAlarm(main)
 				}
 				this.registerAlarms()
@@ -111,8 +111,8 @@
 		},
 
 		update: function() {
+			chrome.storage.local.set({count: 0})
 			this.count = 0
-			chrome.storage.local.set({lastUpdate: $.now(), count: 0})
 			servers.forEach(function (server) {
 				$.ajax(this.url + 'world?world_id=' + server.id, {
 					dataType: 'json',
@@ -153,10 +153,12 @@
 								faction_nc: data.faction_nc,
 								faction_tr: data.faction_tr,
 								faction_vs: data.faction_vs,
-								experience_bonus: data.experience_bonus
+								experience_bonus: data.experience_bonus || 0
 							}
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)
+							} else {
+								this.updateIcon('img/notification_tray_empty.png')
 							}
 							if (server.id === this.notification || this.notification === 0) {
 								if (!this.servers['s'+server.id].alert.notified) {
@@ -281,9 +283,8 @@
 			var context = canvas[0].getContext('2d'),
 			imageObj = new Image()
 
-			context.clearRect(0, 0, 19, 19)
-
 			imageObj.onload = function() {
+				context.clearRect(0, 0, 19, 19)
 				context.drawImage(imageObj, 0, 0, 19, 19)
 				context.fillStyle = '#888'
 				context.fillText(this.count, 6.5, 12)
