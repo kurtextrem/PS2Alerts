@@ -9,6 +9,14 @@
 				this.updateAlerts(server)
 			}.bind(this))
 			$('#refresh').click(this.refresh)
+			chrome.storage.local.get({direction: 'desc', by: $('th')}, function(data) {
+				var $table = $('table')
+				$table.tablesort()
+				$table.data('tablesort').sort($('#'+data.by), data.direction)
+			})
+			$('table').on('tablesort:complete', function(e, tablesort) {
+				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
+			})
 		}.bind(this))
 	}
 	App.prototype = {
@@ -29,7 +37,9 @@
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
 				w.alert.update()
-				$(e).removeAttr('disabled')
+				window.setTimeout(function() {
+					$(e).removeAttr('disabled')
+				}, 30000)
 			})
 		},
 

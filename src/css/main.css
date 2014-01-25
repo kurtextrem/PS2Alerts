@@ -19,3 +19,17 @@ td {
 #refresh {
 	padding: 0 !important;
 }
+
+th.sorted.ascending::after {
+	content: "  \2191";
+	position: absolute;
+	top: 9px;
+	margin-left: 4px;
+}
+
+th.sorted.descending::after {
+	content: " \2193";
+	position: absolute;
+	top: 9px;
+	margin-left: 4px;
+}
