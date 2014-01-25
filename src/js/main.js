@@ -17,7 +17,7 @@
 			$('table').on('tablesort:complete', function(e, tablesort) {
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
-			$('#server-'+data.main).css('background-color', '#d0e9c6')
+			$('#server-'+data.main+' td').css('background-color', '#d0e9c6')
 		}.bind(this))
 	}
 	App.prototype = {
