@@ -65,7 +65,9 @@
 			$server = $('#server-' + server.id)
 			if (server.status == 1) {
 				$server.addClass('success')
-				$server.find('.server-name').prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>')
+				var video = $server.find('.server-name')
+				if (video.find('video').length === 0)
+					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 				$server.find('.type').html(server.alert.type)
 				$server.find('.continent').html(server.alert.zone)
 				$server.find('.remaining').removeClass('inactive')
