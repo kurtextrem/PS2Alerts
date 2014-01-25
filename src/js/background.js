@@ -64,9 +64,13 @@
 
 		constructor: Alert,
 		servers: {},
+		main: 13,
+		flare: 0,
+		notification: 13,
+		hide: 0,
 
 		init: function() {
-			chrome.storage.local.get({main: 13, flare: 0, lastUpdate: 0, servers: '', notification: 13}, function(data) {
+			chrome.storage.local.get({main: 13, flare: 0, lastUpdate: 0, servers: '', notification: 13, hide: 0}, function(data) {
 				if (data.servers === '') {
 					var serverObj = {}
 					$.each(servers, function(i, server) {
@@ -79,6 +83,7 @@
 				this.main = data.main
 				this.flare = data.flare
 				this.notification = data.notification
+				this.hide = data.hide
 				if ($.now()-data.lastUpdate > 300000)
 					this.update()
 				else {
@@ -212,6 +217,8 @@
 				chrome.browserAction.setIcon({path: 'img/notification_tray_empty.png'})
 				chrome.browserAction.setBadgeText({text: ''})
 				chrome.alarms.clear('update-badge')
+				if (this.hide)
+					chrome.browserAction.disable()
 			}
 			if (server.status === 1) {
 				var current = Date.now(),
@@ -230,7 +237,10 @@
 					chrome.browserAction.setIcon({path: 'img/notification_tray_empty.png'})
 					chrome.browserAction.setBadgeText({text: ''})
 					chrome.alarms.clear('update-badge')
+					if (this.hide)
+						chrome.browserAction.disable()
 				} else {
+					chrome.browserAction.enable()
 					if (this.remember && h < 1 && m <= 30) {
 						this.createNotification(server, true)
 						this.remember = false

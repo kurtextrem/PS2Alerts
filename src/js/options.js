@@ -39,16 +39,20 @@
 			})
 		},
 		load: function() {
-			chrome.storage.local.get({main: 13, flare: 0, notification: 13}, function(data) {
+			chrome.storage.local.get({main: 13, flare: 0, notification: 13, hide: 0}, function(data) {
 				$('#notification > option[value='+data.notification+']').attr('selected', 'selected')
 				$('#flare > option[value='+data.flare+']').attr('selected', 'selected')
 				$('#main > option[value='+data.main+']').attr('selected', 'selected')
+				if (data.hide)
+					$('#hide').attr('checked', true)
 			})
 		},
 		bind: function() {
-			$('#notification, #main, #flare').change(function(e) {
-				var obj = {}
-				obj[e.target.id] = +e.target.value
+			$('#notification, #main, #flare, #hide').change(function(e) {
+				var obj = {}, val = +e.target.value
+				if (e.target.id === 'hide')
+					val = $('#hide').is(':checked')
+				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {
 					chrome.runtime.getBackgroundPage(function(w) {
 						w.alert.init()
