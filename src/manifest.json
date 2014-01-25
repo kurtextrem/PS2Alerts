@@ -1,0 +1,30 @@
+{
+	"name": "PlanetSide 2 Alerts",
+	"short_name": "PS2 Alerts",
+	"version": "0.1",
+	"manifest_version": 2,
+
+	"description": "Easy overview over PlanetSide2 Alerts in Chrome.",
+	"icons": {
+		"128": "img/notification_tray_attention.png",
+		"16": "img/notification_tray_attention.png",
+		"48": "img/notification_tray_attention.png"
+	},
+	"author": "Jacob Groß (kurtextrem)",
+
+	"background": {
+	    	"scripts": ["js/jquery.min.js", "js/background.js"],
+	    	"persistent": false
+	},
+
+	"browser_action": {
+	    	"default_icon": {
+	      		"19": "img/notification_tray_empty.png",
+	      		"38": "img/notification_tray_empty.png"
+		},
+	    	"default_popup": "popup.html"
+	},
+	"options_page": "settings.html",
+	"permissions": ["http://census.soe.com/get/ps2:v2/*", "storage", "alarms", "notifications"]
+
+}
