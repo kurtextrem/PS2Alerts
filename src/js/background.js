@@ -142,7 +142,10 @@
 								start: +(data.timestamp + '000'),
 								type: typeData[event.type],
 								zone: zoneData[event.zone],
-								notified: false
+								notified: false,
+								faction_nc: event.faction_nc,
+								faction_tr: event.faction_tr,
+								faction_vs: event.faction_vs
 							}
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)

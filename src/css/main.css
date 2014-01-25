@@ -1,6 +1,11 @@
-table {
-	margin: 0 auto !important;
+body {
+	width: 500px;
 }
+
+#table {
+	margin-bottom: 5px !important;
+}
+
 table .remaining {
 	color: #f00;
 }
@@ -40,6 +45,26 @@ video {
 	margin-right: 4px;
 }
 
-body {
-	width: 500px;
+.server-name button {
+	padding: 0;
+	border: 0;
+	vertical-align: inherit;
+}
+
+.server-name button:hover, .server-name button:focus {
+	text-decoration: none;
+}
+
+
+.server-name button[disabled] {
+	color: #333;
+	opacity: 1;
+}
+
+.progress-bar-purple {
+	background-color: rgba(128, 0, 255, 255);
+}
+
+.progress-bar-nanite {
+	background-color: rgba(255, 238, 0, 255); /* ALL NANITE! */
 }

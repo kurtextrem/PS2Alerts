@@ -53,7 +53,7 @@
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
-				$('tr:last').append('<td class="server-name">' + server.name + '</td>')
+				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse'+server.id+'" class="btn btn-link">' + server.name + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
 				$('tr:last').append('<td class="continent"></td>')
@@ -69,6 +69,13 @@
 				if (video.find('video').length === 0)
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 				$server.find('.type').html(server.alert.type)
+				if (server.alert.type === 'Territory') {
+					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="progress"><div class="progress-bar progress-bar-info" style="width:'+server.alert.faction_tr+'%"></div><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_nc+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+server.alert.faction_vs+'%"></div></div></div>')
+					$('.collapse').collapse({toggle: false})
+					$server.find('.server-name > button').removeAttr('disabled')
+				} else {
+					$server.find('.server-name > button').attr('disabled', true)
+				}
 				$server.find('.continent').html(server.alert.zone)
 				$server.find('.remaining').removeClass('inactive')
 
@@ -77,6 +84,7 @@
 			} else {
 				$server.removeClass()
 				$server.find('.server-name video').remove()
+				$server.find('.server-name > button').attr('disabled', true)
 				$server.find('.type').html('')
 				$server.find('.continent').html('')
 				$server.find('.remaining').addClass('inactive')
@@ -129,5 +137,5 @@ $.fn.ready(function() {
 		$.each($('video'), function(i, vid) {
 			vid.play()
 		})
-	})
+	}, 500)
 })

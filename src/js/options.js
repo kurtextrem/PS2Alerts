@@ -50,8 +50,11 @@
 		bind: function() {
 			$('#notification, #main, #flare, #hide').change(function(e) {
 				var obj = {}, val = +e.target.value
-				if (e.target.id === 'hide')
+				if (e.target.id === 'hide') {
 					val = $('#hide').is(':checked')
+					if (!val)
+						chrome.browserAction.enable()
+				}
 				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {
 					chrome.runtime.getBackgroundPage(function(w) {
