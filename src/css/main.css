@@ -33,3 +33,13 @@ th.sorted.descending::after {
 	top: 9px;
 	margin-left: 4px;
 }
+
+video {
+	position: relative;
+	top: 3px;
+	margin-right: 4px;
+}
+
+body {
+	width: 500px;
+}

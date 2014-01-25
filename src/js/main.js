@@ -46,7 +46,7 @@
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
-				$('tr:last').append('<td>' + server.name + '</td>')
+				$('tr:last').append('<td class="server-name">' + server.name + '</td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
 				$('tr:last').append('<td class="continent"></td>')
@@ -54,30 +54,32 @@
 		},
 
 		updateAlerts: function(server) {
-			var main = 's'+server.id
+			var main = 's'+server.id,
+			$server = $('#server-' + server.id)
 			if (server.status == 1) {
-				$('#server-' + server.id).addClass('success')
-				$('#server-' + server.id + ' .type').html(server.alert.type)
-				$('#server-' + server.id + ' .continent').html(server.alert.zone)
-				$('#server-' + server.id + ' .remaining').removeClass('inactive')
+				$server.addClass('success')
+				$server.find('.server-name').prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>')
+				$server.find('.type').html(server.alert.type)
+				$server.find('.continent').html(server.alert.zone)
+				$server.find('.remaining').removeClass('inactive')
 
 				this.updateTime(server)
 				this.intervals[main] = window.setInterval(this.updateTime.bind(this, server), 1000)
 			} else {
-				$('#server-' + server.id).removeClass()
-				$('#server-' + server.id + ' .type').html('')
-				$('#server-' + server.id + ' .continent').html('')
-				$('#server-' + server.id + ' .remaining').addClass('inactive')
+				$server.removeClass()
+				$server.find('.server-name video').remove()
+				$server.find('.type').html('')
+				$server.find('.continent').html('')
+				$server.find('.remaining').addClass('inactive')
 
 				if (this.intervals[main])
 					window.clearInterval(this.intervals[main])
 			}
 
 			if (typeof server.status === 'string') {
-				var $el = $('#server-' + server.id)
-				$el.find('.remaining').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
+				$server.find('.remaining').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
 				if (server.status.search('error') !== -1)
-					$el.addClass('danger')
+					$server.addClass('danger')
 
 			}
 		},
@@ -111,4 +113,12 @@
 	window.App = App
 }(window)
 
-app = new App()
+var app
+$.fn.ready(function() {
+	app = new App()
+	window.setTimeout(function() {
+		$.each($('video'), function(i, vid) {
+			vid.play()
+		})
+	})
+})

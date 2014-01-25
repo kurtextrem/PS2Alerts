@@ -175,7 +175,7 @@
 		createNotification: function(server, remember) {
 			var opt = {
 			  	type: 'basic',
-			  	iconUrl: 'img/notification_tray_attention.png'
+			  	iconUrl: 'img/AlertIconWaves3.png'
 			}
 			if (remember) {
 				opt.title = server.name+' Alert: 30min left!'
