@@ -4,17 +4,41 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title></title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/options.css" rel="stylesheet">
 </head>
 <body>
-	<form>
-		<select id="flare">
-		</select>
-		<select id="main">
-		</select>
-		<select id="notification">
-		</select>
-	</form>
+	<div class="container">
+		<form class="form-horizontal" role="form">
+			<fieldset>
+				<legend>PlanetSide 2 Alerts options</legend>
+				<div class="form-group">
+					<label for="inputEmail3" class="col-sm-2 control-label">Flare</label>
+					<div class="col-sm-10">
+						<select id="flare" class="form-control"></select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="inputPassword3" class="col-sm-2 control-label">Main Server</label>
+					<div class="col-sm-10">
+						<select id="main" class="form-control"></select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="inputPassword3" class="col-sm-2 control-label">Notification Server</label>
+					<div class="col-sm-10">
+						<select id="notification" class="form-control"></select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<p class="help-block">Options get saved automatically.</p>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
 	<script src="js/jquery.min.js"></script>
 	<script src="js/options.js"></script>
 </body>

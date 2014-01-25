@@ -30,14 +30,14 @@
 		},
 
 		addHTML: function() {
-			$('body').append('<table><tr></tr></table>')
+			$('body').append('<table class="table table-hover"><thead><tr></tr></thead><tbody></tbody></table>')
 			$('tr').append('<td><b>Server</b></td>')
 			$('tr').append('<td><b>Remaining</b></td>')
 			$('tr').append('<td><b>Type</b></td>')
 			$('tr').append('<td><b>Continent</b></td>')
 
 			$.each(this.servers, function (index, server) {
-				$('table').append('<tr id="server-' + server.id + '"></tr>')
+				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
 				$('tr:last').append('<td>' + server.name + '</td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
@@ -48,7 +48,7 @@
 		updateAlerts: function(server) {
 			var main = 's'+server.id
 			if (server.status == 1) {
-				$('#server-' + server.id).addClass('active')
+				$('#server-' + server.id).addClass('success')
 				$('#server-' + server.id + ' .type').html(server.alert.type)
 				$('#server-' + server.id + ' .continent').html(server.alert.zone)
 				$('#server-' + server.id + ' .remaining').removeClass('inactive')

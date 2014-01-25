@@ -1,6 +1,3 @@
-table {
-	margin: 0 auto;
-}
 table .remaining {
 	color: #f00;
 }
@@ -8,25 +5,8 @@ table .inactive {
 	color: #888;
 }
 
-tr {
-	background: #eee;
-}
-tr:first-child td {
+thead td {
 	background: #bbb !important;
-}
-tr:nth-child(odd) {
-	background: #ddd;
-}
-tr:hover td {
-	background: #ccc;
-}
-
-tr.active td {
-	background: #fdd;
-}
-
-tr.active:hover td {
-	background: #fbb;
 }
 
 td {
