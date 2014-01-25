@@ -111,8 +111,8 @@
 		},
 
 		update: function() {
-			chrome.storage.local.set({count: 0})
 			this.count = 0
+			chrome.storage.local.set({count: 0})
 			servers.forEach(function (server) {
 				$.ajax(this.url + 'world?world_id=' + server.id, {
 					dataType: 'json',
@@ -144,7 +144,7 @@
 							var event = events[+data.metagame_event_id - 1]
 
 							server.status = 1
-							server.counted = false
+							server.counted = true
 							server.alert = {
 								start: +(data.timestamp + '000'),
 								type: typeData[event.type],
@@ -155,22 +155,26 @@
 								faction_vs: data.faction_vs,
 								experience_bonus: data.experience_bonus || 0
 							}
+
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)
 							} else {
+								chrome.browserAction.setBadgeText({text: ''})
+								chrome.alarms.clear('update-badge')
+								if (this.hide)
+									chrome.browserAction.disable()
 								this.updateIcon('img/notification_tray_empty.png')
 							}
 							if (server.id === this.notification || this.notification === 0) {
 								if (!this.servers['s'+server.id].alert.notified) {
 									this.createNotification(server)
 									server.alert.notified = true
+								} else {
+									server.alert.notified = true
 								}
 							}
-							if (!this.servers['s'+server.id].counted) {
-								server.counted = true
-								this.count++
-								chrome.storage.local.set({count: this.count})
-							}
+							this.count++
+							chrome.storage.local.set({count: this.count})
 						} else {
 							server.status = 'no alert'
 							if (server.counted) {
