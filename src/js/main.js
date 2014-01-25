@@ -2,7 +2,7 @@
 	'use strict'
 
 	var App = function() {
-		chrome.storage.local.get({servers: {}, main: 13}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0}, function(data) {
 			this.servers = data.servers
 			this.addHTML()
 			$.each(data.servers, function(index, server) {
@@ -18,6 +18,7 @@
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
 			$('#server-'+data.main+' td').css('background-color', '#d0e9c6')
+			$('#server > button').attr('title', new Date(data.lastUpdate))
 		}.bind(this))
 	}
 	App.prototype = {
@@ -25,18 +26,7 @@
 		intervals: {},
 		constructor: App,
 		updated: function(server) {
-			if (!server)
-				return this._updateAll()
 			this.updateAlerts(server)
-		},
-
-		_updateAll: function() {
-			chrome.storage.local.get({servers: {}}, function(data) {
-				this.servers = data.servers
-				$.each(data.servers, function(index, server) {
-					this.updateAlerts(server)
-				}.bind(this))
-			}.bind(this))
 		},
 
 		refresh: function(e) {
@@ -44,6 +34,7 @@
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
 				w.alert.init(true)
+				$('#server > button').attr('title', new Date(data.lastUpdate))
 				window.setTimeout(function() {
 					$(e).removeAttr('disabled')
 				}, 30000)

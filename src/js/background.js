@@ -111,15 +111,15 @@
 		},
 
 		update: function() {
+			chrome.storage.local.set({count: 0, lastUpdate: $.now()})
 			this.count = 0
-			chrome.storage.local.set({count: 0})
 			servers.forEach(function (server) {
 				$.ajax(this.url + 'world?world_id=' + server.id, {
 					dataType: 'json',
 					success: function (response) {
 						if (response && response.world_list && response.world_list[0]) {
 							var state = response.world_list[0].state
-							if (state == 'online') {
+							if (state === 'online') {
 								this._updateServer(server)
 							} else {
 								server.status = state
@@ -144,7 +144,6 @@
 							var event = events[+data.metagame_event_id - 1]
 
 							server.status = 1
-							server.counted = true
 							server.alert = {
 								start: +(data.timestamp + '000'),
 								type: typeData[event.type],
@@ -177,10 +176,6 @@
 							chrome.storage.local.set({count: this.count})
 						} else {
 							server.status = 'no alert'
-							if (server.counted) {
-								this.count--
-								chrome.storage.local.set({count: this.count})
-							}
 						}
 
 						this.sendToPopup(server)
