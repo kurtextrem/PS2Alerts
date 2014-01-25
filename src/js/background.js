@@ -71,7 +71,7 @@
 		remember: false,
 		count: 0,
 
-		init: function() {
+		init: function(force) {
 			chrome.storage.local.get({main: 13, flare: 0, lastUpdate: 0, servers: '', notification: 13, hide: 0, count: 0}, function(data) {
 				if (data.servers === '') {
 					var serverObj = {}
@@ -81,13 +81,15 @@
 					})
 					this.servers = data.servers = serverObj
 					chrome.storage.local.set({servers: data.servers})
+				} else {
+					this.servers = data.servers
 				}
 				this.main = data.main
 				this.flare = data.flare
 				this.notification = data.notification
 				this.hide = data.hide
 				this.count = data.count
-				if ($.now()-data.lastUpdate > 300000)
+				if (force || $.now()-data.lastUpdate > 300000)
 					this.update()
 				else {
 					var main = data.servers['s'+this.main]
@@ -100,7 +102,7 @@
 		sendToPopup: function(server) {
 			chrome.storage.local.get({servers: {}}, function(data) {
 				data.servers['s'+server.id] = server
-				this.servers = data.server
+				this.servers['s'+server.id] = server
 				chrome.storage.local.set({servers: data.servers})
 				var popups = chrome.extension.getViews({type: 'popup'})
 				if (0 < popups.length)
@@ -109,7 +111,8 @@
 		},
 
 		update: function() {
-			chrome.storage.local.set({lastUpdate: $.now()})
+			this.count = 0
+			chrome.storage.local.set({lastUpdate: $.now(), count: 0})
 			servers.forEach(function (server) {
 				$.ajax(this.url + 'world?world_id=' + server.id, {
 					dataType: 'json',
@@ -141,6 +144,7 @@
 							var event = events[+data.metagame_event_id - 1]
 
 							server.status = 1
+							server.counted = false
 							server.alert = {
 								start: +(data.timestamp + '000'),
 								type: typeData[event.type],
@@ -150,22 +154,26 @@
 								faction_tr: event.faction_tr,
 								faction_vs: event.faction_vs
 							}
-							this.count++
-							chrome.storage.local.set({count: this.count})
 							if (server.id === this.main) {
 								this.setBadgeAlarm(server)
 							}
-							this.servers['s'+server.id] = server
 							if (server.id === this.notification || this.notification === 0) {
 								if (!this.servers['s'+server.id].alert.notified) {
 									this.createNotification(server)
 									server.alert.notified = true
 								}
 							}
+							if (!this.servers['s'+server.id].counted) {
+								server.counted = true
+								this.count++
+								chrome.storage.local.set({count: this.count})
+							}
 						} else {
 							server.status = 'no alert'
-							this.count--
-							chrome.storage.local.set({count: this.count})
+							if (server.counted) {
+								this.count--
+								chrome.storage.local.set({count: this.count})
+							}
 						}
 
 						this.sendToPopup(server)
