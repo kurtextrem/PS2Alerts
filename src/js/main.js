@@ -8,6 +8,7 @@
 			$.each(data.servers, function(index, server) {
 				this.updateAlerts(server)
 			}.bind(this))
+			$('#refresh').click(this.refresh)
 		}.bind(this))
 	}
 	App.prototype = {
@@ -23,19 +24,16 @@
 			}.bind(this))
 		},
 
-		refresh: function() {
+		refresh: function(e) {
+			var $e = $(e)
+			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
 				w.alert.update()
+				$(e).removeAttr('disabled')
 			})
 		},
 
 		addHTML: function() {
-			$('body').append('<table class="table table-hover"><thead><tr></tr></thead><tbody></tbody></table>')
-			$('tr').append('<td><b>Server</b></td>')
-			$('tr').append('<td><b>Remaining</b></td>')
-			$('tr').append('<td><b>Type</b></td>')
-			$('tr').append('<td><b>Continent</b></td>')
-
 			$.each(this.servers, function (index, server) {
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
 				$('tr:last').append('<td>' + server.name + '</td>')
@@ -65,8 +63,12 @@
 					window.clearInterval(this.intervals[main])
 			}
 
-			if (typeof server.status == 'string') {
-				$('#server-' + server.id + ' .remaining').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
+			if (typeof server.status === 'string') {
+				var $el = $('#server-' + server.id)
+				$el.find('.remaining').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
+				if (server.status.search('error') !== -1)
+					$el.addClass('danger')
+
 			}
 		},
 

@@ -1,3 +1,6 @@
+table {
+	margin: 0 auto !important;
+}
 table .remaining {
 	color: #f00;
 }
@@ -5,10 +8,14 @@ table .inactive {
 	color: #888;
 }
 
-thead td {
+thead tr {
 	background: #bbb !important;
 }
 
 td {
 	min-width: 100px;
+}
+
+#refresh {
+	padding: 0 !important;
 }
