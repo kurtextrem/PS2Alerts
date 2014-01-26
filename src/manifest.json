@@ -6,9 +6,9 @@
 
 	"description": "Easy overview over PlanetSide2 Alerts in Chrome.",
 	"icons": {
-		"128": "img/notification_tray_attention.png",
-		"16": "img/notification_tray_attention.png",
-		"48": "img/notification_tray_attention.png"
+		"128": "img/alert.png",
+		"16": "img/alert.png",
+		"48": "img/alert.png"
 	},
 	"author": "Jacob Groß (kurtextrem)",
 

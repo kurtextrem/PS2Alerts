@@ -66,7 +66,7 @@
 				if (video.find('video').length === 0)
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 
-				$server.find('.type').text(typeData[server.alert.type]+' (+'+server.alert.experience_bonus+'%)')
+				$server.find('.type').html(typeData[server.alert.type]+' <span title="EXP Bonus">(+'+server.alert.experience_bonus+'%)</span>')
 				if (server.alert.type === 1) {
 					var count = 100 - server.alert.faction_nc - server.alert.faction_tr
 					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_tr +'%" title="'+Math.floor(server.alert.faction_tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ server.alert.faction_nc +'%" title="'+Math.floor(server.alert.faction_nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(server.alert.faction_tr)+'%"></div></div></div></div>')

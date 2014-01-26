@@ -298,7 +298,7 @@
 			if (this.updateRunning)
 				return window.setTimeout(function() {
 					this.updateIcon(path)
-				}.bind(this), 300)
+				}.bind(this), 500)
 			this.updateRunning = true
 			var canvas = $('canvas')
 			if (canvas.length < 1) {
@@ -308,19 +308,19 @@
 			var context = canvas[0].getContext('2d'),
 				imageObj = new Image()
 
-				imageObj.onload = function () {
-					context.clearRect(0, 0, 19, 19)
-					context.drawImage(imageObj, 0, 0, 19, 19)
-					context.fillStyle = '#888'
-					context.fillText(this.count, 6.5, 12)
-					var details = {
-						imageData: 0
-					}
-					details.imageData = context.getImageData(0, 0, 19, 19)
-					chrome.browserAction.setIcon(details)
-					this.updateRunning = false
-				}.bind(this)
-				imageObj.src = path
+			imageObj.onload = function () {
+				context.clearRect(0, 0, 19, 19)
+				context.drawImage(imageObj, 0, 0, 19, 19)
+				context.fillStyle = '#888'
+				context.fillText(this.count, 6.5, 12)
+				var details = {
+					imageData: 0
+				}
+				details.imageData = context.getImageData(0, 0, 19, 19)
+				chrome.browserAction.setIcon(details)
+				this.updateRunning = false
+			}.bind(this)
+			imageObj.src = path
 		}
 	}
 
