@@ -1,5 +1,5 @@
 +function(window) {
-	'use strict'
+	'use strict';
 
 	var App = function() {
 		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0}, function(data) {
@@ -9,7 +9,7 @@
 				this.updateAlerts(server)
 			}.bind(this))
 			$('#refresh').click(this.refresh)
-			chrome.storage.local.get({direction: 'desc', by: $('th')}, function(data) {
+			chrome.storage.local.get({direction: 'desc', by: 'server'}, function(data) {
 				var $table = $('table')
 				$table.tablesort()
 				$table.data('tablesort').sort($('#'+data.by), data.direction)
