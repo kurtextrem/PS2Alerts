@@ -58,6 +58,7 @@
 		hide: 0,
 		remember: false,
 		count: 0,
+		updateRunning: false,
 
 		init: function (force) {
 			chrome.storage.local.get({
@@ -294,11 +295,15 @@
 		},
 
 		updateIcon: function (path) {
+			if (this.updateRunning)
+				return window.setTimeout(function() {
+					this.updateIcon(path)
+				}.bind(this), 300)
+			this.updateRunning = true
 			var canvas = $('canvas')
 			if (canvas.length < 1) {
 				canvas = $('<canvas width="19" height="19"></canvas>')
-				$('body')
-					.append(canvas)
+				$('body').append(canvas)
 			}
 			var context = canvas[0].getContext('2d'),
 				imageObj = new Image()
@@ -313,6 +318,7 @@
 					}
 					details.imageData = context.getImageData(0, 0, 19, 19)
 					chrome.browserAction.setIcon(details)
+					this.updateRunning = false
 				}.bind(this)
 				imageObj.src = path
 		}

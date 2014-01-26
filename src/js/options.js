@@ -1,5 +1,6 @@
 +function(window) {
-	'use strict'
+	'use strict';
+
 	var servers = [
 		{name: 'Briggs', id: 25, status: 0},
 		{name: 'Ceres', id: 11, status: 0},

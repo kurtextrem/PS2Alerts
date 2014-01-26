@@ -18,7 +18,7 @@
 	var App = function() {
 		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', hide2: 0}, function(data) {
 			this.servers = data.servers
-			this.hide2 = data.hide
+			this.hide2 = data.hide2
 			this.main = data.main
 			this.addHTML()
 			$.each(data.servers, function(index, server) {
@@ -45,8 +45,9 @@
 
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
-				if (this.hide2 && server.id !== this.main) return
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
+				if (this.hide2 && server.id !== this.main)
+					$('tr:last').hide()
 				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse'+server.id+'" class="btn btn-link">' + server.name + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
