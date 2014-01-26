@@ -12,10 +12,10 @@
 	]
 
 	var flares = {
-		0: 'Vanu',
-		1: 'NC',
-		2: 'TR',
-		3: 'NS'
+		0: [['Vanu', 128, 0, 255, 255]],
+		1: [['NC', 0, 200, 255, 255]],
+		2: ['TR', [219, 0, 0, 255]],
+		3: [['NS', 255, 238, 0, 255]]
 	}
 
 
@@ -34,26 +34,31 @@
 				$('#notification, #main').append(option)
 			})
 			$.each(flares, function(i, flare) {
-				option = $('<option>').val(i).text(flare)
+				option = $('<option>').val(i).text(flare[0]).css('background-color', 'rgba('+flare[1][0]+', '+flare[1][1]+', '+flare[1][2]+', '+flare[1][3]+')')
 				$('#flare').append(option)
 			})
 		},
 		load: function() {
-			chrome.storage.local.get({main: 13, flare: 0, notification: 13, hide: 0}, function(data) {
+			chrome.storage.local.get({main: 13, flare: 0, notification: 13, hide: 0, hide2: 0}, function(data) {
 				$('#notification > option[value='+data.notification+']').attr('selected', 'selected')
 				$('#flare > option[value='+data.flare+']').attr('selected', 'selected')
 				$('#main > option[value='+data.main+']').attr('selected', 'selected')
 				if (data.hide)
 					$('#hide').attr('checked', true)
+				if (data.hide2)
+					$('#hide2').attr('checked', true)
 			})
 		},
 		bind: function() {
-			$('#notification, #main, #flare, #hide').change(function(e) {
+			$('#notification, #main, #flare, #hide, #hide2').change(function(e) {
 				var obj = {}, val = +e.target.value
 				if (e.target.id === 'hide') {
 					val = $('#hide').is(':checked')
 					if (!val)
 						chrome.browserAction.enable()
+				}
+				if (e.target.id === 'hide2') {
+					val = $('#hide2').is(':checked')
 				}
 				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {

@@ -16,8 +16,10 @@
 	}
 
 	var App = function() {
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server'}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', hide2: 0}, function(data) {
 			this.servers = data.servers
+			this.hide2 = data.hide
+			this.main = data.main
 			this.addHTML()
 			$.each(data.servers, function(index, server) {
 				this.updateTable(server)
@@ -32,7 +34,7 @@
 			$table.on('tablesort:complete', function(e, tablesort) {
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
-			$('#server-'+data.main+' td').css('background-color', '#d0e9c6')
+			$('#server-'+this.main+' td').css('background-color', '#d0e9c6')
 			$('#server > button').attr('title', new Date(data.lastUpdate))
 		}.bind(this))
 	}
@@ -43,12 +45,13 @@
 
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
+				if (this.hide2 && server.id !== this.main) return
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
 				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse'+server.id+'" class="btn btn-link">' + server.name + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
 				$('tr:last').append('<td class="continent"></td>')
-			})
+			}.bind(this))
 		},
 
 		updateTable: function(server) {
