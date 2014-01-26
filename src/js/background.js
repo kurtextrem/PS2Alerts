@@ -278,7 +278,7 @@
 				opt.title = server.name + ': Alert just started!'
 				opt.message = 'An alert started on ' + server.name + '.'
 				opt.buttons = [{
-					title: 'Remeber 30min before alert end'
+					title: 'Reminder 30min before alert end'
 				}]
 			}
 			chrome.notifications.create(server.id + '-alert', opt, function (id) {
