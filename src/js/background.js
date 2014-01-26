@@ -2,14 +2,14 @@
 	'use strict';
 
 	var servers = [
-		{name: 'Briggs', id: 25, status: 0},
-		{name: 'Ceres', id: 11, status: 0},
-		{ name: 'Cobalt', id: 13, status: 0 },
-		{name: 'Connery', id: 1, status: 0},
-		{name: 'Mattherson', id: 17, status: 0},
-		{name: 'Miller', id: 10, status: 0},
-		{name: 'Waterson', id: 18, status: 0},
-		{name: 'Woodman', id: 9, status: 0},
+		{name: 'Briggs', id: 25, status: 'no alert', alert: {}},
+		{name: 'Ceres', id: 11, status: 'no alert', alert: {}},
+		{name: 'Cobalt', id: 13, status: 'no alert', alert: {}},
+		{name: 'Connery', id: 1, status: 'no alert', alert: {}},
+		{name: 'Mattherson', id: 17, status: 'no alert', alert: {}},
+		{name: 'Miller', id: 10, status: 'no alert', alert: {}},
+		{name: 'Waterson', id: 18, status: 'no alert', alert: {}},
+		{name: 'Woodman', id: 9, status: 'no alert', alert: {}},
 	]
 
 	var events = [
@@ -64,17 +64,16 @@
 				main: 13,
 				flare: 0,
 				lastUpdate: 0,
-				servers: {},
+				servers: '',
 				notification: 13,
 				hide: 0,
 				count: 0,
 				remember: false
 			}, function (data) {
-				if (typeof data.servers[0] === 'undefined') {
+				if (data.servers === '') {
 					var serverObj = {}
 					$.each(servers, function (i, server) {
 						serverObj['s' + server.id] = server
-						serverObj['s' + server.id].alert = {}
 					})
 					this.servers = data.servers = serverObj
 					chrome.storage.local.set({
@@ -139,7 +138,7 @@
 
 				var popups = chrome.extension.getViews({ type: 'popup' })
 				if (0 < popups.length)
-					popups[0].app.updated(server)
+					popups[0].App.updated(server)
 			}.bind(this))
 		},
 
@@ -149,14 +148,16 @@
 				success: function (response) {
 					if (!response && !response.world_event_list) {
 						server.status = 'errorUS'
-						this.clearBadgeAlarm()
+						if (server.id === this.main)
+							this.clearBadgeAlarm()
 						return this.sendToPopup(server)
 					}
 
 					var data = response.world_event_list[0]
 					if (!activeEvent[+data.metagame_event_state]) {
 						server.status = 'no alert'
-						this.clearBadgeAlarm()
+						if (server.id === this.main)
+							this.clearBadgeAlarm()
 						return this.sendToPopup(server)
 					}
 
@@ -179,14 +180,11 @@
 						experience_bonus: data.experience_bonus || 0
 					}
 
-					if (server.id === this.main) {
+					if (server.id === this.main)
 						this.setBadgeAlarm(server)
-					} else {
-						this.clearBadgeAlarm()
-					}
 
 					if (server.id === this.notification || this.notification === 0) {
-						if (this.servers['s' + server.id].alert && !this.servers['s' + server.id].alert.notified) {
+						if (!this.servers['s' + server.id].alert.notified) {
 							server.alert.notified = true
 							this.createNotification(server)
 						} else {

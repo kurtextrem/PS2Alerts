@@ -127,7 +127,7 @@
 			var $e = $(e)
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
-				w.alert.init(true)
+				w.Alert.init(true)
 				$('#server > button').attr('title', new Date(data.lastUpdate))
 				window.setTimeout(function() {
 					$(e).removeAttr('disabled')
