@@ -64,7 +64,8 @@
 
 				$server.find('.type').text(typeData[server.alert.type]+' (+'+server.alert.experience_bonus+'%)')
 				if (server.alert.type === 1) {
-					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+Math.round(server.alert.faction_tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+Math.round(server.alert.faction_nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+Math.ceil(server.alert.faction_vs)+'%"></div></div></div></div>')
+					var count = 100 - server.alert.faction_nc - server.alert.faction_tr
+					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_tr +'%" title="'+Math.floor(server.alert.faction_tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ server.alert.faction_nc +'%" title="'+Math.floor(server.alert.faction_nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(server.alert.faction_tr)+'%"></div></div></div></div>')
 					$('.collapse').collapse({toggle: false})
 					$server.find('.server-name > button').removeAttr('disabled')
 				} else {
