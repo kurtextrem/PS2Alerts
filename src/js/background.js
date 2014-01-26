@@ -2,18 +2,14 @@
 	'use strict';
 
 	var servers = [
-		//{name: 'Briggs', id: 25, status: 0},
-		//{name: 'Ceres', id: 11, status: 0},
-		{
-			name: 'Cobalt',
-			id: 13,
-			status: 0
-		},
-		//{name: 'Connery', id: 1, status: 0},
-		//{name: 'Mattherson', id: 17, status: 0},
-		//{name: 'Miller', id: 10, status: 0},
-		//{name: 'Waterson', id: 18, status: 0},
-		//{name: 'Woodman', id: 9, status: 0},
+		{name: 'Briggs', id: 25, status: 0},
+		{name: 'Ceres', id: 11, status: 0},
+		{ name: 'Cobalt', id: 13, status: 0 },
+		{name: 'Connery', id: 1, status: 0},
+		{name: 'Mattherson', id: 17, status: 0},
+		{name: 'Miller', id: 10, status: 0},
+		{name: 'Waterson', id: 18, status: 0},
+		{name: 'Woodman', id: 9, status: 0},
 	]
 
 	var events = [
@@ -94,7 +90,7 @@
 				this.count = data.count
 				this.remember = data.remember
 
-				var main = this.servers.servers['s' + this.main]
+				var main = this.servers['s' + this.main]
 				if (force || $.now() - data.lastUpdate > 300000) {
 					this.update()
 				} else {
@@ -139,9 +135,7 @@
 			chrome.storage.local.get({ servers: {} }, function (data) {
 				var id = 's' + server.id
 				this.servers[id] = data.servers[id] = server
-				chrome.storage.local.set({
-					servers: data.servers
-				})
+				chrome.storage.local.set({ servers: data.servers })
 
 				var popups = chrome.extension.getViews({ type: 'popup' })
 				if (0 < popups.length)
