@@ -51,6 +51,7 @@
 		url: 'http://census.soe.com/get/ps2:v2/',
 
 		constructor: Alert,
+		updateTime: 3,
 		servers: {},
 		main: 13,
 		flare: 0,
@@ -71,6 +72,7 @@
 				count: 0,
 				remember: false
 			}, function (data) {
+				//console.log('init')
 				if (data.servers === '') {
 					var serverObj = {}
 					$.each(servers, function (i, server) {
@@ -91,7 +93,7 @@
 				this.remember = data.remember
 
 				var main = this.servers['s' + this.main]
-				if (force || $.now() - data.lastUpdate > 300000) {
+				if (force || $.now() - data.lastUpdate > this.updaeTime * 60000) {
 					this.update()
 				} else {
 					this.setBadgeAlarm(main)
@@ -259,10 +261,12 @@
 		},
 
 		registerUpdateAlarms: function () {
-			chrome.alarms.create('update', { delayInMinutes: 3, periodInMinutes: 3 })
+			chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
 			chrome.alarms.onAlarm.addListener(function (alarm) {
-				if (alarm.name === 'update')
+				if (alarm.name === 'update') {
+					//console.log('update alarm')
 					this.update()
+				}
 			}.bind(this))
 		},
 
@@ -281,7 +285,7 @@
 					title: 'Reminder 30min before alert end'
 				}]
 			}
-			chrome.notifications.create(server.id + '-alert', opt, function (id) {
+			chrome.notifications.create(server.id + '-alert-'+!!remember, opt, function (id) {
 				chrome.notifications.onButtonClicked.addListener(function (id, index) {
 					this.remember = true
 					chrome.storage.local.set({remember: true})
@@ -298,7 +302,7 @@
 			if (this.updateRunning)
 				return window.setTimeout(function() {
 					this.updateIcon(path)
-				}.bind(this), 500)
+				}.bind(this), 1000)
 			this.updateRunning = true
 			var canvas = $('canvas')
 			if (canvas.length < 1) {
