@@ -93,7 +93,7 @@
 				this.remember = data.remember
 
 				var main = this.servers['s' + this.main]
-				if (force || $.now() - data.lastUpdate > this.updaeTime * 60000) {
+				if (force || $.now() - data.lastUpdate > this.updateTime * 60000) {
 					this.update()
 				} else {
 					this.setBadgeAlarm(main)
