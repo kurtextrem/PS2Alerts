@@ -16,10 +16,10 @@
 	}
 
 	var App = function() {
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', hide2: 0}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0}, function(data) {
 			this.servers = data.servers
-			this.hide2 = data.hide2
 			this.main = data.main
+			this.flare = data.flare
 			this.addHTML()
 			$.each(data.servers, function(index, server) {
 				this.updateTable(server)
@@ -30,11 +30,14 @@
 			$table.tablesort()
 			$table.data('tablesort').sort($('#'+data.by), data.direction)
 
-			$('#refresh').click(this.refresh)
+			$('#refresh').click(function(e) {
+				this.refresh()
+				e.stopImmediatePropagation()
+			}.bind(this))
 			$table.on('tablesort:complete', function(e, tablesort) {
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
-			$('#server-'+this.main+' td').css('background-color', '#d0e9c6')
+			$('#server-'+this.main+' td').css('background-color', 'rgb(224, 236, 218)')
 			$('#server > button').attr('title', new Date(data.lastUpdate))
 		}.bind(this))
 	}
@@ -46,8 +49,6 @@
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
-				if (this.hide2 && server.id !== this.main)
-					$('tr:last').hide()
 				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse'+server.id+'" class="btn btn-link">' + server.name + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
@@ -68,9 +69,22 @@
 
 				$server.find('.type').html(typeData[server.alert.type]+' <span title="EXP Bonus">(+'+server.alert.experience_bonus+'%)</span>')
 				if (server.alert.type === 1) {
-					var count = 100 - server.alert.faction_nc - server.alert.faction_tr
-					$('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+server.alert.faction_tr +'%" title="'+Math.floor(server.alert.faction_tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ server.alert.faction_nc +'%" title="'+Math.floor(server.alert.faction_nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(server.alert.faction_tr)+'%"></div></div></div></div>')
-					$('.collapse').collapse({toggle: false})
+					var vanu = server.alert.faction_vs,
+					tr = server.alert.faction_tr,
+					nc = server.alert.faction_nc,
+					count = 100 - nc - tr,
+					row = $('body').remove('#collapse'+server.id).find('p')
+
+					row.before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%"></div></div></div></div>')
+					var collapse = row.prevAll('#collapse'+server.id),
+					container = collapse.find('.container')
+					if (this.flare === 0 && tr < vanu && nc < vanu)
+						container.append('<div class="text-center text-success">Vanu is leading!</div>')
+					if (this.flare === 1 && tr < nc && nc > vanu)
+						container.append('<div class="text-center text-success">NC is leading!</div>')
+					if (this.flare === 2 && tr > vanu && nc < tr)
+						container.append('<div class="text-center text-success">TR is leading!</div>')
+					collapse.collapse({toggle: false})
 					$server.find('.server-name > button').removeAttr('disabled')
 				} else {
 					$server.find('.server-name > button').attr('disabled', true)
@@ -132,7 +146,7 @@
 			var $e = $(e)
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
-				w.alert.init(true)
+				w.alert.update()
 				$('#server > button').attr('title', new Date(data.lastUpdate))
 				window.setTimeout(function() {
 					$(e).removeAttr('disabled')

@@ -59,7 +59,7 @@
 		hide: 0,
 		remember: false,
 		count: 0,
-		updateRunning: false,
+		test: true,
 
 		init: function (force) {
 			chrome.storage.local.get({
@@ -69,14 +69,18 @@
 				servers: '',
 				notification: 13,
 				hide: 0,
+				hide2: 0,
 				count: 0,
 				remember: false
 			}, function (data) {
-				//console.log('init')
-				if (data.servers === '') {
+				console.log('init')
+				if (this.test || data.servers === '') {
 					var serverObj = {}
 					$.each(servers, function (i, server) {
-						serverObj['s' + server.id] = server
+						if (!data.hide2)
+							serverObj['s' + server.id] = server
+						else if (server.id == data.main)
+							serverObj['s'+data.main] = server
 					})
 					this.servers = data.servers = serverObj
 					chrome.storage.local.set({
@@ -94,6 +98,7 @@
 
 				var main = this.servers['s' + this.main]
 				if (force || $.now() - data.lastUpdate > this.updateTime * 60000) {
+					console.log('update')
 					this.update()
 				} else {
 					this.setBadgeAlarm(main)
@@ -117,18 +122,21 @@
 							if (state === 'online') {
 								this._updateServer(server)
 							} else {
+								server.alert.notified = false
 								server.status = state
 								this.sendToPopup(server)
 							}
 						} else {
-							server.status = 'errorUA'
+							server.alert.notified = false
+							server.status = 'API error (U)'
 							this.sendToPopup(server)
 						}
 					}.bind(this),
 					error: function () {
-						server.status = 'errorAPI'
+						server.alert.notified = false
+						server.status = 'API error'
 						this.sendToPopup(server)
-					}
+					}.bind(this)
 				})
 			}.bind(this))
 		},
@@ -150,7 +158,8 @@
 				dataType: 'json',
 				success: function (response) {
 					if (!response && !response.world_event_list) {
-						server.status = 'errorUS'
+						server.status = 'API Error (A)'
+						server.alert.notified = false
 						if (server.id === this.main)
 							this.clearBadgeAlarm()
 						return this.sendToPopup(server)
@@ -159,15 +168,11 @@
 					var data = response.world_event_list[0]
 					if (!activeEvent[+data.metagame_event_state]) {
 						server.status = 'no alert'
+						server.alert.notified = false
 						if (server.id === this.main)
 							this.clearBadgeAlarm()
 						return this.sendToPopup(server)
 					}
-
-					this.count++
-					chrome.storage.local.set({
-						count: this.count
-					})
 
 					var event = events[+data.metagame_event_id - 1]
 
@@ -183,8 +188,15 @@
 						experience_bonus: data.experience_bonus || 0
 					}
 
-					if (server.id === this.main)
+					this.count++
+					chrome.storage.local.set({ count: this.count })
+
+					if (server.id === this.main) {
+						this.updateIcon('img/notification_tray_attention.png')
 						this.setBadgeAlarm(server)
+					} else {
+						this.updateIcon('img/notification_tray_empty.png')
+					}
 
 					if (server.id === this.notification || this.notification === 0) {
 						if (!this.servers['s' + server.id].alert.notified) {
@@ -198,9 +210,10 @@
 					this.sendToPopup(server)
 				}.bind(this),
 				error: function () {
-					server.state = 'errorAPI'
+					server.alert.notified = false
+					server.state = 'API error'
 					this.sendToPopup(server)
-				}
+				}.bind(this)
 			})
 		},
 
@@ -249,7 +262,6 @@
 						chrome.storage.local.set({remember: false})
 						this.createNotification(server, true)
 					}
-					this.updateIcon('img/notification_tray_attention.png')
 					chrome.browserAction.setBadgeText({
 						text: h + ':' + m
 					})
@@ -264,7 +276,7 @@
 			chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
 			chrome.alarms.onAlarm.addListener(function (alarm) {
 				if (alarm.name === 'update') {
-					//console.log('update alarm')
+					console.log('update alarm')
 					this.update()
 				}
 			}.bind(this))
@@ -299,11 +311,6 @@
 		},
 
 		updateIcon: function (path) {
-			if (this.updateRunning)
-				return window.setTimeout(function() {
-					this.updateIcon(path)
-				}.bind(this), 1000)
-			this.updateRunning = true
 			var canvas = $('canvas')
 			if (canvas.length < 1) {
 				canvas = $('<canvas width="19" height="19"></canvas>')
@@ -316,6 +323,7 @@
 				context.clearRect(0, 0, 19, 19)
 				context.drawImage(imageObj, 0, 0, 19, 19)
 				context.fillStyle = '#888'
+				console.log('icon count: '+this.count)
 				context.fillText(this.count, 6.5, 12)
 				var details = {
 					imageData: 0
