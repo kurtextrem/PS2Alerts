@@ -68,6 +68,12 @@
 					})
 				})
 			})
+			$('[data-popover]').popover({
+				animation: true,
+				html: true,
+				trigger: 'hover',
+				placement: 'bottom'
+			})
 		}
 	}
 

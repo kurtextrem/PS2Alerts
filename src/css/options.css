@@ -1,0 +1,9 @@
+.help {
+	cursor: help;
+	border-bottom: 1px dashed gray;
+}
+
+.popover {
+	min-width: 100%;
+	left: inherit;
+}
