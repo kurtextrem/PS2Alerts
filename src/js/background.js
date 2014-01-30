@@ -9,7 +9,7 @@
 		{name: 'Mattherson', id: 17, status: 'no alert', alert: {}},
 		{name: 'Miller', id: 10, status: 'no alert', alert: {}},
 		{name: 'Waterson', id: 18, status: 'no alert', alert: {}},
-		{name: 'Woodman', id: 9, status: 'no alert', alert: {}},
+		{name: 'Woodman', id: 9, status: 'no alert', alert: {}}
 	]
 
 	var events = [
@@ -59,7 +59,8 @@
 		hide: 0,
 		remember: false,
 		count: 0,
-		test: true,
+		alert: false,
+		test: false,
 
 		init: function (force) {
 			chrome.storage.local.get({
@@ -71,7 +72,8 @@
 				hide: 0,
 				hide2: 0,
 				count: 0,
-				remember: false
+				remember: false,
+				alert: false
 			}, function (data) {
 				console.log('init')
 				if (this.test || data.servers === '') {
@@ -89,6 +91,7 @@
 				} else {
 					this.servers = data.servers
 				}
+				this.alert = data.alert
 				this.main = data.main
 				this.flare = data.flare
 				this.notification = data.notification
@@ -97,7 +100,7 @@
 				this.remember = data.remember
 
 				var main = this.servers['s' + this.main]
-				if (force || $.now() - data.lastUpdate > this.updateTime * 60000) {
+				if (force || $.now() - data.lastUpdate >= this.updateTime * 60000) {
 					console.log('update')
 					this.update()
 				} else {
@@ -123,7 +126,7 @@
 								this._updateServer(server)
 							} else {
 								server.alert.notified = false
-								server.status = state
+								server.status = state+' error'
 								this.sendToPopup(server)
 							}
 						} else {
@@ -157,11 +160,9 @@
 			$.ajax(this.url + 'world_event?world_id=' + server.id + '&type=METAGAME', {
 				dataType: 'json',
 				success: function (response) {
-					if (!response && !response.world_event_list) {
+					if (!response || !response.world_event_list) {
 						server.status = 'API Error (A)'
 						server.alert.notified = false
-						if (server.id === this.main)
-							this.clearBadgeAlarm()
 						return this.sendToPopup(server)
 					}
 
@@ -169,8 +170,11 @@
 					if (!activeEvent[+data.metagame_event_state]) {
 						server.status = 'no alert'
 						server.alert.notified = false
-						if (server.id === this.main)
+						if (server.id === this.main) {
+							this.alert = false
+							chrome.storage.local.set({ alert: false })
 							this.clearBadgeAlarm()
+						}
 						return this.sendToPopup(server)
 					}
 
@@ -192,11 +196,11 @@
 					chrome.storage.local.set({ count: this.count })
 
 					if (server.id === this.main) {
-						this.updateIcon('img/notification_tray_attention.png')
+						this.alert = true
+						chrome.storage.local.set({ alert: true })
 						this.setBadgeAlarm(server)
-					} else {
-						this.updateIcon('img/notification_tray_empty.png')
 					}
+					this.updateIcon()
 
 					if (server.id === this.notification || this.notification === 0) {
 						if (!this.servers['s' + server.id].alert.notified) {
@@ -220,7 +224,7 @@
 		clearBadgeAlarm: function() {
 			chrome.browserAction.setBadgeText({ text: '' })
 			chrome.alarms.clear('update-badge')
-			this.updateIcon('img/notification_tray_empty.png')
+			this.updateIcon()
 			if (this.hide)
 				chrome.browserAction.disable()
 		},
@@ -310,7 +314,11 @@
 			}.bind(this))
 		},
 
-		updateIcon: function (path) {
+		updateIcon: function () {
+			var path = 'img/notification_tray_empty.png'
+			if (this.alert)
+				path = 'img/notification_tray_attention.png'
+
 			var canvas = $('canvas')
 			if (canvas.length < 1) {
 				canvas = $('<canvas width="19" height="19"></canvas>')
@@ -330,7 +338,6 @@
 				}
 				details.imageData = context.getImageData(0, 0, 19, 19)
 				chrome.browserAction.setIcon(details)
-				this.updateRunning = false
 			}.bind(this)
 			imageObj.src = path
 		}
