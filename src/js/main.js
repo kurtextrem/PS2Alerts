@@ -16,6 +16,10 @@
 	}
 
 	var App = function() {
+		if (typeof sessionStorage.startup === 'undefined') {
+			sessionStorage.startup = 1
+			chrome.runtime.getBackgroundPage($.noop)
+		}
 		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0}, function(data) {
 			this.servers = data.servers
 			this.main = data.main

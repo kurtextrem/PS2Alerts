@@ -2,15 +2,16 @@
 
 if (isset($_GET['data'])) {
 	define('UPDATE_TIME', 2);
+	define('NOW', time());
+
 	$data = @file_get_contents('cache/data');
 	if (!$data) {
 		$data = '{"time": 0}';
 	}
 	$data = json_decode($data);
 
-	$now = time();
 	header('Content-type: application/json');
-	if ($now - $data->time <= UPDATE_TIME * 60000) {
+	if (NOW - $data->time <= UPDATE_TIME * 60000) {
 		exit(json_encode($data));
 	} else {
 		require_once 'config.inc.php';
@@ -49,7 +50,7 @@ if (isset($_GET['data'])) {
 			'139' => true
 		);
 
-		$output = array('time' => $now, 'alerts' => array());
+		$output = array('time' => NOW, 'alerts' => array());
 
 		foreach($servers as $server) {
 			$file = json_decode(@file_get_contents($url.'world?world_id=' . $server['id']));
