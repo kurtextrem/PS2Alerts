@@ -1,40 +1,6 @@
 +function (window) {
 	'use strict';
 
-	var servers = [
-		{name: 'Briggs', id: 25, status: 'no alert', alert: {}},
-		{name: 'Ceres', id: 11, status: 'no alert', alert: {}},
-		{name: 'Cobalt', id: 13, status: 'no alert', alert: {}},
-		{name: 'Connery', id: 1, status: 'no alert', alert: {}},
-		{name: 'Mattherson', id: 17, status: 'no alert', alert: {}},
-		{name: 'Miller', id: 10, status: 'no alert', alert: {}},
-		{name: 'Waterson', id: 18, status: 'no alert', alert: {}},
-		{name: 'Woodman', id: 9, status: 'no alert', alert: {}}
-	]
-
-	var events = [
-		{zone: 2, type: 1},
-		{zone: 8, type: 1},
-		{zone: 6, type: 1},
-		{zone: 0, type: 2},
-		{zone: 0, type: 3},
-		{zone: 0, type: 4},
-		{zone: 6, type: 2},
-		{zone: 6, type: 3},
-		{zone: 6, type: 4},
-		{zone: 2, type: 2},
-		{zone: 2, type: 3},
-		{zone: 2, type: 4},
-		{zone: 8, type: 2},
-		{zone: 8, type: 4}
-	]
-
-	var activeEvent = {
-		135: true,
-		136: true,
-		139: true
-	}
-
 	var flares = {
 		0: [128, 0, 255, 255], // Vanu
 		1: [0, 200, 255, 255], // NC
@@ -48,7 +14,7 @@
 	}
 
 	Alert.prototype = {
-		url: 'http://census.soe.com/get/ps2:v2/',
+		url: 'http://kurtextrem.de/PS2/?data=true',
 
 		constructor: Alert,
 		updateTime: 3,
@@ -76,21 +42,7 @@
 				alert: false
 			}, function (data) {
 				console.log('init')
-				if (this.test || data.servers === '') {
-					var serverObj = {}
-					$.each(servers, function (i, server) {
-						if (!data.hide2)
-							serverObj['s' + server.id] = server
-						else if (server.id == data.main)
-							serverObj['s'+data.main] = server
-					})
-					this.servers = data.servers = serverObj
-					chrome.storage.local.set({
-						servers: data.servers
-					})
-				} else {
-					this.servers = data.servers
-				}
+
 				this.alert = data.alert
 				this.main = data.main
 				this.flare = data.flare
@@ -106,6 +58,11 @@
 				} else {
 					this.setBadgeAlarm(main)
 				}
+				if (this.test || data.servers === '') {
+					force = true
+				} else {
+					this.servers = data.servers
+				}
 				this.registerUpdateAlarms()
 			}.bind(this))
 		},
@@ -116,32 +73,29 @@
 				lastUpdate: $.now()
 			})
 			this.count = 0
-			$.each(this.servers, function (index, server) {
-				$.ajax(this.url + 'world?world_id=' + server.id, {
-					dataType: 'json',
-					success: function (response) {
-						if (response && response.world_list && response.world_list[0]) {
-							var state = response.world_list[0].state
-							if (state === 'online') {
-								this._updateServer(server)
-							} else {
-								server.alert.notified = false
-								server.status = state+' error'
-								this.sendToPopup(server)
-							}
+			$.ajax(this.url, {
+				dataType: 'json',
+				success: function(data) {
+					if (!data) {
+						// same as error API error U
+					}
+					$.each(data.servers, function(index, server) {
+						if (server.isOnline) {
+							this._updateServer(server)
 						} else {
 							server.alert.notified = false
-							server.status = 'API error (U)'
 							this.sendToPopup(server)
 						}
-					}.bind(this),
-					error: function () {
-						server.alert.notified = false
-						server.status = 'API error'
-						this.sendToPopup(server)
-					}.bind(this)
-				})
-			}.bind(this))
+					})
+
+				}.bind(this),
+				error: function() {
+					//server.alert.notified = false
+					//server.status = 'API error'
+					//this.sendToPopup(server)
+					//@todo: Not sure what I should do here
+				}.bind(this)
+			})
 		},
 
 		sendToPopup: function (server) {
@@ -157,68 +111,36 @@
 		},
 
 		_updateServer: function (server) {
-			$.ajax(this.url + 'world_event?world_id=' + server.id + '&type=METAGAME', {
-				dataType: 'json',
-				success: function (response) {
-					if (!response || !response.world_event_list) {
-						server.status = 'API Error (A)'
-						server.alert.notified = false
-						return this.sendToPopup(server)
-					}
+			if (data.status === 'no alert') {
+				server.alert.notified = false
+				if (server.id === this.main) {
+					this.alert = false
+					chrome.storage.local.set({ alert: false })
+					this.clearBadgeAlarm()
+				}
+				return this.sendToPopup(server)
+			}
 
-					var data = response.world_event_list[0]
-					if (!activeEvent[+data.metagame_event_state]) {
-						server.status = 'no alert'
-						server.alert.notified = false
-						if (server.id === this.main) {
-							this.alert = false
-							chrome.storage.local.set({ alert: false })
-							this.clearBadgeAlarm()
-						}
-						return this.sendToPopup(server)
-					}
+			this.count++
+			chrome.storage.local.set({ count: this.count })
 
-					var event = events[+data.metagame_event_id - 1]
+			if (server.id === this.main) {
+				this.alert = true
+				chrome.storage.local.set({ alert: true })
+				this.setBadgeAlarm(server)
+			}
+			this.updateIcon()
 
-					server.status = 1
-					server.alert = {
-						start: +(data.timestamp + '000'),
-						type: event.type,
-						zone: event.zone,
-						notified: false,
-						faction_nc: data.faction_nc,
-						faction_tr: data.faction_tr,
-						faction_vs: data.faction_vs,
-						experience_bonus: data.experience_bonus || 0
-					}
+			if (server.id === this.notification || this.notification === 0) {
+				if (!this.servers['s' + server.id].alert.notified) {
+					server.alert.notified = true
+					this.createNotification(server)
+				} else {
+					server.alert.notified = true
+				}
+			}
 
-					this.count++
-					chrome.storage.local.set({ count: this.count })
-
-					if (server.id === this.main) {
-						this.alert = true
-						chrome.storage.local.set({ alert: true })
-						this.setBadgeAlarm(server)
-					}
-					this.updateIcon()
-
-					if (server.id === this.notification || this.notification === 0) {
-						if (!this.servers['s' + server.id].alert.notified) {
-							server.alert.notified = true
-							this.createNotification(server)
-						} else {
-							server.alert.notified = true
-						}
-					}
-
-					this.sendToPopup(server)
-				}.bind(this),
-				error: function () {
-					server.alert.notified = false
-					server.state = 'API error'
-					this.sendToPopup(server)
-				}.bind(this)
-			})
+			this.sendToPopup(server)
 		},
 
 		clearBadgeAlarm: function() {
