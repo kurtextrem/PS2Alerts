@@ -85,7 +85,7 @@
 							server.alert.notified = false
 							this.sendToPopup(server)
 						}
-					})
+					}.bind(this))
 
 				}.bind(this),
 				error: function() {
@@ -110,7 +110,7 @@
 		},
 
 		_updateServer: function (server) {
-			if (data.status === 'no alert') {
+			if (server.status === 'no alert') {
 				server.alert.notified = false
 				if (server.id === this.main) {
 					this.alert = false

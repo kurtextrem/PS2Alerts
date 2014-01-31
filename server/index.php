@@ -88,12 +88,13 @@ if (isset($_GET['data'])) {
 							);
 
 							if ($event['type'] > 1) {
-								$file3 = json_decode(@file_get_contents('http://fishy.sytes.net/ps2territory.php?world='.$server['id'].'&continent='.$event['zone'].'&facility='.$event['type']));
+								$file3 = json_decode(@file_get_contents('http://fishy.sytes.net/ps2territory.php?world='.$server['id'].'&continent='.$event['zone'].'&facility='.$event['type']), true);
+
 								if ($file3) {
-									$data['alert']['facilities'] = $file3['control-list']->facilities;
-									$data['alert']['faction_vs'] = $file3['control-list']['control-percentage'][1];
-									$data['alert']['faction_nc'] = $file3['control-list']['control-percentage'][2];
-									$data['alert']['faction_tr'] = $file3['control-list']['control-percentage'][3];
+									$data['alert']['facilities'] = $file3['control-list'][0]['facilities'];
+									$data['alert']['faction_vs'] = $file3['control-list'][0]['control-percentage'][1];
+									$data['alert']['faction_nc'] = $file3['control-list'][0]['control-percentage'][2];
+									$data['alert']['faction_tr'] = $file3['control-list'][0]['control-percentage'][3];
 								}
 							}
 						}
