@@ -20,10 +20,11 @@
 			sessionStorage.startup = 1
 			chrome.runtime.getBackgroundPage($.noop)
 		}
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0, hide2: 0}, function(data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
+			this.hide2 = data.hide2
 			this.addHTML()
 			$.each(data.servers, function(index, server) {
 				this.updateTable(server)
@@ -53,6 +54,8 @@
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
+				if (this.hide2 && server.id !== this.main)
+					$('tr:last').hide()
 				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse'+server.id+'" class="btn btn-link">' + server.name + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')

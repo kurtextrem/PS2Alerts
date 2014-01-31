@@ -36,7 +36,6 @@
 				servers: '',
 				notification: 13,
 				hide: 0,
-				hide2: 0,
 				count: 0,
 				remember: false,
 				alert: false
