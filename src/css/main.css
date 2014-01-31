@@ -25,14 +25,14 @@ td {
 	padding: 0 !important;
 }
 
-th.sorted.ascending::after {
+.ascending::after {
 	content: "  \2191";
 	position: absolute;
 	top: 9px;
 	margin-left: 4px;
 }
 
-th.sorted.descending::after {
+.descending::after {
 	content: " \2193";
 	position: absolute;
 	top: 9px;
@@ -48,7 +48,7 @@ video {
 .server-name button {
 	padding: 0;
 	border: 0;
-	vertical-align: inherit;
+	vertical-align: auto;
 }
 
 .server-name button:hover, .server-name button:focus {
@@ -71,4 +71,12 @@ video {
 
 .progress-bar {
 	margin-bottom: 0;
+}
+
+.facility {
+	height: 17px;
+	width: 17px;
+	float: left;
+	border-radius: 25px;
+	margin-right: 8px;
 }

@@ -50,7 +50,7 @@ if (isset($_GET['data'])) {
 			'139' => true
 		);
 
-		$output = array('time' => NOW, 'alerts' => array());
+		$output = array('time' => NOW, 'servers' => array());
 
 		foreach($servers as $server) {
 			$file = json_decode(@file_get_contents($url.'world?world_id=' . $server['id']));
@@ -83,8 +83,19 @@ if (isset($_GET['data'])) {
 							                       'faction_nc' => $data2->faction_nc,
 							                       'faction_tr' => $data2->faction_tr,
 							                       'faction_vs' => $data2->faction_vs,
-							                       'experience_bonus' => $data2->experience_bonus || 0
+							                       'experience_bonus' => $data2->experience_bonus || 0,
+							                       'facilities' => array()
 							);
+
+							if ($event['type'] > 1) {
+								$file3 = json_decode(@file_get_contents('http://fishy.sytes.net/ps2territory.php?world='.$server['id'].'&continent='.$event['zone'].'&facility='.$data['type']));
+								if ($file3) {
+									$data['alert']['facilities'] = $file3['control-list']->facilities;
+									$data['alert']['faction_vs'] = $file3['control-list']['control-percentage'][1];
+									$data['alert']['faction_nc'] = $file3['control-list']['control-percentage'][2];
+									$data['alert']['faction_tr'] = $file3['control-list']['control-percentage'][3];
+								}
+							}
 						}
 					}
 				} else {
@@ -92,7 +103,7 @@ if (isset($_GET['data'])) {
 				}
 			}
 
-			$output['alerts'][''.$server['id']] = $data;
+			$output['servers'][''.$server['id']] = $data;
 		}
 
 		$json = json_encode($output);

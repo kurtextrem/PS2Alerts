@@ -72,27 +72,20 @@
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 
 				$server.find('.type').html(typeData[server.alert.type]+' <span title="EXP Bonus">(+'+server.alert.experience_bonus+'%)</span>')
-				if (server.alert.type === 1) {
-					var vanu = server.alert.faction_vs,
-					tr = server.alert.faction_tr,
-					nc = server.alert.faction_nc,
-					count = 100 - nc - tr,
-					row = $('body').remove('#collapse'+server.id).find('p')
+				$server.find('.server-name > button').removeAttr('disabled')
 
-					row.before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%"></div></div></div></div>')
-					var collapse = row.prevAll('#collapse'+server.id),
-					container = collapse.find('.container')
-					if (this.flare === 0 && tr < vanu && nc < vanu)
-						container.append('<div class="text-center text-success">Vanu is leading!</div>')
-					if (this.flare === 1 && tr < nc && nc > vanu)
-						container.append('<div class="text-center text-success">NC is leading!</div>')
-					if (this.flare === 2 && tr > vanu && nc < tr)
-						container.append('<div class="text-center text-success">TR is leading!</div>')
-					collapse.collapse({toggle: false})
-					$server.find('.server-name > button').removeAttr('disabled')
-				} else {
-					$server.find('.server-name > button').attr('disabled', true)
+				switch (server.alert.type) {
+					case 1:
+						this.addType('territory', server)
+						break;
+					case (2 || 3 || 4):
+						this.addType('facility', server)
+						break;
+					default:
+						$server.find('.server-name > button').attr('disabled', true)
+						break
 				}
+
 				$server.find('.continent').text(zoneData[server.alert.zone])
 				$server.find('.remaining').removeClass('inactive')
 
@@ -112,6 +105,58 @@
 					$server.addClass('danger')
 
 			}
+		},
+
+		_addTerritory: function(server) {
+			var vanu = server.alert.faction_vs,
+			tr = server.alert.faction_tr,
+			nc = server.alert.faction_nc,
+			count = 100 - nc - tr,
+			row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%"></div></div></div></div>')
+
+			return [row, vanu, tr, nc]
+		},
+
+		addType: function(which, server) {
+			var data = null
+			switch (which) {
+				case 'territory':
+					data = this._addTerritory(server)
+					break
+				case 'facility':
+					data = this._addFacility(server)
+					break
+
+				default:
+					return
+					break
+			}
+
+			var collapse = data[0].prevAll('#collapse'+server.id),
+			container = collapse.find('.container')
+
+			if (this.flare === 0 && data[3] < data[1] && data[2] < data[1])
+				container.append('<div class="text-center text-success">Vanu is leading!</div>')
+			if (this.flare === 1 && data[2] < data[3] && data[3] > data[1])
+				container.append('<div class="text-center text-success">NC is leading!</div>')
+			if (this.flare === 2 && data[2] > data[1] && nc < data[3])
+				container.append('<div class="text-center text-success">TR is leading!</div>')
+			collapse.collapse({toggle: false})
+		},
+
+		_addFacility: function(server) {
+			var row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"></div></div>'),
+			$container = $('#collapse'+server.id+' > .container'),
+			vanu = server.alert.faction_vs,
+			tr = server.alert.faction_tr,
+			nc = server.alert.faction_nc
+
+
+			$.each(server.alert.facilities, function(i, facility) {
+				$container.append('<div class="facility" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
+			})
+
+			return [row, vanu, tr, nc]
 		},
 
 		updateTime: function(server) {
