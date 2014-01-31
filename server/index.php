@@ -11,7 +11,7 @@ if (isset($_GET['data'])) {
 	$data = json_decode($data);
 
 	header('Content-type: application/json');
-	if (NOW - $data->time <= UPDATE_TIME * 60000) {
+	if (NOW - $data->time <= UPDATE_TIME * 60) {
 		exit(json_encode($data));
 	} else {
 		require_once 'config.inc.php';
@@ -88,7 +88,7 @@ if (isset($_GET['data'])) {
 							);
 
 							if ($event['type'] > 1) {
-								$file3 = json_decode(@file_get_contents('http://fishy.sytes.net/ps2territory.php?world='.$server['id'].'&continent='.$event['zone'].'&facility='.$data['type']));
+								$file3 = json_decode(@file_get_contents('http://fishy.sytes.net/ps2territory.php?world='.$server['id'].'&continent='.$event['zone'].'&facility='.$event['type']));
 								if ($file3) {
 									$data['alert']['facilities'] = $file3['control-list']->facilities;
 									$data['alert']['faction_vs'] = $file3['control-list']['control-percentage'][1];

@@ -44,6 +44,9 @@
 			})
 			$('#server-'+this.main+' td').css('background-color', 'rgb(224, 236, 218)')
 			$('#server > button').attr('title', new Date(data.lastUpdate))
+			$('[data-tooltip]').tooltip({
+				placement: 'bottom'
+			})
 		}.bind(this))
 	}
 	App.prototype = {
@@ -74,7 +77,7 @@
 				if (video.find('video').length === 0)
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 
-				$server.find('.type').html(typeData[server.alert.type]+' <span title="EXP Bonus">(+'+server.alert.experience_bonus+'%)</span>')
+				$server.find('.type').html(typeData[server.alert.type]+' <span data-tooltip="true" title="EXP Bonus">(+'+server.alert.experience_bonus+'%)</span>')
 				$server.find('.server-name > button').removeAttr('disabled')
 
 				switch (server.alert.type) {
@@ -115,7 +118,7 @@
 			tr = server.alert.faction_tr,
 			nc = server.alert.faction_nc,
 			count = 100 - nc - tr,
-			row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%"></div></div></div></div>')
+			row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%" data-tooltip="true"></div></div></div></div>')
 
 			return [row, vanu, tr, nc]
 		},
