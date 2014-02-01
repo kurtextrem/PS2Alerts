@@ -48,6 +48,10 @@
 				placement: 'bottom'
 			})
 		}.bind(this))
+		$('#options').click(function() {
+			chrome.tabs.create({ url: 'settings.html' })
+		})
+		$('#ps2alerts').tooltip()
 	}
 	App.prototype = {
 		servers: {},
@@ -143,7 +147,8 @@
 			container = collapse.find('.container'),
 			append = 'Fair fight.',
 			lead = 4,
-			add = 'text-info'
+			add = 'text-info',
+			col = false
 
 			if (data[3] < data[1] && data[2] < data[1]) {
 				lead = 0
@@ -158,7 +163,9 @@
 			if (this.flare === lead)
 				add = 'text-success'
 			container.append('<div class="text-center '+add+'">'+append+'</div>')
-			collapse.collapse({toggle: false})
+			if (this.hide2 && server.id === this.main)
+				col = true
+			collapse.collapse({toggle: col})
 		},
 
 		_addFacility: function(server) {
