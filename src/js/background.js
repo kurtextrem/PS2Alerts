@@ -154,7 +154,7 @@
 			chrome.browserAction.setBadgeText({ text: '' })
 			chrome.alarms.clear('update-badge')
 			this.updateIcon()
-			if (this.hide)
+			if (this.hide && !this.alert)
 				chrome.browserAction.disable()
 		},
 
