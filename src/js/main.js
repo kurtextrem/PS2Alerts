@@ -20,7 +20,7 @@
 			sessionStorage.startup = 1
 			chrome.runtime.getBackgroundPage($.noop)
 		}
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0, hide2: 0}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0, hide2: 0, serverTimestamp: 0}, function(data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
@@ -43,7 +43,7 @@
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
 			$('#server-'+this.main+' td').css('background-color', 'rgb(224, 236, 218)')
-			$('#server > button').attr('title', new Date(data.lastUpdate))
+			$('#server > button').attr('title', new Date(data.lastUpdate)+'('+new Date(data.serverTimestamp)+')')
 			$('[data-tooltip]').tooltip({
 				placement: 'bottom'
 			})
@@ -159,7 +159,21 @@
 
 
 			$.each(server.alert.facilities, function(i, facility) {
-				$container.append('<div class="facility" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
+				var add = 'progress-bar-purple'
+				switch (facility['owned-by-faction']) {
+					case 1: // Vanu
+						break
+					case 2: // NC
+						add = 'progress-bar-info'
+						break
+					case 3: // TR
+						add = 'progress-bar-danger'
+						break
+
+					default:
+						break
+				}
+				$container.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
 			})
 
 			return [row, vanu, tr, nc]
@@ -202,9 +216,11 @@
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
 				w.alert.update()
-				$('#server > button').attr('title', new Date(data.lastUpdate))
+				chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
+					$('#server > button').attr('title', new Date(data.lastUpdate)+'('+new Date(data.serverTimestamp)+')')
+				})
 				window.setTimeout(function() {
-					$(e).removeAttr('disabled')
+					$e.removeAttr('disabled')
 				}, 30000)
 			})
 		}
