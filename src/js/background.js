@@ -82,6 +82,8 @@
 						if (server.isOnline) {
 							this._updateServer(server)
 						} else {
+							this.alert = false
+							chrome.storage.local.set({alert: false})
 							server.alert.notified = false
 							this.sendToPopup(server)
 						}
@@ -177,6 +179,8 @@
 				var m = ('0' + date.getUTCMinutes()).slice(-2)
 
 				if (h > 2 || (h + +m) < 0) {
+					this.alert = false
+					chrome.storage.local.set({alert: false})
 					this.clearBadgeAlarm()
 				} else {
 					chrome.browserAction.enable()

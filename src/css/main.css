@@ -76,7 +76,7 @@ video {
 .facility {
 	height: 17px;
 	width: 17px;
-	float: left;
+	display: inline-block;
 	border-radius: 25px;
 	margin-right: 8px;
 }

@@ -151,8 +151,9 @@
 		},
 
 		_addFacility: function(server) {
-			var row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"></div></div>'),
+			var row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
 			$container = $('#collapse'+server.id+' > .container'),
+			$facilities = $container.find('.facilities'),
 			vanu = server.alert.faction_vs,
 			tr = server.alert.faction_tr,
 			nc = server.alert.faction_nc
@@ -161,19 +162,19 @@
 			$.each(server.alert.facilities, function(i, facility) {
 				var add = 'progress-bar-purple'
 				switch (facility['owned-by-faction']) {
-					case 1: // Vanu
+					case '1': // Vanu
 						break
-					case 2: // NC
+					case '2': // NC
 						add = 'progress-bar-info'
 						break
-					case 3: // TR
+					case '3': // TR
 						add = 'progress-bar-danger'
 						break
 
 					default:
 						break
 				}
-				$container.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
+				$facilities.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
 			})
 
 			return [row, vanu, tr, nc]
@@ -235,5 +236,5 @@ $.fn.ready(function() {
 		$.each($('video'), function(i, vid) {
 			vid.play()
 		})
-	}, 500)
+	}, 750)
 })
