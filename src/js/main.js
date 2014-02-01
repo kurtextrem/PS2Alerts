@@ -118,13 +118,14 @@
 			tr = server.alert.faction_tr,
 			nc = server.alert.faction_nc,
 			count = 100 - nc - tr,
-			row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%" data-tooltip="true"></div></div></div></div>')
+			row = $('body').find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%" data-tooltip="true"></div></div></div></div>')
 
 			return [row, vanu, tr, nc]
 		},
 
 		addType: function(which, server) {
 			var data = null
+			$('#collapse'+server.id).remove()
 			switch (which) {
 				case 'territory':
 					data = this._addTerritory(server)
@@ -147,12 +148,10 @@
 			if (data[3] < data[1] && data[2] < data[1]) {
 				lead = 0
 				append = 'Vanu is leading.'
-			}
-			if (data[2] < data[3] && data[3] > data[1]) {
+			} else if (data[2] < data[3] && data[3] > data[1]) {
 				lead = 1
 				append = 'NC is leading.'
-			}
-			if (data[2] > data[1] && data[3] < data[2]) {
+			} else if (data[2] > data[1] && data[3] < data[2]) {
 				lead = 2
 				append = 'TR is leading.'
 			}
@@ -163,7 +162,7 @@
 		},
 
 		_addFacility: function(server) {
-			var row = $('body').remove('#collapse'+server.id).find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
+			var row = $('body').find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
 			$container = $('#collapse'+server.id+' > .container'),
 			$facilities = $container.find('.facilities'),
 			vanu = server.alert.faction_vs,
@@ -201,7 +200,7 @@
 			var current = Date.now()
 
 			if (server.status === 1) {
-				var date = new Date(server.alert.start - current)
+				var date = new Date(+server.alert.start - current)
 
 				if (server.alert.type === 1 || server.alert.zone === 0) {
 					date.setUTCHours(date.getUTCHours() + 2)

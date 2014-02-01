@@ -26,6 +26,7 @@
 		remember: false,
 		count: 0,
 		alert: false,
+		storeRunning: false,
 		test: false,
 
 		init: function (force) {
@@ -33,7 +34,7 @@
 				main: 13,
 				flare: 0,
 				lastUpdate: 0,
-				servers: '',
+				servers: {},
 				notification: 13,
 				hide: 0,
 				count: 0,
@@ -49,6 +50,7 @@
 				this.hide = data.hide
 				this.count = data.count
 				this.remember = data.remember
+				this.servers = data.servers
 
 				var main = this.servers['s' + this.main]
 				if (force || $.now() - data.lastUpdate >= this.updateTime * 60000) {
@@ -76,7 +78,7 @@
 						// same as error API error U
 					}
 					this.count = data.alertCount
-					chrome.storage.local.set({count: this.count, serverTimestamp: data.time})
+					chrome.storage.local.set({count: this.count, serverTimestamp: data.time+'000'})
 
 					$.each(data.servers, function(index, server) {
 						if (server.isOnline) {
@@ -102,10 +104,16 @@
 		},
 
 		sendToPopup: function (server) {
+			if (this.storeRunning)
+				window.setTimeout(function() {
+					this.sendToPopup(server)
+				}.bind(this), 250)
+			this.storeRunning = true
 			chrome.storage.local.get({ servers: {} }, function (data) {
 				var id = 's' + server.id
 				this.servers[id] = data.servers[id] = server
 				chrome.storage.local.set({ servers: data.servers })
+				this.storeRunning = false
 
 				var popups = chrome.extension.getViews({ type: 'popup' })
 				if (0 < popups.length)
@@ -167,7 +175,7 @@
 				this.clearBadgeAlarm()
 			if (server.status === 1) {
 				var current = Date.now(),
-					date = new Date(server.alert.start - current)
+					date = new Date(+server.alert.start - current)
 
 				if (server.alert.type === 1 || server.alert.zone === 0) {
 					date.setUTCHours(date.getUTCHours() + 2)
