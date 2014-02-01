@@ -139,14 +139,26 @@
 			}
 
 			var collapse = data[0].prevAll('#collapse'+server.id),
-			container = collapse.find('.container')
+			container = collapse.find('.container'),
+			append = 'Fair fight.',
+			lead = 4,
+			add = 'text-info'
 
-			if (this.flare === 0 && data[3] < data[1] && data[2] < data[1])
-				container.append('<div class="text-center text-success">Vanu is leading!</div>')
-			if (this.flare === 1 && data[2] < data[3] && data[3] > data[1])
-				container.append('<div class="text-center text-success">NC is leading!</div>')
-			if (this.flare === 2 && data[2] > data[1] && nc < data[3])
-				container.append('<div class="text-center text-success">TR is leading!</div>')
+			if (data[3] < data[1] && data[2] < data[1]) {
+				lead = 0
+				append = 'Vanu is leading.'
+			}
+			if (data[2] < data[3] && data[3] > data[1]) {
+				lead = 1
+				append = 'NC is leading.'
+			}
+			if (data[2] > data[1] && data[3] < data[2]) {
+				lead = 2
+				append = 'TR is leading.'
+			}
+			if (this.flare === lead)
+				add = 'text-success'
+			container.append('<div class="text-center '+add+'">'+append+'</div>')
 			collapse.collapse({toggle: false})
 		},
 
@@ -177,7 +189,7 @@
 				$facilities.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
 			})
 
-			return [row, vanu, tr, nc]
+			return [row, +vanu.toFixed(2), +tr.toFixed(2), +nc.toFixed(2)]
 		},
 
 		updateTime: function(server) {
