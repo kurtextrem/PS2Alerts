@@ -1,7 +1,7 @@
 <?php
 
 if (isset($_GET['data'])) {
-	define('UPDATE_TIME', 2);
+	define('UPDATE_TIME', 100);
 	define('NOW', time());
 
 	$data = @file_get_contents('cache/data');
@@ -50,7 +50,7 @@ if (isset($_GET['data'])) {
 			'139' => true
 		);
 
-		$output = array('time' => NOW, 'servers' => array());
+		$output = array('time' => NOW.'000', 'alertCount' => 0, 'servers' => array());
 
 		foreach($servers as $server) {
 			$file = json_decode(@file_get_contents($url.'world?world_id=' . $server['id']));
@@ -73,6 +73,7 @@ if (isset($_GET['data'])) {
 						if (!isset($activeEvent[''.$data2->metagame_event_state])) {
 							$data['status'] = 'no alert';
 						} else {
+							$output['alertCount']++;
 							$event = $events[''.($data2->metagame_event_id - 1)];
 
 							$data['status'] = 1;
@@ -83,7 +84,7 @@ if (isset($_GET['data'])) {
 							                       'faction_nc' => $data2->faction_nc,
 							                       'faction_tr' => $data2->faction_tr,
 							                       'faction_vs' => $data2->faction_vs,
-							                       'experience_bonus' => $data2->experience_bonus || 0,
+							                       'experience_bonus' => $data2->experience_bonus,
 							                       'facilities' => array()
 							);
 
@@ -104,7 +105,7 @@ if (isset($_GET['data'])) {
 				}
 			}
 
-			$output['servers'][''.$server['id']] = $data;
+			$output['servers'][$server['id']] = $data;
 		}
 
 		$json = json_encode($output);

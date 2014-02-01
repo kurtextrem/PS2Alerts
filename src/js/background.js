@@ -67,17 +67,17 @@
 		},
 
 		update: function () {
-			chrome.storage.local.set({
-				count: 0,
-				lastUpdate: $.now()
-			})
-			this.count = 0
+			chrome.storage.local.set({lastUpdate: $.now()})
+
 			$.ajax(this.url, {
 				dataType: 'json',
 				success: function(data) {
 					if (!data) {
 						// same as error API error U
 					}
+					this.count = data.alertCount
+					chrome.storage.local.set({count: this.count, serverTimestamp: data.time})
+
 					$.each(data.servers, function(index, server) {
 						if (server.isOnline) {
 							this._updateServer(server)
@@ -86,6 +86,8 @@
 							this.sendToPopup(server)
 						}
 					}.bind(this))
+
+					this.updateIcon()
 
 				}.bind(this),
 				error: function() {
@@ -120,15 +122,11 @@
 				return this.sendToPopup(server)
 			}
 
-			this.count++
-			chrome.storage.local.set({ count: this.count })
-
 			if (server.id === this.main) {
 				this.alert = true
 				chrome.storage.local.set({ alert: true })
 				this.setBadgeAlarm(server)
 			}
-			this.updateIcon()
 
 			if (server.id === this.notification || this.notification === 0) {
 				if (!this.servers['s' + server.id].alert.notified) {
