@@ -87,10 +87,16 @@
 				switch (server.alert.type) {
 					case 1:
 						this.addType('territory', server)
-						break;
-					case (2 || 3 || 4):
+						break
+					case 2:
 						this.addType('facility', server)
-						break;
+						break
+					case 3:
+						this.addType('facility', server)
+						break
+					case 4:
+						this.addType('facility', server)
+						break
 					default:
 						$server.find('.server-name > button').attr('disabled', true)
 						break
