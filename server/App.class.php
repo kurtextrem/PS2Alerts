@@ -2,6 +2,7 @@
 
 class App {
 	const UPDATE_TIME = 2;
+	const FILE_NAME = 'cache/data';
 
 	private $url;
 	private $servers = array(
@@ -38,16 +39,19 @@ class App {
 		'139' => true
 	);
 
-	private $output = array('time' => NOW, 'alertCount' => 0, 'servers' => array());
+	private $output = array();
 
 	function __construct() {
 		if (!isset($_GET['data']))
 			exit($this->setHeader('404'));
 
 		define('NOW', time());
+		require_once 'config.inc.php';
 		define('URL', 'http://census.soe.com/s:'.ID.'/get/ps2:v2/');
 
-		$data = @file_get_contents('cache/data');
+		$this->output = array('time' => NOW, 'alertCount' => 0, 'servers' => array());
+
+		$data = @file_get_contents(self::FILE_NAME);
 		if (!$data) {
 			$data = '{"time": 0}';
 		}
@@ -79,7 +83,7 @@ class App {
 	}
 
 	function isOld($data) {
-		return (self::NOW - $data->time <= self::UPDATE_TIME * 60);
+		return (NOW - $data->time <= self::UPDATE_TIME * 60);
 	}
 
 	function output($data, $exit = true) {
@@ -91,11 +95,11 @@ class App {
 	function update() {
 		$ids = $this->getIDs();
 		$servers = $this->get(URL.'world?c:show=state,world_id&world_id='.$ids);
-		$alerts = $this->sortAlerts($this->get(URL.'world_event?world_id='.$data['id'].'&type=METAGAME'));
+		$alerts = $this->sortAlerts($this->get(URL.'world_event?type=METAGAME&world_id='.$ids)->world_event_list);
 
 		foreach ($servers->world_list as $server) {
-			$data = $this->servers[$server['world_id']];
-			$data['id'] = $server['world_id'];
+			$data = $this->servers[$server->world_id];
+			$data['id'] = $server->world_id;
 
 			if ($server->state === 'online') {
 				$data['isOnline'] = true;
@@ -105,11 +109,11 @@ class App {
 				} else {
 					$data2 = $alerts[$data['id']];
 
-					if (!isset($this->activeEvent[''.$data2->metagame_event_state])) {
+					if (!isset($this->activeEvent[$data2->metagame_event_state])) {
 						$data['status'] = 'no alert';
 					} else {
 						$this->output['alertCount']++;
-						$event = $this->events[''.($data2->metagame_event_id - 1)];
+						$event = $this->events[$data2->metagame_event_id - 1];
 
 						$data['status'] = 1;
 						$data['alert'] = array(
@@ -138,16 +142,16 @@ class App {
 			} else {
 				$data['status'] = $server['state'];
 			}
-			$this->output['servers'][$server['world_id']] = $data;
+			$this->output['servers'][$data['id']] = $data;
 		}
 
 		$this->output($this->output, false);
-		@file_put_contents('cache/data', $json);
+		@file_put_contents(self::FILE_NAME, $json);
 	}
 
 	function getIDs() {
 		$ids = '';
-		foreach ($this->servers as $id) {
+		foreach ($this->servers as $id => $key) {
 			$ids .= $id.',';
 		}
 		return $ids;
@@ -160,7 +164,8 @@ class App {
 	function sortAlerts($alerts) {
 		$return = array();
 		foreach ($alerts as $alert) {
-			$return[$alert['world_id']] = $alert;
+			if (!array_key_exists($alert->world_id, $return))
+				$return[$alert->world_id] = $alert;
 		}
 		return $return;
 	}
