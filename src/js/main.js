@@ -198,7 +198,7 @@
 					default:
 						break
 				}
-				$facilities.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[facility['facility-type']]+') on '+zoneData[facility.continent]+'">')
+				$facilities.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[server.alert.type]+') on '+zoneData[facility.continent]+'">')
 			})
 
 			return [row, +vanu.toFixed(2), +tr.toFixed(2), +nc.toFixed(2)]

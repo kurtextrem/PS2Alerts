@@ -99,7 +99,7 @@ class App {
 
 		foreach ($servers->world_list as $server) {
 			$data = $this->servers[$server->world_id];
-			$data['id'] = $server->world_id;
+			$data['id'] = 0+$server->world_id;
 
 			if ($server->state === 'online') {
 				$data['isOnline'] = true;
