@@ -14,7 +14,7 @@
 	}
 
 	Alert.prototype = {
-		url: 'http://kurtextrem.de/PS2/?data=true',
+		url: 'http://kurtextrem.de/PS2/get/data',
 
 		constructor: Alert,
 		updateTime: 3,

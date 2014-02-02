@@ -58,8 +58,8 @@ class App {
 		$data = json_decode($data);
 
 		$this->setHeader('json');
-		if (!$this->isOld($data)) {
-			$this->output($data);
+		if ($this->isNew($data)) {
+			$this->output(json_encode($data));
 		} else {
 			$this->update();
 		}
@@ -82,12 +82,12 @@ class App {
 		header($header);
 	}
 
-	function isOld($data) {
+	function isNew($data) {
 		return (NOW - $data->time <= self::UPDATE_TIME * 60);
 	}
 
 	function output($data, $exit = true) {
-		echo json_encode($data);
+		echo $data;
 		if ($exit)
 			exit;
 	}
@@ -105,7 +105,7 @@ class App {
 				$data['isOnline'] = true;
 
 				if (!isset($alerts[$data['id']])) {
-					$data['status'] = 'API error (A)';
+					$data['status'] = 'no alert';
 				} else {
 					$data2 = $alerts[$data['id']];
 
@@ -145,7 +145,8 @@ class App {
 			$this->output['servers'][$data['id']] = $data;
 		}
 
-		$this->output($this->output, false);
+		$json = json_encode($this->output);
+		$this->output($json, false);
 		@file_put_contents(self::FILE_NAME, $json);
 	}
 
