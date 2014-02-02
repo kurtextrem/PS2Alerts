@@ -128,7 +128,8 @@ class App {
 						);
 
 						if ($event['type'] > 1) {
-							$file3 = $this->get('http://fishy.sytes.net/ps2territory.php?world='.$data['id'].'&continent='.$event['zone'].'&facility='.$event['type'], true);
+							$type = $event['type'] === 2?3:($event['type'] === 3?2:4);
+							$file3 = $this->get('http://fishy.sytes.net/ps2territory.php?world='.$data['id'].'&continent='.$event['zone'].'&facility='.$type, true);
 
 							if ($file3) {
 								$data['alert']['facilities'] = $file3['control-list'][0]['facilities'];
@@ -171,5 +172,3 @@ class App {
 		return $return;
 	}
 }
-
-new App();
