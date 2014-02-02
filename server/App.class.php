@@ -128,7 +128,7 @@ class App {
 						);
 
 						if ($event['type'] > 1) {
-							$type = $event['type'] === 2?3:($event['type'] === 3?2:4);
+							$type = $event['type'] === 2?3:($event['type'] === 3?4:2);
 							$file3 = $this->get('http://fishy.sytes.net/ps2territory.php?world='.$data['id'].'&continent='.$event['zone'].'&facility='.$type, true);
 
 							if ($file3) {
