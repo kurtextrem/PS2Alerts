@@ -152,11 +152,7 @@ class App {
 	}
 
 	function getIDs() {
-		$ids = '';
-		foreach ($this->servers as $id => $key) {
-			$ids .= $id.',';
-		}
-		return $ids;
+		return implode(',', array_keys($this->servers));
 	}
 
 	function get($url, $array = false) {
