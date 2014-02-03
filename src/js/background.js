@@ -26,7 +26,6 @@
 		remember: false,
 		count: 0,
 		alert: false,
-		storeRunning: false,
 		test: false,
 
 		init: function (force) {
@@ -91,6 +90,7 @@
 						}
 					}.bind(this))
 
+					chrome.storage.local.set({ servers: this.servers })
 					this.updateIcon()
 
 				}.bind(this),
@@ -104,21 +104,11 @@
 		},
 
 		sendToPopup: function (server) {
-			if (this.storeRunning)
-				window.setTimeout(function() {
-					this.sendToPopup(server)
-				}.bind(this), 250)
-			this.storeRunning = true
-			chrome.storage.local.get({ servers: {} }, function (data) {
-				var id = 's' + server.id
-				this.servers[id] = data.servers[id] = server
-				chrome.storage.local.set({ servers: data.servers })
-				this.storeRunning = false
+			this.servers['s'+server.id] = server
 
-				var popups = chrome.extension.getViews({ type: 'popup' })
-				if (0 < popups.length)
-					popups[0].App.updated(server)
-			}.bind(this))
+			var popups = chrome.extension.getViews({ type: 'popup' })
+			if (0 < popups.length)
+				popups[0].App.updated(server)
 		},
 
 		_updateServer: function (server) {
@@ -139,7 +129,7 @@
 			}
 
 			if (server.id === this.notification || this.notification === 0) {
-				if (!this.servers['s' + server.id].alert.notified) {
+				if (typeof this.servers['s'+server.id] !== 'undefined' && !this.servers['s' + server.id].alert.notified) {
 					server.alert.notified = true
 					this.createNotification(server)
 				} else {
