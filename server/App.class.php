@@ -1,7 +1,7 @@
 <?php
 
 class App {
-	const UPDATE_TIME = 2;
+	const UPDATE_TIME = 1;
 	const FILE_NAME = 'cache/data';
 
 	private $url;

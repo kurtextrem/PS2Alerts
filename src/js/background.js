@@ -17,7 +17,7 @@
 		url: 'http://kurtextrem.de/PS2/get/data',
 
 		constructor: Alert,
-		updateTime: 3,
+		updateTime: 1,
 		servers: {},
 		main: 13,
 		flare: 0,
