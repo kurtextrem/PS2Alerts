@@ -51,7 +51,7 @@ class App {
 
 		$this->output = array('time' => NOW, 'alertCount' => 0, 'servers' => array());
 
-		$data = @file_get_contents(self::FILE_NAME);
+		$this->file = @fopen(self::FILE_NAME, 'r+');
 		if (!$data) {
 			$data = '{"time": 0}';
 		}
@@ -61,8 +61,12 @@ class App {
 		if ($this->isNew($data)) {
 			$this->output(json_encode($data));
 		} else {
+			$data->time = NOW;
+			fwrite($this->file, json_encode($data));
+			flock($this->file, LOCK_EX);
 			$this->update();
 		}
+		fclose($this->file);
 	}
 
 	function setHeader($type) {
@@ -86,10 +90,8 @@ class App {
 		return (NOW - $data->time <= self::UPDATE_TIME * 60);
 	}
 
-	function output($data, $exit = true) {
+	function output($data) {
 		echo $data;
-		if ($exit)
-			exit;
 	}
 
 	function update() {
@@ -147,8 +149,9 @@ class App {
 		}
 
 		$json = json_encode($this->output);
-		$this->output($json, false);
-		@file_put_contents(self::FILE_NAME, $json);
+		@fwrite($this->file, $json);
+		flock($this->file, LOCK_UN);
+		$this->output($json);
 	}
 
 	function getIDs() {
