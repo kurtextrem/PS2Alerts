@@ -219,7 +219,7 @@
 				opt.title = server.name + ': Alert just started!'
 				opt.message = 'An alert started on ' + server.name + '.'
 				opt.buttons = [{
-					title: 'Reminder 30min before alert end'
+					title: 'Remind me 30min before the alert ends'
 				}]
 			}
 			chrome.notifications.create(server.id + '-alert-'+!!remember, opt, function (id) {
@@ -227,11 +227,6 @@
 					this.remember = true
 					chrome.storage.local.set({remember: true})
 				}.bind(this))
-				chrome.alarms.create('close-notification', { delayInMinutes: 1 })
-				chrome.alarms.onAlarm.addListener(function (alarm) {
-					if (alarm.name === 'close-notification')
-						chrome.notifications.clear(id, function () {})
-				})
 			}.bind(this))
 		},
 
