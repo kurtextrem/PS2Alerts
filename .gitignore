@@ -1,5 +1,7 @@
 server/config.inc.php
 src/src.zip
+src.crx
+src.pem
 
 #################
 ## Eclipse

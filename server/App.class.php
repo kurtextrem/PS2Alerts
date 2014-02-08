@@ -39,30 +39,26 @@ class App {
 		'139' => true
 	);
 
-	private $output = array();
+	private $output = array('time' => 0, 'alertCount' => 0, 'servers' => array());
 
 	function __construct() {
-		if (!isset($_GET['data']))
+		if (!isset($_GET['data']) && !isset($_GET['updateKey']))
 			exit($this->setHeader('404'));
 
 		define('NOW', time());
 		require_once 'config.inc.php';
 		define('URL', 'http://census.soe.com/s:'.ID.'/get/ps2:v2/');
 
-		$this->output = array('time' => NOW, 'alertCount' => 0, 'servers' => array());
+		if (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY)
+			exit($this->update());
 
 		$data = @file_get_contents(self::FILE_NAME);
-		if (!$data) {
-			$data = '{"time": 0}';
+		if ($data) {
+			$this->output = json_decode($data, true);
 		}
-		$data = json_decode($data);
 
 		$this->setHeader('json');
-		if ($this->isNew($data)) {
-			$this->output(json_encode($data));
-		} else {
-			$this->update();
-		}
+		$this->output(json_encode($this->output));
 	}
 
 	function setHeader($type) {
@@ -82,14 +78,8 @@ class App {
 		header($header);
 	}
 
-	function isNew($data) {
-		return (NOW - $data->time <= self::UPDATE_TIME * 60);
-	}
-
-	function output($data, $exit = true) {
+	function output($data) {
 		echo $data;
-		if ($exit)
-			exit;
 	}
 
 	function update() {
@@ -146,9 +136,7 @@ class App {
 			$this->output['servers'][$data['id']] = $data;
 		}
 
-		$json = json_encode($this->output);
-		$this->output($json, false);
-		@file_put_contents(self::FILE_NAME, $json);
+		@file_put_contents(self::FILE_NAME, json_encode($this->output));
 	}
 
 	function getIDs() {
