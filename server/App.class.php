@@ -50,21 +50,28 @@ class App {
 		require_once 'config.inc.php';
 		define('URL', 'http://census.soe.com/s:'.ID.'/get/ps2:v2/');
 
-		$this->file = @fopen(self::FILE_NAME, 'w+');
-		if ($fgets = @fgets($this->file) && !empty($fgets)) {
-			$this->output =  json_decode($fgets, true);
-		}
+		$this->updateOutput();
 
 		$this->setHeader('json');
 		if ($this->isNew($this->output)) {
 			$this->output(json_encode($this->output));
 		} else {
+			$this->updateOutput();
+			if (!$this->isNew($this->output)) $this->output(json_encode($this->output));
 			$this->output['time'] = NOW;
-			@fwrite($this->file, json_encode($this->output));
+			@file_put_contents(self::FILE_NAME, json_encode($this->output));
+			$this->file = @fopen(self::FILE_NAME, 'w+');
 			@flock($this->file, LOCK_EX);
 			$this->update();
+			@fclose($this->file);
 		}
-		@fclose($this->file);
+	}
+
+	function updateOutput() {
+		$content = file_get_contents(self::FILE_NAME);
+		if (!empty($content)) {
+			$this->output =  json_decode($content, true);
+		}
 	}
 
 	function setHeader($type) {
@@ -94,8 +101,11 @@ class App {
 
 	function update() {
 		$ids = $this->getIDs();
-		$servers = $this->get(URL.'world?c:show=state,world_id&world_id='.$ids);
-		$alerts = $this->sortAlerts($this->get(URL.'world_event?c:limit=13&type=METAGAME&world_id='.$ids)->world_event_list);
+		//$servers = $this->get(URL.'world?c:show=state,world_id&world_id='.$ids);
+		//$alerts = $this->sortAlerts($this->get(URL.'world_event?c:limit=13&type=METAGAME&world_id='.$ids)->world_event_list);
+		$servers = $this->get('test/servers');
+		$alerts = $this->sortAlerts($this->get('test/alerts')->world_event_list);
+		$this->output['alertCount'] = 0;
 
 		foreach ($servers->world_list as $server) {
 			$data = $this->servers[$server->world_id];
@@ -128,7 +138,7 @@ class App {
 						);
 
 						if ($event['type'] > 1) {
-							$type = $event['type'] === 2?3:($event['type'] === 3?4:2);
+							/*$type = $event['type'] === 2?3:($event['type'] === 3?4:2);
 							$file3 = $this->get('http://fishy.sytes.net/ps2territory.php?world='.$data['id'].'&continent='.$event['zone'].'&facility='.$type, true);
 
 							if ($file3) {
@@ -136,7 +146,7 @@ class App {
 								$data['alert']['faction_vs'] = $file3['control-list'][0]['control-percentage'][1];
 								$data['alert']['faction_nc'] = $file3['control-list'][0]['control-percentage'][2];
 								$data['alert']['faction_tr'] = $file3['control-list'][0]['control-percentage'][3];
-							}
+							}*/
 						}
 					}
 				}
@@ -149,7 +159,8 @@ class App {
 		$json = json_encode($this->output);
 		@fwrite($this->file, $json);
 		@flock($this->file, LOCK_UN);
-		$this->output($json);
+		$this->output['update'] = true;
+		$this->output(json_encode($this->output));
 	}
 
 	function getIDs() {

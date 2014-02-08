@@ -26,7 +26,6 @@
 		remember: false,
 		count: 0,
 		alert: false,
-		test: false,
 
 		init: function (force) {
 			chrome.storage.local.get({
@@ -40,8 +39,6 @@
 				remember: false,
 				alert: false
 			}, function (data) {
-				console.log('init')
-
 				this.alert = data.alert
 				this.main = data.main
 				this.flare = data.flare
@@ -53,12 +50,11 @@
 
 				var main = this.servers['s' + this.main]
 				if (force || $.now() - data.lastUpdate >= this.updateTime * 60000) {
-					console.log('update')
 					this.update()
 				} else {
 					this.setBadgeAlarm(main)
 				}
-				if (this.test || data.servers === '') {
+				if (data.servers === '') {
 					force = true
 				} else {
 					this.servers = data.servers
@@ -77,7 +73,7 @@
 						// same as error API error U
 					}
 					this.count = data.alertCount
-					chrome.storage.local.set({count: this.count, serverTimestamp: data.time+'000'})
+					chrome.storage.local.set({count: this.count, serverTimestamp: data.time + '000'})
 
 					$.each(data.servers, function(index, server) {
 						if (server.isOnline) {
@@ -201,7 +197,6 @@
 			chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
 			chrome.alarms.onAlarm.addListener(function (alarm) {
 				if (alarm.name === 'update') {
-					console.log('update alarm')
 					this.update()
 				}
 			}.bind(this))
@@ -247,7 +242,6 @@
 				context.clearRect(0, 0, 19, 19)
 				context.drawImage(imageObj, 0, 0, 19, 19)
 				context.fillStyle = '#888'
-				console.log('icon count: '+this.count)
 				context.fillText(this.count, 6.5, 12)
 				var details = {
 					imageData: 0
