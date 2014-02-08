@@ -39,7 +39,8 @@ class App {
 		'139' => true
 	);
 
-	private $output = array();
+	private $output = array('time' => 0, 'alertCount' => 0, 'servers' => array());
+	private $file = null;
 
 	function __construct() {
 		if (!isset($_GET['data']))
@@ -49,24 +50,21 @@ class App {
 		require_once 'config.inc.php';
 		define('URL', 'http://census.soe.com/s:'.ID.'/get/ps2:v2/');
 
-		$this->output = array('time' => NOW, 'alertCount' => 0, 'servers' => array());
-
-		$this->file = @fopen(self::FILE_NAME, 'r+');
-		if (!$data) {
-			$data = '{"time": 0}';
+		$this->file = @fopen(self::FILE_NAME, 'w+');
+		if ($fgets = @fgets($this->file) && !empty($fgets)) {
+			$this->output =  json_decode($fgets, true);
 		}
-		$data = json_decode($data);
 
 		$this->setHeader('json');
-		if ($this->isNew($data)) {
-			$this->output(json_encode($data));
+		if ($this->isNew($this->output)) {
+			$this->output(json_encode($this->output));
 		} else {
-			$data->time = NOW;
-			fwrite($this->file, json_encode($data));
-			flock($this->file, LOCK_EX);
+			$this->output['time'] = NOW;
+			@fwrite($this->file, json_encode($this->output));
+			@flock($this->file, LOCK_EX);
 			$this->update();
 		}
-		fclose($this->file);
+		@fclose($this->file);
 	}
 
 	function setHeader($type) {
@@ -87,7 +85,7 @@ class App {
 	}
 
 	function isNew($data) {
-		return (NOW - $data->time <= self::UPDATE_TIME * 60);
+		return (NOW - $data['time'] <= self::UPDATE_TIME * 60);
 	}
 
 	function output($data) {
@@ -150,7 +148,7 @@ class App {
 
 		$json = json_encode($this->output);
 		@fwrite($this->file, $json);
-		flock($this->file, LOCK_UN);
+		@flock($this->file, LOCK_UN);
 		$this->output($json);
 	}
 
