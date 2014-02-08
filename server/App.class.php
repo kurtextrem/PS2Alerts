@@ -136,6 +136,7 @@ class App {
 			$this->output['servers'][$data['id']] = $data;
 		}
 
+		$this->output['time'] = NOW;
 		@file_put_contents(self::FILE_NAME, json_encode($this->output));
 	}
 
