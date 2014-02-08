@@ -1,0 +1,8 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script>
+	for (var i = 0; i < 50; i++) {
+		$.getJSON('../index.php?data=true', function(data) {
+			console.log(data.time)
+		})
+	}
+</script>
