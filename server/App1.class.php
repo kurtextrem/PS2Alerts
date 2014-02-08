@@ -39,7 +39,8 @@ class App {
 		'139' => true
 	);
 
-	private $output = array();
+	private $output = array('time' => 0, 'alertCount' => 0, 'servers' => array());
+	private $file = null;
 
 	function __construct() {
 		if (!isset($_GET['data']))
@@ -49,19 +50,27 @@ class App {
 		require_once 'config.inc.php';
 		define('URL', 'http://census.soe.com/s:'.ID.'/get/ps2:v2/');
 
-		$this->output = array('time' => NOW, 'alertCount' => 0, 'servers' => array());
-
-		$data = @file_get_contents(self::FILE_NAME);
-		if (!$data) {
-			$data = '{"time": 0}';
-		}
-		$data = json_decode($data);
+		$this->updateOutput();
 
 		$this->setHeader('json');
-		if ($this->isNew($data)) {
-			$this->output(json_encode($data));
+		if ($this->isNew($this->output)) {
+			$this->output(json_encode($this->output));
 		} else {
+			$this->updateOutput();
+			if (!$this->isNew($this->output)) $this->output(json_encode($this->output));
+			$this->output['time'] = NOW;
+			@file_put_contents(self::FILE_NAME, json_encode($this->output));
+			$this->file = @fopen(self::FILE_NAME, 'w+');
+			@flock($this->file, LOCK_EX);
 			$this->update();
+			@fclose($this->file);
+		}
+	}
+
+	function updateOutput() {
+		$content = file_get_contents(self::FILE_NAME);
+		if (!empty($content)) {
+			$this->output =  json_decode($content, true);
 		}
 	}
 
@@ -83,19 +92,18 @@ class App {
 	}
 
 	function isNew($data) {
-		return (NOW - $data->time <= self::UPDATE_TIME * 60);
+		return (NOW - $data['time'] <= self::UPDATE_TIME * 60);
 	}
 
-	function output($data, $exit = true) {
+	function output($data) {
 		echo $data;
-		if ($exit)
-			exit;
 	}
 
 	function update() {
 		$ids = $this->getIDs();
 		$servers = $this->get(URL.'world?c:show=state,world_id&world_id='.$ids);
 		$alerts = $this->sortAlerts($this->get(URL.'world_event?c:limit=13&type=METAGAME&world_id='.$ids)->world_event_list);
+		$this->output['alertCount'] = 0;
 
 		foreach ($servers->world_list as $server) {
 			$data = $this->servers[$server->world_id];
@@ -147,8 +155,9 @@ class App {
 		}
 
 		$json = json_encode($this->output);
-		$this->output($json, false);
-		@file_put_contents(self::FILE_NAME, $json);
+		@fwrite($this->file, $json);
+		@flock($this->file, LOCK_UN);
+		$this->output($json);
 	}
 
 	function getIDs() {
