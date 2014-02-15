@@ -44,9 +44,6 @@
 			})
 			$('#server-'+this.main+' td').css('background-color', 'rgb(224, 236, 218)')
 			$('#server > button').attr('title', new Date(data.lastUpdate)+'('+new Date(data.serverTimestamp)+')')
-			$('[data-tooltip]').tooltip({
-				placement: 'bottom'
-			})
 		}.bind(this))
 		$('#options').click(function() {
 			chrome.tabs.create({ url: 'settings.html' })
@@ -119,8 +116,9 @@
 				$server.find('.remaining').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
 				if (server.status.search('error') !== -1)
 					$server.addClass('danger')
-
 			}
+
+			$server.find('[data-tooltip]').tooltip({ placement: 'bottom' })
 		},
 
 		_addTerritory: function(server) {
