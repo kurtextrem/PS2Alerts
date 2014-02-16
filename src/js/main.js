@@ -33,7 +33,7 @@
 
 			var $table = $('table')
 			$table.tablesort()
-			$table.data('tablesort').sort($('#'+data.by), data.direction)
+			$table.data('tablesort').sort($('#' + data.by), data.direction)
 
 			$('#refresh').click(function(e) {
 				this.refresh()
@@ -42,8 +42,11 @@
 			$table.on('tablesort:complete', function(e, tablesort) {
 				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
 			})
-			$('#server-'+this.main+' td').css('background-color', 'rgb(224, 236, 218)')
-			$('#server > button').attr('title', new Date(data.lastUpdate)+'('+new Date(data.serverTimestamp)+')')
+			$('#server-' + this.main + ' td').css('background-color', 'rgb(224, 236, 218)')
+			$('#server > button').attr({
+				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
+				'data-tooltip': true
+			}).tooltip({html: true, placement: 'bottom'})
 		}.bind(this))
 		$('#options').click(function() {
 			chrome.tabs.create({ url: 'settings.html' })
@@ -60,7 +63,7 @@
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
 				if (this.hide2 && server.id !== this.main)
 					$('tr:last').hide()
-				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse'+server.id+'" class="btn btn-link">' + server.name + '</button></td>')
+				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse' + server.id + '" class="btn btn-link">' + server.name + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
 				$('tr:last').append('<td class="continent"></td>')
@@ -68,7 +71,7 @@
 		},
 
 		updateTable: function(server) {
-			var main = 's'+server.id,
+			var main = 's' + server.id,
 			$server = $('#server-' + server.id)
 
 			if (server.status === 1) {
@@ -78,7 +81,10 @@
 				if (video.find('video').length === 0)
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 
-				$server.find('.type').html(typeData[server.alert.type]+' <span data-tooltip="true" title="EXP Bonus">(+'+server.alert.experience_bonus+'%)</span>')
+				$server.find('.type').html(typeData[server.alert.type]).attr({
+					title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
+					'data-tooltip': true
+				}).tooltip({container: 'body'})
 				$server.find('.server-name > button').removeAttr('disabled')
 
 				switch (server.alert.type) {
@@ -117,8 +123,6 @@
 				if (server.status.search('error') !== -1)
 					$server.addClass('danger')
 			}
-
-			$server.find('[data-tooltip]').tooltip({ placement: 'bottom' })
 		},
 
 		_addTerritory: function(server) {
@@ -126,14 +130,14 @@
 			tr = server.alert.faction_tr,
 			nc = server.alert.faction_nc,
 			count = 100 - nc - tr,
-			row = $('body').find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:'+tr +'%" title="'+Math.floor(tr)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-info" style="width:'+ nc +'%" title="'+Math.floor(nc)+'%" data-tooltip="true"></div><div class="progress-bar progress-bar-purple" style="width:'+ count +'%" title="'+Math.floor(vanu)+'%" data-tooltip="true"></div></div></div></div>')
+			row = $('body').find('p').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div></div></div>')
 
 			return [row, vanu, tr, nc]
 		},
 
 		addType: function(which, server) {
 			var data = null
-			$('#collapse'+server.id).remove()
+			$('#collapse' + server.id).remove()
 			switch (which) {
 				case 'territory':
 					data = this._addTerritory(server)
@@ -147,7 +151,7 @@
 					break
 			}
 
-			var collapse = data[0].prevAll('#collapse'+server.id),
+			var collapse = data[0].prevAll('#collapse' + server.id),
 			container = collapse.find('.container'),
 			append = 'Fair fight.',
 			lead = 4,
@@ -166,15 +170,15 @@
 			}
 			if (this.flare === lead)
 				add = 'text-success'
-			container.append('<div class="text-center '+add+'">'+append+'</div>')
+			container.append('<div class="text-center ' + add + '">' + append + '</div>')
 			if (this.hide2 && server.id === this.main)
 				col = true
 			collapse.collapse({toggle: col})
 		},
 
 		_addFacility: function(server) {
-			var row = $('body').find('p').before('<div id="collapse'+server.id+'" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
-			$container = $('#collapse'+server.id+' > .container'),
+			var row = $('body').find('p').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
+			$container = $('#collapse' + server.id + ' > .container'),
 			$facilities = $container.find('.facilities'),
 			vanu = server.alert.faction_vs,
 			tr = server.alert.faction_tr,
@@ -196,8 +200,9 @@
 					default:
 						break
 				}
-				$facilities.append('<div class="facility '+add+'" data-tooltip="true" title="'+facility.name+' ('+typeData[server.alert.type].slice(0, -1)+') on '+zoneData[facility.continent]+'">')
+				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility.name + ' (' + typeData[server.alert.type].slice(0, -1) + ') on ' + zoneData[facility.continent] + '">')
 			})
+			$facilities.find('[data-tooltip]').tooltip()
 
 			return [row, +vanu.toFixed(2), +tr.toFixed(2), +nc.toFixed(2)]
 		},
@@ -240,7 +245,7 @@
 			chrome.runtime.getBackgroundPage(function(w) {
 				w.alert.update()
 				chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
-					$('#server > button').attr('title', new Date(data.lastUpdate)+'('+new Date(data.serverTimestamp)+')')
+					$('#server > button').attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
 				})
 				window.setTimeout(function() {
 					$e.removeAttr('disabled')

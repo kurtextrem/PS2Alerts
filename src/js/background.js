@@ -73,7 +73,7 @@
 						// same as error API error U
 					}
 					this.count = data.alertCount
-					chrome.storage.local.set({count: this.count, serverTimestamp: data.time + '000'})
+					chrome.storage.local.set({count: this.count, serverTimestamp: data.time})
 
 					$.each(data.servers, function(index, server) {
 						if (server.isOnline) {
@@ -100,7 +100,7 @@
 		},
 
 		sendToPopup: function (server) {
-			this.servers['s'+server.id] = server
+			this.servers['s' + server.id] = server
 
 			var popups = chrome.extension.getViews({ type: 'popup' })
 			if (0 < popups.length)
@@ -125,7 +125,7 @@
 			}
 
 			if (server.id === this.notification || this.notification === 0) {
-				if (typeof this.servers['s'+server.id] !== 'undefined' && !this.servers['s' + server.id].alert.notified) {
+				if (typeof this.servers['s' + server.id] !== 'undefined' && !this.servers['s' + server.id].alert.notified) {
 					server.alert.notified = true
 					this.createNotification(server)
 				} else {
@@ -217,7 +217,7 @@
 					title: 'Remind me 30min before the alert ends'
 				}]
 			}
-			chrome.notifications.create(server.id + '-alert-'+!!remember, opt, function (id) {
+			chrome.notifications.create(server.id + '-alert-' + !!remember, opt, function (id) {
 				chrome.notifications.onButtonClicked.addListener(function (id, index) {
 					this.remember = true
 					chrome.storage.local.set({remember: true})
