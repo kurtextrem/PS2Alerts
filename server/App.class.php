@@ -35,8 +35,7 @@ class App {
 
 	private $activeEvent = array(
 		'135' => true,
-		'136' => true,
-		'139' => true
+		'136' => true
 	);
 
 	private $output = array('time' => 0, 'alertCount' => 0, 'servers' => array());
@@ -49,8 +48,11 @@ class App {
 		require_once 'config.inc.php';
 		define('URL', 'http://census.soe.com/s:'.ID.'/get/ps2:v2/');
 
-		if (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY)
-			exit($this->update());
+		if (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY) {
+			$this->update();
+			echo 'Done';
+			exit;
+		}
 
 		$data = @file_get_contents(self::FILE_NAME);
 		if ($data) {
@@ -85,7 +87,7 @@ class App {
 	function update() {
 		$ids = $this->getIDs();
 		$servers = $this->get(URL.'world?c:show=state,world_id&world_id='.$ids);
-		$alerts = $this->sortAlerts($this->get(URL.'world_event?c:limit=13&type=METAGAME&world_id='.$ids)->world_event_list);
+		$alerts = $this->sortAlerts($this->get(URL.'world_event?c:limit=8&type=METAGAME&world_id='.$ids)->world_event_list);
 
 		foreach ($servers->world_list as $server) {
 			$data = $this->servers[$server->world_id];
@@ -107,7 +109,7 @@ class App {
 
 						$data['status'] = 1;
 						$data['alert'] = array(
-						                       'start' => $data2->timestamp . '000',
+						                       'start' => 0+($data2->timestamp . '000'),
 						                       'type' => $event['type'],
 						                       'zone' => $event['zone'],
 						                       'faction_nc' => $data2->faction_nc,
@@ -136,7 +138,7 @@ class App {
 			$this->output['servers'][$data['id']] = $data;
 		}
 
-		$this->output['time'] = NOW;
+		$this->output['time'] = 0+(NOW . '000');
 		@file_put_contents(self::FILE_NAME, json_encode($this->output));
 	}
 
