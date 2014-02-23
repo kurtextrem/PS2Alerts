@@ -87,7 +87,7 @@ class App {
 	function update() {
 		$ids = $this->getIDs();
 		$servers = $this->get(URL.'world?c:show=state,world_id&world_id='.$ids);
-		$alerts = $this->sortAlerts($this->get(URL.'world_event?c:limit=8&type=METAGAME&world_id='.$ids)->world_event_list);
+		$alerts = $this->sortAlerts($this->get(URL.'world_event?type=METAGAME&world_id='.$ids)->world_event_list);
 
 		foreach ($servers->world_list as $server) {
 			$data = $this->servers[$server->world_id];
@@ -133,7 +133,7 @@ class App {
 					}
 				}
 			} else {
-				$data['status'] = $server['state'];
+				$data['status'] = $server->state;
 			}
 			$this->output['servers'][$data['id']] = $data;
 		}
