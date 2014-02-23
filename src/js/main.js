@@ -228,8 +228,13 @@
 				var m = ('0' + date.getUTCMinutes()).slice(-2)
 				var s = ('0' + date.getUTCSeconds()).slice(-2)
 
-				if (h < 2 && (h + +m + +s) > 0)
+				if (h < 2 && (h + +m + +s) > 0) {
+					if (server.id === this.main)
+						chrome.runtime.getBackgroundPage(function(w) {
+							w.alert.updateBadge(server)
+						})
 					return $('#server-' + server.id + ' .remaining').html(h + ':' + m + ':' + s)
+				}
 				server.status = 'no alert'
 				this.updateTable(server)
 			}

@@ -183,6 +183,8 @@
 						chrome.storage.local.set({remember: false})
 						this.createNotification(server, true)
 					}
+					if (m === 0)
+						m = 1
 					chrome.browserAction.setBadgeText({
 						text: h + ':' + m
 					})
