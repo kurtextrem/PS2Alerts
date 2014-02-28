@@ -40,7 +40,7 @@
 			})
 		},
 		load: function() {
-			chrome.storage.local.get({main: 13, flare: 0, notification: 13, hide: 0, hide2: 0}, function(data) {
+			chrome.storage.local.get({main: 13, flare: 0, notification: 13, hide: 0, hide2: 0, alwaysRemind: 0, timeRemind: 30}, function(data) {
 				$('#notification > option[value='+data.notification+']').attr('selected', 'selected')
 				$('#flare > option[value='+data.flare+']').attr('selected', 'selected')
 				$('#main > option[value='+data.main+']').attr('selected', 'selected')
@@ -48,10 +48,13 @@
 					$('#hide').attr('checked', true)
 				if (data.hide2)
 					$('#hide2').attr('checked', true)
+				if (data.alwaysRemind)
+					$('#alwaysRemind').attr('checked', true)
+				$('#timeRemind').val(timeRemind)
 			})
 		},
 		bind: function() {
-			$('#notification, #main, #flare, #hide, #hide2').change(function(e) {
+			$('input, select').change(function(e) {
 				var obj = {}, val = +e.target.value
 				if (e.target.id === 'hide') {
 					val = $('#hide').is(':checked')
@@ -64,7 +67,7 @@
 				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {
 					chrome.runtime.getBackgroundPage(function(w) {
-						w.alert.init(true)
+						w.alert.init()
 					})
 				})
 			})

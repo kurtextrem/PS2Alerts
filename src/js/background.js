@@ -178,7 +178,7 @@
 					this.clearBadgeAlarm()
 				} else {
 					chrome.browserAction.enable()
-					if (this.remember && h < 1 && m <= 30) {
+					if (this.remember && h < 1 && m <= this.timeRemind) {
 						this.remember = false
 						chrome.storage.local.set({remember: false})
 						this.createNotification(server, true)
@@ -211,7 +211,7 @@
 			}
 			if (remember) {
 				opt.title = server.name + ' Alert: 30min left!'
-				opt.message = '30mins left, start playing now!'
+				opt.message = '30min left, start playing now!'
 			} else {
 				opt.title = server.name + ': Alert just started!'
 				opt.message = 'An alert started on ' + server.name + '.'
@@ -220,6 +220,10 @@
 				}]
 			}
 			chrome.notifications.create(server.id + '-alert-' + !!remember, opt, function (id) {
+				if (this.alwaysRemind) {
+					this.remember = true
+					chrome.storage.local.set({remember: true})
+				}
 				chrome.notifications.onButtonClicked.addListener(function (id, index) {
 					this.remember = true
 					chrome.storage.local.set({remember: true})
