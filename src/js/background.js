@@ -8,7 +8,6 @@
 		3: [255, 238, 0, 255] // NS
 	}
 
-
 	var Alert = function () {
 		this.init()
 	}
@@ -26,6 +25,8 @@
 		remember: false,
 		count: 0,
 		alert: false,
+		timeRemind: 30,
+		alwaysRemind: false,
 
 		init: function (force) {
 			chrome.storage.local.get({
@@ -37,7 +38,9 @@
 				hide: 0,
 				count: 0,
 				remember: false,
-				alert: false
+				alert: false,
+				timeRemind: 30,
+				alwaysRemind: false
 			}, function (data) {
 				this.alert = data.alert
 				this.main = data.main
@@ -47,6 +50,8 @@
 				this.count = data.count
 				this.remember = data.remember
 				this.servers = data.servers
+				this.timeRemind = data.timeRemind
+				this.alwaysRemind = data.alwaysRemind
 
 				var main = this.servers['s' + this.main]
 				if (force || $.now() - data.lastUpdate >= this.updateTime * 60000) {
@@ -216,7 +221,7 @@
 				opt.title = server.name + ': Alert just started!'
 				opt.message = 'An alert started on ' + server.name + '.'
 				opt.buttons = [{
-					title: 'Remind me 30min before the alert ends'
+					title: 'Remind me ' + this.timeRemind + 'min before the alert ends'
 				}]
 			}
 			chrome.notifications.create(server.id + '-alert-' + !!remember, opt, function (id) {

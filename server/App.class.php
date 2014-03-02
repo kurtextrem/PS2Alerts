@@ -6,13 +6,13 @@ class App {
 
 	private $url;
 	private $servers = array(
-	                 	'25' => array('name' => 'Briggs', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
-	                 	'11' => array('name' => 'Ceres', 'status' => 'API error (U)','isOnline' => false, 'alert' => array()),
-	                 	'13' => array('name' => 'Cobalt', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
-	                 	'1' => array('name' => 'Connery', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
-	                 	'17' => array('name' => 'Mattherson', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
-	                 	'10' => array('name' => 'Miller', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
-	                 	'18' => array('name' => 'Waterson', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
+	                 '25' => array('name' => 'Briggs', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
+	                 '11' => array('name' => 'Ceres', 'status' => 'API error (U)','isOnline' => false, 'alert' => array()),
+	                 '13' => array('name' => 'Cobalt', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
+	                 '1' => array('name' => 'Connery', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
+	                 '17' => array('name' => 'Mattherson', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
+	                 '10' => array('name' => 'Miller', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
+	                 '18' => array('name' => 'Waterson', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array()),
 	                	'9' => array('name' => 'Woodman', 'status' => 'API error (U)', 'isOnline' => false, 'alert' => array())
 	);
 
