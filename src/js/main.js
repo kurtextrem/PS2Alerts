@@ -1,6 +1,8 @@
 +function(window) {
 	'use strict';
 
+	var VERSION = 0.3
+
 	var zoneData = {
 		0: 'Global',
 		2: 'Indar',
@@ -50,8 +52,12 @@
 		}.bind(this))
 		$('#options').click(function() {
 			chrome.tabs.create({ url: 'settings.html' })
-		})
-		$('#ps2alerts').tooltip()
+		}).attr('title', 'v' + VERSION).parent().find('[data-tooltip]').tooltip()
+		window.setTimeout(function() {
+			$.each($('video'), function(i, vid) {
+				vid.play()
+			})
+		}, 750)
 	}
 	App.prototype = {
 		servers: {},
@@ -130,7 +136,7 @@
 			tr = server.alert.faction_tr,
 			nc = server.alert.faction_nc,
 			count = 100 - nc - tr,
-			row = $('body').find('p').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div></div></div>')
+			row = $('footer').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div></div></div>')
 
 			return [row, vanu, tr, nc]
 		},
@@ -177,7 +183,7 @@
 		},
 
 		_addFacility: function(server) {
-			var row = $('body').find('p').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
+			var row = $('footer').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
 			$container = $('#collapse' + server.id + ' > .container'),
 			$facilities = $container.find('.facilities'),
 			vanu = server.alert.faction_vs,
@@ -264,9 +270,4 @@
 
 $.fn.ready(function() {
 	App = new App()
-	window.setTimeout(function() {
-		$.each($('video'), function(i, vid) {
-			vid.play()
-		})
-	}, 750)
 })

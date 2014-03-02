@@ -145,18 +145,18 @@
 		},
 
 		setBadgeAlarm: function (server) {
-			this._updateBadge(server)
+			this.updateBadge(server)
 			chrome.alarms.create('update-badge', {
 				delayInMinutes: 1,
 				periodInMinutes: 1
 			})
 			chrome.alarms.onAlarm.addListener(function (alarm) {
 				if (alarm.name === 'update-badge')
-					this._updateBadge(server)
+					this.updateBadge(server)
 			}.bind(this))
 		},
 
-		_updateBadge: function (server) {
+		updateBadge: function (server) {
 			if (server.status === 'no alert')
 				this.clearBadgeAlarm()
 			if (server.status === 1) {
