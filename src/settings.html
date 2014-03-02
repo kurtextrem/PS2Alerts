@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>PlanetSide 2 Alerts options</title>
+	<title>PlanetSide 2 Alerts Options</title>
+	<link href="img/alert.png">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/options.css" rel="stylesheet">
 </head>
@@ -10,38 +11,38 @@
 	<div class="container">
 		<form class="form-horizontal" role="form">
 			<fieldset>
-				<legend>PlanetSide 2 Alerts options</legend>
+				<legend>PlanetSide 2 Alerts Options</legend>
 				<div class="form-group">
-					<label for="flare" class="col-sm-2 control-label">Flare</label>
-					<div class="col-sm-10">
+					<label for="flare" class="col-md-3 control-label">Badge Color</label>
+					<div class="col-md-9">
 						<select id="flare" class="form-control"></select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="main" class="col-sm-2 control-label">Main Server</label>
-					<div class="col-sm-10">
+					<label for="main" class="col-md-3 control-label">Main Server</label>
+					<div class="col-md-9">
 						<select id="main" class="form-control"></select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="notification" class="col-sm-2 control-label">Notification Server</label>
-					<div class="col-sm-10">
+					<label for="notification" class="col-md-3 control-label">Notification Server</label>
+					<div class="col-md-9">
 						<select id="notification" class="form-control"></select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="hide" class="col-sm-2 control-label">Fade when no main server alert</label>
-					<div class="col-sm-10 checkbox">
+					<label for="hide" class="col-md-3 control-label">Fade Icon</label>
+					<div class="col-md-9 checkbox">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" id="hide"> Yes
+								<input type="checkbox" id="hide"> Yes, if there is no main server alert
 							</label>
 						</div>
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="hide2" class="col-sm-2 control-label">Only display main server</label>
-					<div class="col-sm-10 checkbox">
+					<label for="hide2" class="col-md-3 control-label">Only display main server</label>
+					<div class="col-md-9 checkbox">
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" id="hide2"> Yes
@@ -50,8 +51,8 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="alwaysRemind" class="col-sm-2 control-label">Always display reminder popup</label>
-					<div class="col-sm-10 checkbox">
+					<label for="alwaysRemind" class="col-md-3 control-label">Always display reminder popup</label>
+					<div class="col-md-9 checkbox">
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" id="alwaysRemind"> Yes
@@ -60,21 +61,21 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="timeRemind" class="col-sm-2 control-label">Reminder popup shows up</label>
-					<div class="col-sm-10">
-						<div class="input-group">
+					<label for="timeRemind" class="col-md-3 control-label">Reminder popup shows up</label>
+					<div class="col-md-9">
+						<div class="input-group col-md-4">
 								<input type="number" id="timeRemind" value="30" min="5" max="59" class="form-control">
-								<label class="input-group-addon" for="timeRemind">before alert ends</label>
+								<label class="input-group-addon" for="timeRemind">min before alert ends</label>
 						</div>
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
+					<div class="col-md-offset-2 col-md-9">
 						<p class="help-block">Options are saved automatically.</p>
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
+					<div class="col-md-offset-2 col-md-9">
 						<p class="help-block"><a href="http://de.reddit.com/r/Planetside/comments/1w6q46/chrome_alerts_extension_first_alpha/">Reddit thread</a><!-- http://de.reddit.com/r/Planetside/comments/1w1oxt/is_there_need_for_a_chrome_alerts_extension/ --> &middot; <a href="https://github.com/kurtextrem/PS2Alerts">GitHub Repository</a> &middot; <a href="https://github.com/kurtextrem/PS2Alerts/commits/master">Changelog</a> &middot; <span class="help" data-trigger="hover" data-popover="true" data-content="<img src='img/update.png'>" data-title="How to force update">How to force update</span> &middot; <button type="button" class="btn btn-link" data-popover="true" data-title="You want to donate some €? Thank you very much! Contact me on reddit if you have a feature request or something else :)" data-trigger="click" data-content='<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="LAHXLBYJPA822"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="Donate with PayPal."><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"></form>'>Donate €</button> &middot; <button type="button" class="btn btn-link" data-popover="true" data-title="You want to donate some $? Thank you very much! Contact me on reddit if you have a feature request or something else :)" data-trigger="click" data-content='<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="274AUHUBFNZAU"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="Donate with PayPal."><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"></form>'>Donate $</button><br><small class="text-muted">Thanks to p3lim for some basic code, <a href="http://ps2alerts.com">PS2Alerts.com</a> for the alert animation and an image, Fisu for some API, SOE for some API and of course thanks to you for using :)</small></p>
 					</div>
 				</div>

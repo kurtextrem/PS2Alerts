@@ -13,10 +13,10 @@
 	]
 
 	var flares = {
-		0: ['Vanu', [128, 0, 255, 255]],
-		1: ['NC', [0, 200, 255, 255]],
-		2: ['TR', [219, 0, 0, 255]],
-		3: ['NS', [255, 238, 0, 255]]
+		0: ['Vanu', [128, 0, 255, .6]],
+		1: ['NC', [0, 200, 255, .6]],
+		2: ['TR', [219, 0, 0, .6]],
+		3: ['NS', [255, 238, 0, .6]]
 	}
 
 
@@ -25,6 +25,7 @@
 		this.load()
 		this.bind()
 	}
+
 	Options.prototype = {
 		constructor: Options,
 		createHTML: function() {
@@ -50,7 +51,7 @@
 					$('#hide2').attr('checked', true)
 				if (data.alwaysRemind)
 					$('#alwaysRemind').attr('checked', true)
-				$('#timeRemind').val(timeRemind)
+				$('#timeRemind').val(data.timeRemind)
 			})
 		},
 		bind: function() {

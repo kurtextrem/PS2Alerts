@@ -7,3 +7,7 @@
 	min-width: 100%;
 	left: inherit;
 }
+
+.form-horizontal .checkbox {
+	padding-top: 3.5px;
+}
