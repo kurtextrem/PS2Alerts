@@ -261,6 +261,7 @@
 				chrome.browserAction.setIcon(details)
 			}.bind(this)
 			imageObj.src = path
+			chrome.browserAction.setTitle({title: this.count + ' Alerts running'})
 		}
 	}
 

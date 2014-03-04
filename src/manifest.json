@@ -23,6 +23,7 @@
 	      		"19": "img/notification_tray_empty.png",
 	      		"38": "img/notification_tray_empty.png"
 		},
+		"default_title": "0 Alerts running",
 	    	"default_popup": "popup.html"
 	},
 	"options_page": "settings.html",
