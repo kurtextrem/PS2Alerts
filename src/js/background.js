@@ -188,8 +188,8 @@
 						chrome.storage.local.set({remember: false})
 						this.createNotification(server, true)
 					}
-					if (m === 0)
-						m = 1
+					if (m === '00')
+						m = '01'
 					chrome.browserAction.setBadgeText({
 						text: h + ':' + m
 					})
