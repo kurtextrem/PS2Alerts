@@ -57,14 +57,10 @@
 		bind: function() {
 			$('input, select').change(function(e) {
 				var obj = {}, val = +e.target.value
-				if (e.target.id === 'hide') {
-					val = $('#hide').is(':checked')
-					if (!val)
+				if (e.target.type === 'checkbox')
+					val = $('#' + e.target.id).is(':checked')
+				if (e.target.id === 'hide' && !val)
 						chrome.browserAction.enable()
-				}
-				if (e.target.id === 'hide2') {
-					val = $('#hide2').is(':checked')
-				}
 				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {
 					chrome.runtime.getBackgroundPage(function(w) {
