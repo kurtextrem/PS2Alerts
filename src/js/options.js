@@ -55,12 +55,14 @@
 			})
 		},
 		bind: function() {
+			// save
 			$('input, select').change(function(e) {
 				var obj = {}, val = +e.target.value
+
 				if (e.target.type === 'checkbox')
 					val = $('#' + e.target.id).is(':checked')
 				if (e.target.id === 'hide' && !val)
-						chrome.browserAction.enable()
+						chrome.browserAction.enable() // make sure it gets enabled
 				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {
 					chrome.runtime.getBackgroundPage(function(w) {
@@ -68,6 +70,8 @@
 					})
 				})
 			})
+
+			// bottom links
 			$('[data-popover]').popover({
 				animation: true,
 				html: true,

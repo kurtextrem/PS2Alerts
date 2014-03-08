@@ -209,14 +209,14 @@
 			}.bind(this))
 		},
 
-		createNotification: function (server, remember) {
+		createNotification: function (server, reminder) {
 			var opt = {
 				type: 'basic',
 				iconUrl: 'img/AlertIconWaves3.png'
 			}
-			if (remember) {
-				opt.title = server.name + ' Alert: 30min left!'
-				opt.message = '30min left, start playing now!'
+			if (reminder) {
+				opt.title = server.name + ' Alert: ' + this.timeRemind + 'min left!'
+				opt.message =  this.timeRemind + 'min left, start playing now!'
 			} else {
 				opt.title = server.name + ': Alert just started!'
 				opt.message = 'An alert started on ' + server.name + '.'
@@ -224,8 +224,8 @@
 					title: 'Remind me ' + this.timeRemind + 'min before the alert ends'
 				}]
 			}
-			chrome.notifications.create(server.id + '-alert-' + !!remember, opt, function (id) {
-				if (this.alwaysRemind) {
+			chrome.notifications.create(server.id + '-alert-' + !!reminder, opt, function (id) {
+				if (!reminder && this.alwaysRemind) {
 					this.remember = true
 					chrome.storage.local.set({remember: true})
 				}
