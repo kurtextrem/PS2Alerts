@@ -38,7 +38,7 @@ class App {
 		'136'// => true // restarted
 		/*'137' => false, // canceled
 		'138' => false, // finished
-		'139' => false'/
+		'139' => false'*/
 	);
 
 	private $output = array('time' => 0, 'alertCount' => 0, 'servers' => array());
