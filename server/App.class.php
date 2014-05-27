@@ -34,8 +34,11 @@ class App {
 	);
 
 	private $activeEvent = array(
-		'135' => true,
-		'136' => true
+		'135'// => true, // started
+		'136'// => true // restarted
+		/*'137' => false, // canceled
+		'138' => false, // finished
+		'139' => false'/
 	);
 
 	private $output = array('time' => 0, 'alertCount' => 0, 'servers' => array());
