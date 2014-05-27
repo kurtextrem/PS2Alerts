@@ -27,6 +27,6 @@
 	    	"default_popup": "popup.html"
 	},
 	"options_page": "settings.html",
-	"permissions": ["http://kurtextrem.de/PS2/*", "storage", "alarms", "notifications"]
+	"permissions": ["http://kurtextrem.de/PS2/*", "*://ps2alerts.com/*", "storage", "alarms", "notifications"]
 
 }

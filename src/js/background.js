@@ -9,11 +9,11 @@
 	}
 
 	var Alert = function () {
-		this.init()
+		this.addListener()
 	}
 
 	Alert.prototype = {
-		url: 'http://kurtextrem.de/PS2/get/data',
+		url: 'http://ps2alerts.com/api',
 
 		constructor: Alert,
 		updateTime: 1,
@@ -56,15 +56,12 @@
 				var main = this.servers['s' + this.main]
 				if (force || $.now() - data.lastUpdate >= this.updateTime * 60000) {
 					this.update()
-				} else {
-					this.setBadgeAlarm(main)
 				}
 				if (data.servers === '') {
 					force = true
 				} else {
 					this.servers = data.servers
 				}
-				this.registerUpdateAlarms()
 			}.bind(this))
 		},
 
@@ -151,13 +148,25 @@
 
 		setBadgeAlarm: function (server) {
 			this.updateBadge(server)
-			chrome.alarms.create('update-badge', {
-				delayInMinutes: 1,
-				periodInMinutes: 1
+			chrome.storage.local.set({server: server})
+			chrome.alarms.get('update-badge', function(alarm) {
+				if (alarm === null) // @todo: test
+					chrome.alarms.create('update-badge', {
+						delayInMinutes: 1,
+						periodInMinutes: 1
+					})
 			})
+		},
+
+		addListener: function() {
+			chrome.runtime.onInstalled.addListener(function() {
+				this.registerUpdateAlarms()
+			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
 				if (alarm.name === 'update-badge')
-					this.updateBadge(server)
+					return chrome.storage.local.get('server', function (obj) { this.updateBadge(obj.server) }.bind(this))
+				if (alarm.name === 'update')
+					return this.update()
 			}.bind(this))
 		},
 
@@ -202,11 +211,6 @@
 
 		registerUpdateAlarms: function () {
 			chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
-			chrome.alarms.onAlarm.addListener(function (alarm) {
-				if (alarm.name === 'update') {
-					this.update()
-				}
-			}.bind(this))
 		},
 
 		createNotification: function (server, reminder) {
