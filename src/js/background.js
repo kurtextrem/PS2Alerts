@@ -13,7 +13,7 @@
 	}
 
 	Alert.prototype = {
-		url: 'http://ps2alerts.com/api',
+		url: 'http://ps2alerts.com/API/status',
 
 		constructor: Alert,
 		updateTime: 1,
@@ -54,7 +54,7 @@
 				this.alwaysRemind = data.alwaysRemind
 
 				var main = this.servers['s' + this.main]
-				if (force || $.now() - data.lastUpdate >= this.updateTime * 60000) {
+				if (force || (Date).now() - data.lastUpdate >= this.updateTime * 60000) {
 					this.update()
 				}
 				if (data.servers === '') {
@@ -66,18 +66,19 @@
 		},
 
 		update: function () {
-			chrome.storage.local.set({lastUpdate: $.now()})
+			chrome.storage.local.set({lastUpdate: (Date).now()})
 
-			$.ajax(this.url, {
-				dataType: 'json',
-				success: function(data) {
+			qwest.get(this.url, {}, { dataType: 'json' })
+				.success(function(data) {
 					if (!data) {
 						// same as error API error U
 					}
 					this.count = data.alertCount
 					chrome.storage.local.set({count: this.count, serverTimestamp: data.time})
 
-					$.each(data.servers, function(index, server) {
+					var server, length = data.servers.length - 2
+					for (var i = 0; i < length; i++) {
+						server = data.servers[i]
 						if (server.isOnline) {
 							this._updateServer(server)
 						} else {
@@ -86,19 +87,16 @@
 							server.alert.notified = false
 							this.sendToPopup(server)
 						}
-					}.bind(this))
+					}
 
 					chrome.storage.local.set({ servers: this.servers })
 					this.updateIcon()
-
-				}.bind(this),
-				error: function() {
+				}.bind(this)).error(function() {
 					//server.alert.notified = false
 					//server.status = 'API error'
 					//this.sendToPopup(server)
 					//@todo: Not sure what I should do here
-				}.bind(this)
-			})
+				}.bind(this))
 		},
 
 		sendToPopup: function (server) {
@@ -245,10 +243,12 @@
 			if (this.alert)
 				path = 'img/notification_tray_attention.png'
 
-			var canvas = $('canvas')
+			var canvas = document.getElementsByTagName('canvas')
 			if (canvas.length < 1) {
-				canvas = $('<canvas width="19" height="19"></canvas>')
-				$('body').append(canvas)
+				canvas = document.createElement('canvas')
+				canvas.setAttribute('width', '19')
+				canvas.setAttribute('height', '19')
+				document.getElementsByTagName('body').appendChild(canvas)
 			}
 			var context = canvas[0].getContext('2d'),
 				imageObj = new Image()
