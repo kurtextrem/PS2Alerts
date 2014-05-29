@@ -53,7 +53,7 @@
 				this.timeRemind = data.timeRemind
 				this.alwaysRemind = data.alwaysRemind
 
-				if (force || (Date).now() - data.lastUpdate >= this.updateTime * 60000) {
+				if (force || Date.now() - data.lastUpdate >= this.updateTime * 60000) {
 					this.update()
 				}
 				if (data.servers === '') {
@@ -65,21 +65,22 @@
 		},
 
 		update: function () {
-			chrome.storage.local.set({lastUpdate: (Date).now()})
+			chrome.storage.local.set({lastUpdate: Date.now()})
 
 			qwest.get(this.url, {}, { dataType: 'json' })
 				.success(function(data) {
 					if (!data) {
 						// same as error API error U
 					}
-					this.count = data.alertCount
-					chrome.storage.local.set({count: this.count, serverTimestamp: data.time})
 
-					var server, length = data.servers.length - 2
+					var server, length = data.servers.length - 2, alertCount = 0, timestamp = 0
 					for (var i = 0; i < length; i++) {
-						server = data.servers[i]
+						server = data[i]
+						server.alert = data.Actives[i].Stats
+						timestamp = server.UpdatedTimestamp
 						if (server.isOnline) {
-							this._updateServer(server)
+							if (this._updateServer(server))
+								alertCount++
 						} else {
 							this.alert = false
 							chrome.storage.local.set({alert: false})
@@ -88,7 +89,8 @@
 						}
 					}
 
-					chrome.storage.local.set({ servers: this.servers })
+					this.count = alertCount
+					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: timestamp })
 					this.updateIcon()
 				}.bind(this)).error(function() {
 					//server.alert.notified = false
@@ -107,15 +109,23 @@
 		},
 
 		_updateServer: function (server) {
-			if (server.status === 'no alert') {
+			server.id = server.ServerID
+			server.alert.type = server.Detail.type
+			server.alert.zone = server.Detail.cont
+			server.alert.start = server.alert.dataTimestamp
+
+			if (server.Status === 'INACTIVE') {
 				server.alert.notified = false
 				if (server.id === this.main) {
 					this.alert = false
 					chrome.storage.local.set({ alert: false })
 					this.clearBadgeAlarm()
 				}
-				return this.sendToPopup(server)
+				this.sendToPopup(server)
+				return false
 			}
+
+			server.status = 1
 
 			if (server.id === this.main) {
 				this.alert = true
@@ -133,6 +143,7 @@
 			}
 
 			this.sendToPopup(server)
+			return true
 		},
 
 		clearBadgeAlarm: function() {
@@ -168,13 +179,13 @@
 		},
 
 		updateBadge: function (server) {
-			if (server.status === 'no alert')
+			if (server.status === 'INACTIVE')
 				this.clearBadgeAlarm()
 			if (server.status === 1) {
 				var current = Date.now(),
 					date = new Date(+server.alert.start - current)
 
-				if (server.alert.type === 1 || server.alert.zone === 0) {
+				if (server.alert.type === 'Territory' || server.alert.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
 				} else {
 					date.setUTCHours(date.getUTCHours() + 1)

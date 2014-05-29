@@ -1,20 +1,17 @@
 +function(window) {
 	'use strict';
 
-	var VERSION = 0.3
+	var VERSION = 0.4
 
-	var zoneData = {
-		0: 'Global',
-		2: 'Indar',
-		6: 'Amerish',
-		8: 'Esamir'
-	}
-
-	var typeData = {
-		1: 'Territory',
-		2: 'Bio Labs',
-		3: 'Tech Plants',
-		4: 'Amp Stations'
+	var serverData = {
+		'25': 'Briggs',
+		'11': 'Ceres',
+		'13': 'Cobalt',
+		'1': 'Connery',
+		'17': 'Mattherson',
+		'10': 'Miller',
+		'18': 'Waterson',
+		'9': 'Woodman',
 	}
 
 	var App = function() {
@@ -69,7 +66,7 @@
 				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
 				if (this.hide2 && server.id !== this.main)
 					$('tr:last').hide()
-				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse' + server.id + '" class="btn btn-link">' + server.name + '</button></td>')
+				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse' + server.id + '" class="btn btn-link">' + serverData[server.id] + '</button></td>')
 				$('tr:last').append('<td class="remaining"></td>')
 				$('tr:last').append('<td class="type"></td>')
 				$('tr:last').append('<td class="continent"></td>')
@@ -87,23 +84,23 @@
 				if (video.find('video').length === 0)
 					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
 
-				$server.find('.type').html(typeData[server.alert.type]).attr({
-					title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
+				$server.find('.type').html(server.alert.type).attr({
+					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
 					'data-tooltip': true
 				}).tooltip({container: 'body'})
 				$server.find('.server-name > button').removeAttr('disabled')
 
 				switch (server.alert.type) {
-					case 1:
+					case 'Territory':
 						this.addType('territory', server)
 						break
-					case 2:
+					case 'Bio':
 						this.addType('facility', server)
 						break
-					case 3:
+					case 'Tech':
 						this.addType('facility', server)
 						break
-					case 4:
+					case 'Amp':
 						this.addType('facility', server)
 						break
 					default:
@@ -111,7 +108,7 @@
 						break
 				}
 
-				$server.find('.continent').text(zoneData[server.alert.zone])
+				$server.find('.continent').text(server.alert.zone)
 				$server.find('.remaining').removeClass('inactive')
 
 				this.updateTime(server)
@@ -132,9 +129,9 @@
 		},
 
 		_addTerritory: function(server) {
-			var vanu = server.alert.faction_vs,
-			tr = server.alert.faction_tr,
-			nc = server.alert.faction_nc,
+			var vanu = server.alert.TerritoryVS,
+			tr = server.alert.TerritoryTR,
+			nc = server.alert.TerritoryNC,
 			count = 100 - nc - tr,
 			row = $('footer').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div></div></div>')
 
@@ -186,14 +183,16 @@
 			var row = $('footer').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
 			$container = $('#collapse' + server.id + ' > .container'),
 			$facilities = $container.find('.facilities'),
-			vanu = server.alert.faction_vs,
-			tr = server.alert.faction_tr,
-			nc = server.alert.faction_nc
+			vanu = server.alert.TerritoryVS,
+			tr = server.alert.TerritoryTR,
+			nc = server.alert.TerritoryNC
 
 
-			$.each(server.alert.facilities, function(i, facility) {
+			$.each(server.alert, function(facility, status) {
+				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID')
+					return
 				var add = 'progress-bar-purple'
-				switch (facility['owned-by-faction']) {
+				switch (status) {
 					case '1': // Vanu
 						break
 					case '2': // NC
@@ -206,7 +205,7 @@
 					default:
 						break
 				}
-				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility.name + ' (' + typeData[server.alert.type].slice(0, -1) + ') on ' + zoneData[facility.continent] + '">')
+				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility + ' (' + server.alert.type + ') on ' + server.alert.zone + '">')
 			})
 			$facilities.find('[data-tooltip]').tooltip()
 
@@ -224,7 +223,7 @@
 			if (server.status === 1) {
 				var date = new Date(+server.alert.start - current)
 
-				if (server.alert.type === 1 || server.alert.zone === 0) {
+				if (server.alert.type === 'Territory' || server.alert.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
 				} else {
 					date.setUTCHours(date.getUTCHours() + 1)
@@ -241,7 +240,7 @@
 						})
 					return $('#server-' + server.id + ' .remaining').html(h + ':' + m + ':' + s)
 				}
-				server.status = 'no alert'
+				server.status = 'INACTIVE'
 				this.updateTable(server)
 			}
 		},
