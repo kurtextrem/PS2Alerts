@@ -67,7 +67,7 @@
 		update: function () {
 			chrome.storage.local.set({lastUpdate: Date.now()})
 
-			qwest.get(this.url, {}, { dataType: 'json' })
+			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' })
 				.success(function(data) {
 					if (!data) {
 						// same as error API error U
