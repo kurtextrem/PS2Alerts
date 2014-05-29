@@ -53,7 +53,6 @@
 				this.timeRemind = data.timeRemind
 				this.alwaysRemind = data.alwaysRemind
 
-				var main = this.servers['s' + this.main]
 				if (force || (Date).now() - data.lastUpdate >= this.updateTime * 60000) {
 					this.update()
 				}
@@ -162,7 +161,7 @@
 			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
 				if (alarm.name === 'update-badge')
-					return chrome.storage.local.get('server', function (obj) { this.updateBadge(obj.server) }.bind(this))
+					return this.updateBadge(this.servers['s' + this.main])
 				if (alarm.name === 'update')
 					return this.update()
 			}.bind(this))
