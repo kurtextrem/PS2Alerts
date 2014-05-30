@@ -7,23 +7,13 @@
 	<link href="css/main.css" rel="stylesheet">
 </head>
 <body>
-	<table class="table table-hover" id="table">
-		<thead>
-			<tr>
-				<th id="server">Server <button id="refresh" type="button" class="btn btn-link"><i class="glyphicon glyphicon-repeat"></i></button></th>
-				<th id="remaining">Remaining</th>
-				<th id="type">Type</th>
-				<th id="continent">Continent</th>
-			</tr>
-		</thead>
-		<tbody></tbody>
-	</table>
+	<div class="alert-container container-fluid"></div>
 
-	<footer class="text-center text-muted"><a target="_blank" title="Alert history @ ps2alerts.com" id="ps2alerts" data-tooltip="true" href="http://ps2alerts.com">Alert history</a> | <a target="_blank" href="http://fishy.sytes.net/ps2alert.php">Alert details</a> | <a id="options" data-tooltip="true" title="vX.X" href="#">Options</a></footer>
+	<footer class="text-center text-muted"><a id="options" data-tooltip="true" title="vX.X" href="#">Options</a> | <button id="refresh" type="button" class="btn btn-link"><i class="glyphicon glyphicon-repeat"></i></button></footer>
 
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
-	<script src="js/jquery.tablesort.min.js"></script>
+	<script src="js/jquery.sortable.min.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

@@ -19,33 +19,31 @@
 			sessionStorage.startup = 1
 			chrome.runtime.getBackgroundPage($.noop)
 		}
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, direction: 'desc', by: 'server', flare: 0, hide2: 0, serverTimestamp: 0}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0}, function(data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
 			this.hide2 = data.hide2
 			this.addHTML()
-			$.each(data.servers, function(index, server) {
-				this.updateTable(server)
-			}.bind(this))
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
-			var $table = $('table')
-			$table.tablesort()
-			$table.data('tablesort').sort($('#' + data.by), data.direction)
+			$('.alert-container').sortable({
+				handle: '.handle',
+				items: '.row'
+			}).on('sortupdate', function() {
+				$.each($('video'), function(i, vid) {
+					vid.play()
+				})
+			})
 
 			$('#refresh').click(function(e) {
 				this.refresh()
 				e.stopImmediatePropagation()
-			}.bind(this))
-			$table.on('tablesort:complete', function(e, tablesort) {
-				chrome.storage.local.set({direction: tablesort.direction, by: $('.sorted').attr('id')})
-			})
-			$('#server-' + this.main + ' td').css('background-color', 'rgb(224, 236, 218)')
-			$('#server > button').attr({
+			}.bind(this)).attr({
 				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
 				'data-tooltip': true
 			}).tooltip({html: true, placement: 'bottom'})
+			$('#server-' + this.main).addClass('panel-info').removeClass('panel-default')
 		}.bind(this))
 		$('#options').click(function() {
 			chrome.tabs.create({ url: 'settings.html' })
@@ -63,32 +61,27 @@
 
 		addHTML: function() {
 			$.each(this.servers, function (index, server) {
-				$('tbody').append('<tr id="server-' + server.id + '"></tr>')
 				if (this.hide2 && server.id !== this.main)
-					$('tr:last').hide()
-				$('tr:last').append('<td class="server-name"><button type="button" data-toggle="collapse" data-target="#collapse' + server.id + '" class="btn btn-link">' + serverData[server.id] + '</button></td>')
-				$('tr:last').append('<td class="remaining"></td>')
-				$('tr:last').append('<td class="type"></td>')
-				$('tr:last').append('<td class="continent"></td>')
+					return
+				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default" id="server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-target="#collapse' + server.id + '" href="#collapse' + server.id + '"><span class="server-name">' + serverData[server.id] + '</span></a><span class="pull-right badge remaining"></span></h4></div><div id="collapse' + server.id + '" class="panel-collapse collapse"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
+				this.updateTable(server)
 			}.bind(this))
 		},
 
 		updateTable: function(server) {
-			var main = 's' + server.id,
-			$server = $('#server-' + server.id)
+			var $server = $('#server-' + server.id)
 
 			if (server.Status === 1) {
 				$server.addClass('success')
 
 				var video = $server.find('.server-name')
 				if (video.find('video').length === 0)
-					video.prepend('<video width="15" height="15" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').find('video')[0].play()
+					video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev()[0].play()
 
 				$server.find('.type').html(server.alert.type).attr({
 					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
 					'data-tooltip': true
 				}).tooltip({container: 'body'})
-				$server.find('.server-name > button').removeAttr('disabled')
 
 				switch (server.alert.type) {
 					case 'Territory':
@@ -104,7 +97,6 @@
 						this.addType('facility', server)
 						break
 					default:
-						$server.find('.server-name > button').attr('disabled', true)
 						break
 				}
 
@@ -113,16 +105,16 @@
 
 				this.updateTime(server)
 			} else {
-				$server.removeClass()
+				//$server.removeClass()
 				$server.find('.server-name video').remove()
-				$server.find('.server-name > button').attr('disabled', true)
 				$server.find('.type').text('')
 				$server.find('.continent').text('')
+				$server.find('.panel-body').html('<a href="' + server.FullAlertLink + '" target="_blank">Further details</a>')
 				$server.find('.remaining').addClass('inactive')
 			}
 
 			if (typeof server.Status === 'string') {
-				$server.find('.remaining').html(server.Status.charAt(0).toUpperCase() + server.Status.slice(1))
+				$server.find('.remaining:not(".badge")').html(server.Status.charAt(0).toUpperCase() + server.Status.slice(1))
 				if (server.Status.indexOf('error') !== -1)
 					$server.addClass('danger')
 			}
@@ -133,14 +125,14 @@
 			tr = server.alert.TerritoryTR,
 			nc = server.alert.TerritoryNC,
 			count = 100 - nc - tr,
-			row = $('footer').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div></div></div>')
+			row = $('#collapse' + server.id + ' > .panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
 			return [row, vanu, tr, nc]
 		},
 
 		addType: function(which, server) {
 			var data
-			$('#collapse' + server.id).remove()
+			$('#collapse' + server.id + ' > .panel-body').html('')
 			switch (which) {
 				case 'territory':
 					data = this._addTerritory(server)
@@ -154,12 +146,10 @@
 					break
 			}
 
-			var collapse = data[0].prevAll('#collapse' + server.id),
-			container = collapse.find('.container'),
+			var container = data[0],
 			append = 'Fair fight.',
 			lead = 4,
-			add = 'text-info',
-			col = false
+			add = 'text-info'
 
 			if (data[3] < data[1] && data[2] < data[1]) {
 				lead = 0
@@ -173,43 +163,43 @@
 			}
 			if (this.flare === lead)
 				add = 'text-success'
-			container.append('<div class="text-center ' + add + '">' + append + '</div>')
-			if (this.hide2 && server.id === this.main)
-				col = true
-			collapse.collapse({toggle: col})
+			container.append('<div class="' + add + '">' + append + '<br><a href="' + server.FullAlertLink + '" target="_blank">Further details on ps2alerts</a></div>')
 		},
 
 		_addFacility: function(server) {
-			var row = $('footer').before('<div id="collapse' + server.id + '" class="collapse"><div class="container"><div class="facilities text-center"></div></div></div>'),
-			$container = $('#collapse' + server.id + ' > .container'),
+			var row = $('#collapse' + server.id + ' > .panel-body').append('<div class="facilities"></div>'),
+			$container = $('#collapse' + server.id + ' > .panel-body'),
 			$facilities = $container.find('.facilities'),
-			vanu = server.alert.TerritoryVS,
-			tr = server.alert.TerritoryTR,
-			nc = server.alert.TerritoryNC
+			vanu = 0,
+			tr = 0,
+			nc = 0
 
 
 			$.each(server.alert, function(facility, status) {
-				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID')
+				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone')
 					return
 				var add = 'progress-bar-purple'
 				switch (status) {
 					case '1': // Vanu
+						vanu++
 						break
 					case '2': // NC
+						nc++
 						add = 'progress-bar-info'
 						break
 					case '3': // TR
+						tr++
 						add = 'progress-bar-danger'
 						break
 
 					default:
 						break
 				}
-				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility + ' (' + server.alert.type + ') on ' + server.alert.zone + '">')
+				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility + ' (' + server.alert.type + ')">')
 			})
 			$facilities.find('[data-tooltip]').tooltip()
 
-			return [row, +vanu.toFixed(2), +tr.toFixed(2), +nc.toFixed(2)]
+			return [row, vanu, tr, nc]
 		},
 
 		updateTime: function(server) {
@@ -238,7 +228,7 @@
 						chrome.runtime.getBackgroundPage(function(w) {
 							w.alert.updateBadge(server)
 						})
-					return $('#server-' + server.id + ' .remaining').html(h + ':' + m + ':' + s)
+					return $('#server-' + server.id + ' .remaining:not(".badge")').html(h + 'h ' + m + 'm ' + s + 's')
 				}
 				server.Status = 'INACTIVE'
 				this.updateTable(server)

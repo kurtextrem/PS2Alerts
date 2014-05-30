@@ -1,9 +1,39 @@
 body {
 	width: 500px;
+	padding-top: 5px;
 }
 
-#table {
-	margin-bottom: 5px !important;
+.btn-lg {
+	font-size: 14px;
+	padding: 10px 16px 9px 16px;
+}
+
+.panel-title > a > span {
+	position: relative;
+	left: 35px;
+}
+
+.handle {
+	cursor: move;
+}
+
+.sortable-placeholder {
+	border: 1px dashed #CCC;
+	background: none;
+	height: 100px;
+	margin-bottom: 20px;
+}
+
+.panel {
+	margin-bottom: 5px;
+}
+
+.table {
+	margin-bottom: 0;
+}
+
+.table>tbody>tr>td:not(:last-of-type) {
+	border-right: 1px solid #ddd;
 }
 
 table .remaining {
@@ -11,10 +41,6 @@ table .remaining {
 }
 table .inactive {
 	color: #888;
-}
-
-thead tr {
-	background: #bbb !important;
 }
 
 td {
@@ -40,25 +66,9 @@ td {
 }
 
 video {
-	position: relative;
+	position: absolute;
 	top: 3px;
-	margin-right: 4px;
-}
-
-.server-name button {
-	padding: 0;
-	border: 0;
-	vertical-align: auto;
-}
-
-.server-name button:hover, .server-name button:focus {
-	text-decoration: none;
-}
-
-
-.server-name button[disabled] {
-	color: #333;
-	opacity: 1;
+	border-radius: 50px;
 }
 
 .progress-bar-purple {

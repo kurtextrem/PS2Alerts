@@ -77,7 +77,7 @@
 						server = data[i]
 						server.alert = data.Actives[i] || {}
 						server.id = server.ServerID
-						timestamp = server.UpdatedTimestamp
+						timestamp = server.LastTimestamp
 						if (server.Status !== 'OFFLINE') {
 							if (this._updateServer(server))
 								alertCount++
@@ -90,7 +90,7 @@
 					}
 
 					this.count = alertCount
-					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: timestamp })
+					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: +(timestamp + '000') })
 					this.updateIcon()
 				}.bind(this)).error(function() {
 					//server.alert.notified = false
@@ -122,7 +122,7 @@
 
 			server.Status = 1
 			server.alert = server.alert.Stats
-			server.alert.start = server.alert.dataTimestamp
+			server.alert.start = +(server.alert.dataTimestamp + '000')
 			server.alert.type = server.Detail.type
 			server.alert.zone = server.Detail.cont
 
