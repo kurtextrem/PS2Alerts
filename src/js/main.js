@@ -77,7 +77,7 @@
 			var main = 's' + server.id,
 			$server = $('#server-' + server.id)
 
-			if (server.status === 1) {
+			if (server.Status === 1) {
 				$server.addClass('success')
 
 				var video = $server.find('.server-name')
@@ -121,9 +121,9 @@
 				$server.find('.remaining').addClass('inactive')
 			}
 
-			if (typeof server.status === 'string') {
-				$server.find('.remaining').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
-				if (server.status.search('error') !== -1)
+			if (typeof server.Status === 'string') {
+				$server.find('.remaining').html(server.Status.charAt(0).toUpperCase() + server.Status.slice(1))
+				if (server.Status.indexOf('error') !== -1)
 					$server.addClass('danger')
 			}
 		},
@@ -139,7 +139,7 @@
 		},
 
 		addType: function(which, server) {
-			var data = null
+			var data
 			$('#collapse' + server.id).remove()
 			switch (which) {
 				case 'territory':
@@ -220,7 +220,7 @@
 			}
 			var current = Date.now()
 
-			if (server.status === 1) {
+			if (server.Status === 1) {
 				var date = new Date(+server.alert.start - current)
 
 				if (server.alert.type === 'Territory' || server.alert.zone === 'Global') {
@@ -240,7 +240,7 @@
 						})
 					return $('#server-' + server.id + ' .remaining').html(h + ':' + m + ':' + s)
 				}
-				server.status = 'INACTIVE'
+				server.Status = 'INACTIVE'
 				this.updateTable(server)
 			}
 		},

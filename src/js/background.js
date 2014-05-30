@@ -53,13 +53,13 @@
 				this.timeRemind = data.timeRemind
 				this.alwaysRemind = data.alwaysRemind
 
-				if (force || Date.now() - data.lastUpdate >= this.updateTime * 60000) {
-					this.update()
-				}
 				if (data.servers === '') {
 					force = true
 				} else {
 					this.servers = data.servers
+				}
+				if (force || Date.now() - data.lastUpdate >= this.updateTime * 60000) {
+					this.update()
 				}
 			}.bind(this))
 		},
@@ -67,18 +67,18 @@
 		update: function () {
 			chrome.storage.local.set({lastUpdate: Date.now()})
 
-			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' })
-				.success(function(data) {
+			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
 					if (!data) {
 						// same as error API error U
 					}
 
-					var server, length = data.servers.length - 2, alertCount = 0, timestamp = 0
+					var server, length = Object.keys(data).length - 2, alertCount = 0, timestamp = 0
 					for (var i = 0; i < length; i++) {
 						server = data[i]
-						server.alert = data.Actives[i].Stats
+						server.alert = data.Actives[i] || {}
+						server.id = server.ServerID
 						timestamp = server.UpdatedTimestamp
-						if (server.isOnline) {
+						if (server.Status !== 'OFFLINE') {
 							if (this._updateServer(server))
 								alertCount++
 						} else {
@@ -109,11 +109,6 @@
 		},
 
 		_updateServer: function (server) {
-			server.id = server.ServerID
-			server.alert.type = server.Detail.type
-			server.alert.zone = server.Detail.cont
-			server.alert.start = server.alert.dataTimestamp
-
 			if (server.Status === 'INACTIVE') {
 				server.alert.notified = false
 				if (server.id === this.main) {
@@ -125,7 +120,11 @@
 				return false
 			}
 
-			server.status = 1
+			server.Status = 1
+			server.alert = server.alert.Stats
+			server.alert.start = server.alert.dataTimestamp
+			server.alert.type = server.Detail.type
+			server.alert.zone = server.Detail.cont
 
 			if (server.id === this.main) {
 				this.alert = true
@@ -181,7 +180,7 @@
 		updateBadge: function (server) {
 			if (server.status === 'INACTIVE')
 				this.clearBadgeAlarm()
-			if (server.status === 1) {
+			if (server.Status === 1) {
 				var current = Date.now(),
 					date = new Date(+server.alert.start - current)
 
@@ -258,7 +257,8 @@
 				canvas = document.createElement('canvas')
 				canvas.setAttribute('width', '19')
 				canvas.setAttribute('height', '19')
-				document.getElementsByTagName('body').appendChild(canvas)
+				document.getElementsByTagName('body')[0].appendChild(canvas)
+				canvas = [canvas]
 			}
 			var context = canvas[0].getContext('2d'),
 				imageObj = new Image()
