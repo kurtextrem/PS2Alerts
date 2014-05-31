@@ -63,7 +63,7 @@
 			$.each(this.servers, function (index, server) {
 				if (this.hide2 && server.id !== this.main)
 					return
-				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default" id="server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-target="#collapse' + server.id + '" href="#collapse' + server.id + '"><span class="server-name">' + serverData[server.id] + '</span></a><span class="pull-right badge remaining"></span></h4></div><div id="collapse' + server.id + '" class="panel-collapse collapse"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
+				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default" id="server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + serverData[server.id] + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
 			}.bind(this))
 		},
@@ -73,6 +73,8 @@
 
 			if (server.Status === 1) {
 				$server.addClass('success')
+				$server.find('.info').removeClass('hide')
+				$server.find('.handle').css('height', '51px')
 
 				var video = $server.find('.server-name')
 				if (video.find('video').length === 0)
@@ -111,6 +113,8 @@
 				$server.find('.continent').text('')
 				$server.find('.panel-body').html('<a href="' + server.FullAlertLink + '" target="_blank">Further details</a>')
 				$server.find('.remaining').addClass('inactive')
+				$server.find('.info').addClass('hide')
+				$server.find('.handle').css('height', 'auto')
 			}
 
 			if (typeof server.Status === 'string') {
@@ -228,7 +232,7 @@
 						chrome.runtime.getBackgroundPage(function(w) {
 							w.alert.updateBadge(server)
 						})
-					return $('#server-' + server.id + ' .remaining:not(".badge")').html(h + 'h ' + m + 'm ' + s + 's')
+					return $('#server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
 				server.Status = 'INACTIVE'
 				this.updateTable(server)

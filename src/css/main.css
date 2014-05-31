@@ -28,6 +28,16 @@ body {
 	margin-bottom: 5px;
 }
 
+.table.info {
+	margin-bottom: -10px;
+	width: 85%;
+	margin-left: 22px;
+}
+
+.table.info>tbody>tr>td {
+	padding: 0;
+}
+
 .table {
 	margin-bottom: 0;
 }
