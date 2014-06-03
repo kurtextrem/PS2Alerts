@@ -108,9 +108,9 @@
 				this.updateTime(server)
 			} else {
 				//$server.removeClass()
-				$server.find('.server-name video').remove()
-				$server.find('.type').text('')
-				$server.find('.continent').text('')
+				$server.find('video').remove()
+				$server.find('.type').empty()
+				$server.find('.continent').empty()
 				$server.find('.panel-body').html('<a href="' + server.FullAlertLink + '" target="_blank">Further details</a>')
 				$server.find('.remaining').addClass('inactive')
 				$server.find('.info').addClass('hide')

@@ -72,13 +72,12 @@
 						// same as error API error U
 					}
 
-					var server, length = Object.keys(data).length - 2, alertCount = 0, timestamp = 0
+					var server, length = Object.keys(data).length - 2, alertCount = 0
 					for (var i = 0; i < length; i++) {
 						server = data[i]
 						server.alert = data.Actives[i] || {}
 						server.id = server.ServerID
-						timestamp = server.LastTimestamp
-						if (server.Status !== 'OFFLINE') {
+						if (server.ServerStatus === 'ONLINE') {
 							if (this._updateServer(server))
 								alertCount++
 						} else {
@@ -90,7 +89,7 @@
 					}
 
 					this.count = alertCount
-					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: +(timestamp + '000') })
+					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 					this.updateIcon()
 				}.bind(this)).error(function() {
 					//server.alert.notified = false
@@ -122,7 +121,7 @@
 
 			server.Status = 1
 			server.alert = server.alert.Stats
-			server.alert.start = +(server.alert.dataTimestamp + '000')
+			server.alert.start = +(server.LastTimestamp + '000')
 			server.alert.type = server.Detail.type
 			server.alert.zone = server.Detail.cont
 
