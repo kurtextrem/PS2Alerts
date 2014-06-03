@@ -36,7 +36,6 @@
 				servers: {},
 				notification: 13,
 				hide: 0,
-				count: 0,
 				remember: false,
 				alert: false,
 				timeRemind: 30,
@@ -47,11 +46,11 @@
 				this.flare = data.flare
 				this.notification = data.notification
 				this.hide = data.hide
-				this.count = data.count
 				this.remember = data.remember
 				this.servers = data.servers
 				this.timeRemind = data.timeRemind
 				this.alwaysRemind = data.alwaysRemind
+				this.count = 0
 
 				if (data.servers === '') {
 					force = true
@@ -72,14 +71,13 @@
 						// same as error API error U
 					}
 
-					var server, length = Object.keys(data).length - 2, alertCount = 0
+					var server, length = Object.keys(data).length - 2
 					for (var i = 0; i < length; i++) {
 						server = data[i]
 						server.alert = data.Actives[i] || {}
 						server.id = +(server.ServerID)
 						if (server.ServerStatus === 'ONLINE') {
-							if (this._updateServer(server))
-								alertCount++
+							this._updateServer(server)
 						} else {
 							this.alert = false
 							chrome.storage.local.set({alert: false})
@@ -88,7 +86,6 @@
 						}
 					}
 
-					this.count = alertCount
 					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 					this.updateIcon()
 				}.bind(this)).error(function() {
@@ -119,6 +116,7 @@
 				return false
 			}
 
+			this.count++
 			server.Status = 1
 			server.alert = server.alert.Stats
 			server.alert.start = +(server.LastTimestamp + '000')
@@ -172,7 +170,7 @@
 				if (alarm.name === 'update-badge')
 					return this.updateBadge(this.servers['s' + this.main])
 				if (alarm.name === 'update')
-					return this.update()
+					return this.init(true)
 			}.bind(this))
 		},
 

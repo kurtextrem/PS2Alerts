@@ -55,7 +55,7 @@
 			}.bind(this)).attr({
 				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
 				'data-tooltip': true
-			}).tooltip({html: true, placement: 'bottom'})
+			}).tooltip()
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 		}.bind(this))
 		$('#options').click(function() {
@@ -265,13 +265,13 @@
 			this.updateTable(server)
 		},
 
-		refresh: function(e) {
-			var $e = $(e)
+		refresh: function() {
+			var $e = $('#refresh')
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
-				w.alert.update()
+				w.alert.init()
 				chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
-					$('#server > button').attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
+					$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
 				})
 				window.setTimeout(function() {
 					$e.removeAttr('disabled')
