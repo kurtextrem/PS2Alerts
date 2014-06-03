@@ -196,7 +196,7 @@
 
 
 			$.each(server.alert, function(facility, status) {
-				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone' || status === null)
+				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone' || status === null || facility === 'notified')
 					return
 				var add = 'progress-bar-purple'
 				switch (status) {
