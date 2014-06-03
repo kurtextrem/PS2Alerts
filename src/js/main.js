@@ -27,7 +27,7 @@
 			this.addHTML()
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
-			if (data.sortOrder !== null) {
+			if (data.sortOrder !== null && !this.hide2) {
 				var $detach = $('.alert-container').detach()
 				for (var i = 0; i < data.sortOrder.length; i++) {
 					data.sortOrder[i] = $detach.find('#' + data.sortOrder[i])
@@ -248,10 +248,12 @@
 					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
 				chrome.runtime.getBackgroundPage(function(w) {
-					w.alert.alertCount--
+					w.alert.count--
 					w.alert.updateIcon()
 				})
 				server.Status = 'INACTIVE'
+				this.servers['s' + server.id].Status = 'INACTIVE'
+				chrome.storage.local.set({servers: this.servers})
 				this.updateTable(server)
 			}
 		},

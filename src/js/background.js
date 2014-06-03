@@ -76,7 +76,7 @@
 					for (var i = 0; i < length; i++) {
 						server = data[i]
 						server.alert = data.Actives[i] || {}
-						server.id = server.ServerID
+						server.id = +(server.ServerID)
 						if (server.ServerStatus === 'ONLINE') {
 							if (this._updateServer(server))
 								alertCount++
