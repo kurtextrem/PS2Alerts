@@ -19,7 +19,7 @@
 			sessionStorage.startup = 1
 			chrome.runtime.getBackgroundPage($.noop)
 		}
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0}, function(data) {
+		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null}, function(data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
@@ -27,10 +27,23 @@
 			this.addHTML()
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
+			if (data.sortOrder !== null) {
+				var $detach = $('.alert-container').detach()
+				for (var i = 0; i < data.sortOrder.length; i++) {
+					data.sortOrder[i] = $detach.find('#' + data.sortOrder[i])
+				}
+				$('body').prepend('<div class="alert-container container-fluid"></div>').find('.alert-container').prepend(data.sortOrder)
+			}
+
 			$('.alert-container').sortable({
 				handle: '.handle',
 				items: '.row'
 			}).on('sortupdate', function() {
+				var order = [], children = document.getElementsByClassName('alert-container')[0].children
+				for (var i = 0; i < children.length; i++) {
+					order.push(children[i].id)
+				}
+				chrome.storage.local.set({sortOrder: order})
 				$.each($('video'), function(i, vid) {
 					vid.play()
 				})
@@ -43,7 +56,7 @@
 				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
 				'data-tooltip': true
 			}).tooltip({html: true, placement: 'bottom'})
-			$('#server-' + this.main).addClass('panel-info').removeClass('panel-default')
+			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 		}.bind(this))
 		$('#options').click(function() {
 			chrome.tabs.create({ url: 'settings.html' })
@@ -52,7 +65,7 @@
 			$.each($('video'), function(i, vid) {
 				vid.play()
 			})
-		}, 750)
+		}, 550)
 	}
 	App.prototype = {
 		servers: {},
@@ -63,13 +76,13 @@
 			$.each(this.servers, function (index, server) {
 				if (this.hide2 && server.id !== this.main)
 					return
-				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default" id="server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + serverData[server.id] + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
+				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + serverData[server.id] + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
 			}.bind(this))
 		},
 
 		updateTable: function(server) {
-			var $server = $('#server-' + server.id)
+			var $server = $('.server-' + server.id)
 
 			if (server.Status === 1) {
 				$server.addClass('success')
@@ -180,7 +193,7 @@
 
 
 			$.each(server.alert, function(facility, status) {
-				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone')
+				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone' || status === null)
 					return
 				var add = 'progress-bar-purple'
 				switch (status) {
@@ -232,8 +245,12 @@
 						chrome.runtime.getBackgroundPage(function(w) {
 							w.alert.updateBadge(server)
 						})
-					return $('#server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
+					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
+				chrome.runtime.getBackgroundPage(function(w) {
+					w.alert.alertCount--
+					w.alert.updateIcon()
+				})
 				server.Status = 'INACTIVE'
 				this.updateTable(server)
 			}

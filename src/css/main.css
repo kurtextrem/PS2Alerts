@@ -8,11 +8,7 @@ body {
 	padding: 10px 16px 9px 16px;
 }
 
-.panel-title > a > span {
-	position: relative;
-	left: 35px;
-}
-
+/** Sortable **/
 .handle {
 	cursor: move;
 }
@@ -20,12 +16,22 @@ body {
 .sortable-placeholder {
 	border: 1px dashed #CCC;
 	background: none;
-	height: 100px;
-	margin-bottom: 20px;
+	height: 70px;
+	margin-bottom: 15px;
 }
+/** End sortable */
 
 .panel {
 	margin-bottom: 5px;
+}
+
+.panel-title > a > span {
+	position: relative;
+	left: 35px;
+}
+
+.table {
+	margin-bottom: 0;
 }
 
 .table.info {
@@ -38,41 +44,23 @@ body {
 	padding: 0;
 }
 
-.table {
-	margin-bottom: 0;
-}
-
 .table>tbody>tr>td:not(:last-of-type) {
 	border-right: 1px solid #ddd;
-}
-
-table .remaining {
-	color: #f00;
-}
-table .inactive {
-	color: #888;
 }
 
 td {
 	min-width: 100px;
 }
 
+table .remaining {
+	color: #FF4136;
+}
+table .inactive {
+	color: #888;
+}
+
 #refresh {
 	padding: 0 !important;
-}
-
-.ascending::after {
-	content: "  \2191";
-	position: absolute;
-	top: 9px;
-	margin-left: 4px;
-}
-
-.descending::after {
-	content: " \2193";
-	position: absolute;
-	top: 9px;
-	margin-left: 4px;
 }
 
 video {
@@ -86,7 +74,7 @@ video {
 }
 
 .progress-bar-nanite {
-	background-color: rgba(255, 238, 0, 255); /* ALL NANITE! */
+	background-color: rgba(255, 238, 0, 255);
 }
 
 .progress-bar, .progress {
