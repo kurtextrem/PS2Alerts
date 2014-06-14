@@ -3,17 +3,6 @@
 
 	var VERSION = 0.4
 
-	var serverData = {
-		'25': 'Briggs',
-		'11': 'Ceres',
-		'13': 'Cobalt',
-		'1': 'Connery',
-		'17': 'Mattherson',
-		'10': 'Miller',
-		'18': 'Waterson',
-		'9': 'Woodman',
-	}
-
 	var App = function() {
 		if (typeof sessionStorage.startup === 'undefined') {
 			sessionStorage.startup = 1
@@ -79,7 +68,7 @@
 				var add = ''
 				if (server.id === this.main)
 					add = ' in'
-				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + serverData[server.id] + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
+				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
 			}.bind(this))
 		},
@@ -127,7 +116,7 @@
 				$server.find('video').remove()
 				$server.find('.type').empty()
 				$server.find('.continent').empty()
-				$server.find('.panel-body').html('<a href="' + server.FullAlertLink + '" target="_blank">Further details</a>')
+				$server.find('.panel-body').html('<a href="' + server.FullAlertLink + '" target="_blank">View all alerts for this server</a>')
 				$server.find('.remaining').addClass('inactive')
 				$server.find('.info').addClass('hide')
 				$server.find('.handle').css('height', 'auto')
@@ -183,7 +172,7 @@
 			}
 			if (this.flare === lead)
 				add = 'text-success'
-			container.append('<div class="' + add + '">' + append + '<br><a href="' + server.FullAlertLink + '" target="_blank">Further details on ps2alerts</a></div>')
+			container.append('<div class="' + add + '">' + append + '<br><a href="' + server.FullAlertLink + '" target="_blank">View this alert live on PS2Alerts</a></div>')
 		},
 
 		_addFacility: function(server) {
@@ -250,13 +239,13 @@
 						})
 					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
-				chrome.runtime.getBackgroundPage(function(w) {
-					w.alert.count--
-					w.alert.updateIcon()
-				})
+				//chrome.runtime.getBackgroundPage(function(w) {
+				//	w.alert.count--
+				//	w.alert.updateIcon()
+				//})
 				server.Status = 'INACTIVE'
-				this.servers['s' + server.id].Status = 'INACTIVE'
-				chrome.storage.local.set({servers: this.servers})
+				//this.servers['s' + server.id].Status = 'INACTIVE'
+				//chrome.storage.local.set({servers: this.servers})
 				this.updateTable(server)
 			}
 		},
