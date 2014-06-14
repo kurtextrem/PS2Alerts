@@ -8,6 +8,17 @@
 		3: [255, 238, 0, 255] // NS
 	}
 
+	var serverData = {
+		'25': 'Briggs',
+		'11': 'Ceres',
+		'13': 'Cobalt',
+		'1': 'Connery',
+		'17': 'Mattherson',
+		'10': 'Miller',
+		'18': 'Waterson',
+		'9': 'Woodman',
+	}
+
 	var Alert = function () {
 		this.addListener()
 	}
@@ -76,6 +87,7 @@
 						server = data[i]
 						server.alert = data.Actives[i] || {}
 						server.id = +(server.ServerID)
+						server.name = serverData[server.id]
 						if (server.ServerStatus === 'ONLINE') {
 							this._updateServer(server)
 						} else {
