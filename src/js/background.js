@@ -166,7 +166,7 @@
 			this.updateBadge(server)
 			chrome.storage.local.set({server: server})
 			chrome.alarms.get('update-badge', function(alarm) {
-				if (alarm === null) // @todo: test
+				if (alarm === undefined)
 					chrome.alarms.create('update-badge', {
 						delayInMinutes: 1,
 						periodInMinutes: 1
@@ -179,10 +179,11 @@
 				this.registerUpdateAlarms()
 			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
+				this.init()
 				if (alarm.name === 'update-badge')
 					return this.updateBadge(this.servers['s' + this.main])
 				if (alarm.name === 'update')
-					return this.init(true)
+					return this.update()
 			}.bind(this))
 		},
 
