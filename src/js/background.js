@@ -39,7 +39,7 @@
 		timeRemind: 30,
 		alwaysRemind: false,
 
-		init: function (force) {
+		init: function (force, callback) {
 			chrome.storage.local.get({
 				main: 13,
 				flare: 0,
@@ -71,6 +71,8 @@
 				if (force || Date.now() - data.lastUpdate >= this.updateTime * 60000) {
 					this.update()
 				}
+				if (callback !== undefined)
+					callback()
 			}.bind(this))
 		},
 
@@ -82,7 +84,7 @@
 						// same as error API error U
 					}
 
-					var server, length = Object.keys(data).length - 2
+					var server, length = Object.keys(data).length - 1
 					for (var i = 0; i < length; i++) {
 						server = data[i]
 						server.alert = data.Actives[i] || {}

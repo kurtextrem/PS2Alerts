@@ -6,7 +6,9 @@
 	var App = function() {
 		if (typeof sessionStorage.startup === 'undefined') {
 			sessionStorage.startup = 1
-			chrome.runtime.getBackgroundPage($.noop)
+			chrome.runtime.getBackgroundPage(function (w) {
+				w.alert.init()
+			})
 		}
 		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null}, function(data) {
 			this.servers = data.servers
@@ -235,7 +237,7 @@
 				if (h < 2 && (h + +m + +s) > 0) {
 					if (server.id === this.main)
 						chrome.runtime.getBackgroundPage(function(w) {
-							w.alert.updateBadge(server)
+							w.alert.init(w.alert.updateBadge(server))
 						})
 					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
@@ -258,13 +260,14 @@
 			var $e = $('#refresh')
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
-				w.alert.init()
-				chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
-					$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
+				w.alert.init(function() {
+					chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
+						$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
+					})
+					window.setTimeout(function() {
+						$e.removeAttr('disabled')
+					}, 30000)
 				})
-				window.setTimeout(function() {
-					$e.removeAttr('disabled')
-				}, 30000)
 			})
 		}
 	}
