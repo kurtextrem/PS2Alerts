@@ -7,7 +7,7 @@
 		if (typeof sessionStorage.startup === 'undefined') {
 			sessionStorage.startup = 1
 			chrome.runtime.getBackgroundPage(function (w) {
-				w.alert.init(function() {
+				w.alert.init(true, function() {
 					w.alert.updateIcon()
 				})
 			})
@@ -262,13 +262,13 @@
 			var $e = $('#refresh')
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function(w) {
-				w.alert.init(function() {
+				w.alert.init(true, function() {
 					chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
 						$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
 					})
 					window.setTimeout(function() {
 						$e.removeAttr('disabled')
-					}, 30000)
+					}, 120000)
 				})
 			})
 		}

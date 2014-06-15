@@ -19,6 +19,25 @@
 		'9': 'Woodman',
 	}
 
+	function throttle(fn, scope, delay) {
+		var last, deferTimer, count
+		return function () {
+			var context = scope, now = +new Date, args = arguments;
+			if (last && now < last + threshhold) {
+				count++
+				clearTimeout(deferTimer)
+				deferTimer = setTimeout(function () {
+					last = now
+					fn.apply(context, args)
+				}, delay * count * 60)
+			} else {
+				count = 0
+				last = now
+				fn.apply(context, args)
+			}
+		}
+	}
+
 	var Alert = function () {
 		this.addListener()
 	}
@@ -27,7 +46,7 @@
 		url: 'http://ps2alerts.com/API/status',
 
 		constructor: Alert,
-		updateTime: 1,
+		updateTime: 2,
 		servers: {},
 		main: 13,
 		flare: 0,
@@ -80,34 +99,29 @@
 			chrome.storage.local.set({lastUpdate: Date.now()})
 
 			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
-					if (!data) {
-						// same as error API error U
-					}
+				if (!data) {
+					// same as error API error U
+				}
 
-					var server, length = Object.keys(data).length - 1
-					for (var i = 0; i < length; i++) {
-						server = data[i]
-						server.alert = data.Actives[i] || {}
-						server.id = +(server.ServerID)
-						server.name = serverData[server.id]
-						if (server.ServerStatus === 'ONLINE') {
-							this._updateServer(server)
-						} else {
-							this.alert = false
-							chrome.storage.local.set({alert: false})
-							server.alert.notified = false
-							this.sendToPopup(server)
-						}
+				var server, length = Object.keys(data).length - 1
+				for (var i = 0; i < length; i++) {
+					server = data[i]
+					server.alert = data.Actives[i] || {}
+					server.id = +(server.ServerID)
+					server.name = serverData[server.id]
+					if (server.ServerStatus === 'ONLINE') {
+						this._updateServer(server)
+					} else {
+						this.alert = false
+						chrome.storage.local.set({alert: false})
+						server.alert.notified = false
+						this.sendToPopup(server)
 					}
+				}
 
-					chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
-					this.updateIcon()
-				}.bind(this)).error(function() {
-					//server.alert.notified = false
-					//server.status = 'API error'
-					//this.sendToPopup(server)
-					//@todo: Not sure what I should do here
-				}.bind(this))
+				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
+				this.updateIcon()
+			}.bind(this)).error(throttle(this.update(), this, 2))
 		},
 
 		sendToPopup: function (server) {
@@ -195,7 +209,7 @@
 				this.clearBadgeAlarm()
 			if (server.Status === 1) {
 				var current = Date.now(),
-					date = new Date(+server.alert.start - current)
+				date = new Date(+server.alert.start - current)
 
 				if (server.alert.type === 'Territory' || server.alert.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
@@ -274,7 +288,7 @@
 				canvas = [canvas]
 			}
 			var context = canvas[0].getContext('2d'),
-				imageObj = new Image()
+			imageObj = new Image()
 
 			imageObj.onload = function () {
 				context.clearRect(0, 0, 19, 19)
