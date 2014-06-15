@@ -19,25 +19,6 @@
 		'9': 'Woodman',
 	}
 
-	function throttle(fn, scope, delay) {
-		var last, deferTimer, count
-		return function () {
-			var context = scope, now = +new Date, args = arguments;
-			if (last && now < last + threshhold) {
-				count++
-				clearTimeout(deferTimer)
-				deferTimer = setTimeout(function () {
-					last = now
-					fn.apply(context, args)
-				}, delay * count * 1000)
-			} else {
-				count = 0
-				last = now
-				fn.apply(context, args)
-			}
-		}
-	}
-
 	var Alert = function () {
 		this.addListener()
 	}
@@ -57,6 +38,7 @@
 		alert: false,
 		timeRemind: 30,
 		alwaysRemind: false,
+		errorDelay: 2,
 
 		init: function (force, callback) {
 			chrome.storage.local.get({
@@ -100,8 +82,9 @@
 
 			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
 				if (!data) {
-					// same as error API error U
+					window.setTimeout(this.update.bind(this), ++this.errorDelay * 2000)
 				}
+				this.errorDelay = 2
 
 				var server, length = Object.keys(data).length - 1
 				for (var i = 0; i < length; i++) {
@@ -121,7 +104,9 @@
 
 				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 				this.updateIcon()
-			}.bind(this)).error(throttle(this.update(), this, 2))
+			}.bind(this)).error(function() {
+				window.setTimeout(this.update.bind(this), ++this.errorDelay * 2000)
+			}.bind(this))
 		},
 
 		sendToPopup: function (server) {
