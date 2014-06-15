@@ -29,7 +29,7 @@
 				deferTimer = setTimeout(function () {
 					last = now
 					fn.apply(context, args)
-				}, delay * count * 60)
+				}, delay * count * 1000)
 			} else {
 				count = 0
 				last = now
