@@ -4,15 +4,6 @@
 	var VERSION = 0.4
 
 	var App = function() {
-		if (typeof sessionStorage.startup === 'undefined') {
-			sessionStorage.startup = 1
-			chrome.runtime.getBackgroundPage(function (w) {
-				w.alert.init(true, function() {
-					w.alert.updateIcon()
-					location.reload()
-				})
-			})
-		}
 		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null}, function(data) {
 			this.servers = data.servers
 			this.main = data.main

@@ -177,6 +177,7 @@
 
 		addListener: function() {
 			chrome.runtime.onInstalled.addListener(function() {
+				this.init(true)
 				this.registerUpdateAlarms()
 			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
