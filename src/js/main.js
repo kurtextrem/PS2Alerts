@@ -9,6 +9,7 @@
 			chrome.runtime.getBackgroundPage(function (w) {
 				w.alert.init(true, function() {
 					w.alert.updateIcon()
+					location.reload()
 				})
 			})
 		}
