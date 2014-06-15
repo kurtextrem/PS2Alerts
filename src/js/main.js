@@ -7,7 +7,9 @@
 		if (typeof sessionStorage.startup === 'undefined') {
 			sessionStorage.startup = 1
 			chrome.runtime.getBackgroundPage(function (w) {
-				w.alert.init()
+				w.alert.init(function() {
+					w.alert.updateIcon()
+				})
 			})
 		}
 		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null}, function(data) {

@@ -181,11 +181,12 @@
 				this.registerUpdateAlarms()
 			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
-				this.init()
-				if (alarm.name === 'update-badge')
-					return this.updateBadge(this.servers['s' + this.main])
-				if (alarm.name === 'update')
-					return this.update()
+				this.init(function() {
+					if (alarm.name === 'update-badge')
+						return this.updateBadge(this.servers['s' + this.main])
+					if (alarm.name === 'update')
+						return this.update()
+				}.bind(this))
 			}.bind(this))
 		},
 
