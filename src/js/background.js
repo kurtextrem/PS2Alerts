@@ -82,7 +82,7 @@
 
 			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
 				if (!data) {
-					window.setTimeout(this.update.bind(this), ++this.errorDelay * 2000)
+					window.setTimeout(this.update.bind(this), ++this.errorDelay * 3000)
 				}
 				this.errorDelay = 2
 
@@ -105,7 +105,7 @@
 				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 				this.updateIcon()
 			}.bind(this)).error(function() {
-				window.setTimeout(this.update.bind(this), ++this.errorDelay * 2000)
+				window.setTimeout(this.update.bind(this), ++this.errorDelay * 3000)
 			}.bind(this))
 		},
 
