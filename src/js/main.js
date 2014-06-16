@@ -231,7 +231,7 @@
 				if (h < 2 && (h + +m + +s) > 0) {
 					if (server.id === this.main)
 						chrome.runtime.getBackgroundPage(function(w) {
-							w.alert.init(w.alert.updateBadge(server))
+							w.alert.init(false, w.alert.updateBadge(server))
 						})
 					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}

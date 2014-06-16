@@ -66,7 +66,7 @@
 				obj[e.target.id] = val
 				chrome.storage.local.set(obj, function() {
 					chrome.runtime.getBackgroundPage(function(w) {
-						w.alert.init(true)
+						w.alert.init()
 					})
 				})
 			})

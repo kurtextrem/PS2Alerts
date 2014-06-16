@@ -177,15 +177,15 @@
 
 		addListener: function() {
 			chrome.runtime.onInstalled.addListener(function() {
-				this.init(true)
+				this.init()
 				this.registerUpdateAlarms()
 			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
-				this.init(function() {
+				this.init(false, function() {
 					if (alarm.name === 'update-badge')
 						return this.updateBadge(this.servers['s' + this.main])
-					if (alarm.name === 'update')
-						return this.update()
+					//if (alarm.name === 'update') // Updates anyway, if required
+					//	return this.update()
 				}.bind(this))
 			}.bind(this))
 		},
