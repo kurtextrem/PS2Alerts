@@ -38,7 +38,7 @@
 		alert: false,
 		timeRemind: 30,
 		alwaysRemind: false,
-		errorDelay: 2,
+		errorCount: 0,
 
 		init: function (force, callback) {
 			chrome.storage.local.get({
@@ -80,11 +80,15 @@
 		update: function () {
 			chrome.storage.local.set({lastUpdate: Date.now()})
 
-			qwest.post(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
+			qwest.get(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
 				if (!data) {
-					window.setTimeout(this.update.bind(this), ++this.errorDelay * 3000)
+					if (!this.errorCount) {
+						this.errorCount++
+						return window.setTimeout(this.update.bind(this), 30000)
+					}
+					return
 				}
-				this.errorDelay = 2
+				this.errorCount =  0
 
 				var server, length = Object.keys(data).length - 1
 				for (var i = 0; i < length; i++) {
@@ -105,7 +109,10 @@
 				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 				this.updateIcon()
 			}.bind(this)).error(function() {
-				window.setTimeout(this.update.bind(this), ++this.errorDelay * 3000)
+				if (!this.errorCount) {
+					this.errorCount++
+					window.setTimeout(this.update.bind(this), 30000)
+				}
 			}.bind(this))
 		},
 
