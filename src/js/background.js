@@ -80,7 +80,7 @@
 		update: function () {
 			chrome.storage.local.set({lastUpdate: Date.now()})
 
-			qwest.get(this.url, {ref: 'kurtextrem alert monitor'}, { dataType: 'json' }).success(function(data) {
+			qwest.get(this.url, {ref: 'ALERTMON'}, { dataType: 'json' }).success(function(data) {
 				if (!data) {
 					if (!this.errorCount) {
 						this.errorCount++
