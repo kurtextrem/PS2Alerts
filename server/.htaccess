@@ -74,7 +74,7 @@ AddDefaultCharset utf-8
   # Options +SymLinksIfOwnerMatch
     RewriteEngine On
   # RewriteBase /
-   RewriteRule ^get/data /PS2/index.php?data=true
+   #RewriteRule ^get/data /PS2/index.php?data=true
 </IfModule>
 
 # ------------------------------------------------------------------------------

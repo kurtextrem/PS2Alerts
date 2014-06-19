@@ -8,7 +8,8 @@ class App {
 			exit($this->setHeader('404'));
 
 		require_once 'config.inc.php';
-		define('URL', 'http://ps2alerts.com/API/status?ref=ALERTMON');
+		//define('URL', 'http://ps2alerts.com/API/status?ref=ALERTMON');
+		define('URL', 'http://maelstrome26.servehttp.com/ps2alerts/API/status?ref=ALERTMON');
 
 		if (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY) {
 			$this->update();

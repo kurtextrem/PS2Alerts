@@ -24,7 +24,7 @@
 	}
 
 	Alert.prototype = {
-		url: 'http://ps2alerts.com/API/status',
+		url: 'http://kurtextrem.de/PS2/data.json',
 
 		constructor: Alert,
 		updateTime: 2,
@@ -80,7 +80,7 @@
 		update: function () {
 			chrome.storage.local.set({lastUpdate: Date.now()})
 
-			qwest.get(this.url, {ref: 'ALERTMON'}, { dataType: 'json', headers: { Connection: 'close' }}).success(function(data) {
+			qwest.get(this.url, {}, { dataType: 'json', headers: { Connection: 'close' }}).success(function(data) {
 				if (!data) {
 					if (!this.errorCount) {
 						this.errorCount++
