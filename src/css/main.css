@@ -1,11 +1,11 @@
 body {
+	padding-top: 5px;
 	width: 500px;
-	padding-top: 5px;
 }
 
 .btn-lg {
+	padding: 10px 16px 9px 16px;
 	font-size: 14px;
-	padding: 10px 16px 9px 16px;
 }
 
 /** Sortable **/
@@ -14,10 +14,10 @@ body {
 }
 
 .sortable-placeholder {
+	margin-bottom: 15px;
+	height: 70px;
 	border: 1px dashed #CCC;
 	background: none;
-	height: 70px;
-	margin-bottom: 15px;
 }
 /** End sortable */
 
@@ -36,8 +36,8 @@ body {
 
 .table.info {
 	margin-bottom: -10px;
-	width: 85%;
 	margin-left: 22px;
+	width: 85%;
 }
 
 .table.info>tbody>tr>td {
@@ -82,9 +82,9 @@ video {
 }
 
 .facility {
-	height: 17px;
-	width: 17px;
 	display: inline-block;
-	border-radius: 25px;
 	margin-right: 8px;
+	width: 17px;
+	height: 17px;
+	border-radius: 25px;
 }

@@ -13,10 +13,9 @@
 		'11': 'Ceres',
 		'13': 'Cobalt',
 		'1': 'Connery',
-		'17': 'Mattherson',
+		'17': 'Emerald',
 		'10': 'Miller',
-		'18': 'Waterson',
-		'9': 'Woodman',
+		'9': 'Woodman'
 	}
 
 	var Alert = function () {
@@ -78,9 +77,9 @@
 		},
 
 		update: function () {
-			chrome.storage.local.set({lastUpdate: Date.now()})
+			chrome.storage.local.set({ lastUpdate: Date.now() })
 
-			qwest.get(this.url, {}, { dataType: 'json', headers: { Connection: 'close' }}).success(function(data) {
+			qwest.get(this.url, {}, { dataType: 'json', headers: { Connection: 'close' }}).success(function (data) {
 				if (!data) {
 					if (!this.errorCount) {
 						this.errorCount++
@@ -100,7 +99,7 @@
 						this._updateServer(server)
 					} else {
 						this.alert = false
-						chrome.storage.local.set({alert: false})
+						chrome.storage.local.set({ alert: false })
 						server.alert.notified = false
 						this.sendToPopup(server)
 					}
@@ -108,7 +107,7 @@
 
 				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 				this.updateIcon()
-			}.bind(this)).error(function() {
+			}.bind(this)).error(function () {
 				if (!this.errorCount) {
 					this.errorCount++
 					window.setTimeout(this.update.bind(this), 30000)
@@ -162,7 +161,7 @@
 			return true
 		},
 
-		clearBadgeAlarm: function() {
+		clearBadgeAlarm: function () {
 			chrome.browserAction.setBadgeText({ text: '' })
 			chrome.alarms.clear('update-badge')
 			this.updateIcon()
@@ -172,8 +171,8 @@
 
 		setBadgeAlarm: function (server) {
 			this.updateBadge(server)
-			chrome.storage.local.set({server: server})
-			chrome.alarms.get('update-badge', function(alarm) {
+			chrome.storage.local.set({ server: server })
+			chrome.alarms.get('update-badge', function (alarm) {
 				if (alarm === undefined)
 					chrome.alarms.create('update-badge', {
 						delayInMinutes: 1,
@@ -182,13 +181,13 @@
 			})
 		},
 
-		addListener: function() {
-			chrome.runtime.onInstalled.addListener(function() {
+		addListener: function () {
+			chrome.runtime.onInstalled.addListener(function () {
 				this.init()
 				this.registerUpdateAlarms()
 			}.bind(this))
 			chrome.alarms.onAlarm.addListener(function (alarm) {
-				this.init(false, function() {
+				this.init(false, function () {
 					if (alarm.name === 'update-badge')
 						return this.updateBadge(this.servers['s' + this.main])
 					//if (alarm.name === 'update') // Updates anyway, if required
@@ -215,13 +214,13 @@
 
 				if (h > 2 || (h + +m) < 0) {
 					this.alert = false
-					chrome.storage.local.set({alert: false})
+					chrome.storage.local.set({ alert: false })
 					this.clearBadgeAlarm()
 				} else {
 					chrome.browserAction.enable()
 					if (this.remember && h < 1 && m <= this.timeRemind) {
 						this.remember = false
-						chrome.storage.local.set({remember: false})
+						chrome.storage.local.set({ remember: false })
 						this.createNotification(server, true)
 					}
 					if (m === '00')
@@ -258,11 +257,11 @@
 			chrome.notifications.create(server.id + '-alert-' + !!reminder, opt, function (id) {
 				if (!reminder && this.alwaysRemind) {
 					this.remember = true
-					chrome.storage.local.set({remember: true})
+					chrome.storage.local.set({ remember: true })
 				}
 				chrome.notifications.onButtonClicked.addListener(function (id, index) {
 					this.remember = true
-					chrome.storage.local.set({remember: true})
+					chrome.storage.local.set({ remember: true })
 				}.bind(this))
 			}.bind(this))
 		},
@@ -295,7 +294,7 @@
 				chrome.browserAction.setIcon(details)
 			}.bind(this)
 			imageObj.src = path
-			chrome.browserAction.setTitle({title: this.count + ' Alerts running'})
+			chrome.browserAction.setTitle({ title: this.count + ' Alerts running' })
 		}
 	}
 
