@@ -20,7 +20,7 @@
 	}
 
 
-	var Options = function() {
+	var Options = function () {
 		this.createHTML()
 		this.load()
 		this.bind()
@@ -28,19 +28,19 @@
 
 	Options.prototype = {
 		constructor: Options,
-		createHTML: function() {
+		createHTML: function () {
 			var option = $('<option>').val(0).text('All')
 			$('#notification').append(option)
-			$.each(servers, function(i, server) {
+			$.each(servers, function (i, server) {
 				option = $('<option>').val(server.id).text(server.name)
 				$('#notification, #main').append(option)
 			})
-			$.each(flares, function(i, flare) {
+			$.each(flares, function (i, flare) {
 				option = $('<option>').val(i).text(flare[0]).css('background-color', 'rgba('+flare[1][0]+', '+flare[1][1]+', '+flare[1][2]+', '+flare[1][3]+')')
 				$('#flare').append(option)
 			})
 		},
-		load: function() {
+		load: function () {
 			chrome.storage.local.get({main: 13, flare: 0, notification: 13, hide: 0, hide2: 0, alwaysRemind: 0, timeRemind: 30}, function(data) {
 				$('#notification > option[value='+data.notification+']').attr('selected', 'selected')
 				$('#flare > option[value='+data.flare+']').attr('selected', 'selected')
@@ -54,9 +54,9 @@
 				$('#timeRemind').val(data.timeRemind)
 			})
 		},
-		bind: function() {
+		bind: function () {
 			// save
-			$('input, select').change(function(e) {
+			$('input, select').change(function (e) {
 				var obj = {}, val = +e.target.value
 
 				if (e.target.type === 'checkbox')
@@ -64,8 +64,8 @@
 				if (e.target.id === 'hide' && !val)
 						chrome.browserAction.enable() // make sure it gets enabled
 				obj[e.target.id] = val
-				chrome.storage.local.set(obj, function() {
-					chrome.runtime.getBackgroundPage(function(w) {
+				chrome.storage.local.set(obj, function () {
+					chrome.runtime.getBackgroundPage(function (w) {
 						w.alert.init()
 					})
 				})
@@ -80,7 +80,5 @@
 		}
 	}
 
-	window.Options = Options
+	window.Options = new Options()
 }(window)
-
-new Options()

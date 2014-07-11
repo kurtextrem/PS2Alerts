@@ -1,10 +1,11 @@
 body {
-	padding-top: 5px;
+	padding-top: 5px;
 	width: 500px;
 }
 
 .btn-lg {
-	padding: 10px 16px 9px 16px;
+	padding: 10px 16px 9px 16px;
+
 	font-size: 14px;
 }
 
@@ -15,7 +16,8 @@ body {
 
 .sortable-placeholder {
 	margin-bottom: 15px;
-	height: 70px;
+	height: 70px;
+
 	border: 1px dashed #CCC;
 	background: none;
 }
@@ -84,7 +86,8 @@ video {
 .facility {
 	display: inline-block;
 	margin-right: 8px;
-	width: 17px;
+	width: 17px;
+
 	height: 17px;
 	border-radius: 25px;
 }
