@@ -2,6 +2,7 @@ server/config.inc.php
 src/src.zip
 src.crx
 src.pem
+node_modules/
 
 #################
 ## Eclipse
