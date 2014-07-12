@@ -44,8 +44,8 @@ gulp.task('copy-css', function () {
 })
 
 // Output Final CSS Styles
-gulp.task('css', function () {
-	runSequence(['css-minify', 'copy-css'])
+gulp.task('css', function (cb) {
+	runSequence(['css-minify', 'copy-css'], cb)
 })
 
 gulp.task('json', function () {
@@ -62,8 +62,8 @@ gulp.task('zip', function () {
 	return gulp.src('dist/**').pipe($.zip('dist.zip')).pipe(gulp.dest('dist'))
 })
 
-gulp.task('copy', function () {
-	runSequence(['copy-img', 'copy-fonts', 'copy-js'])
+gulp.task('copy', function (cb) {
+	runSequence(['copy-img', 'copy-fonts', 'copy-js'], cb)
 })
 
 gulp.task('copy-img', function () {
@@ -88,8 +88,8 @@ gulp.task('html', function () {
 	.pipe($.size({ title: 'html' }))
 })
 
-gulp.task('js', function () {
-	runSequence(['background-js', 'main-js', 'options-js'])
+gulp.task('js', function (cb) {
+	runSequence(['background-js', 'main-js', 'options-js'], cb)
 })
 
 gulp.task('main-js', function () {
@@ -136,7 +136,7 @@ gulp.task('clean', function (cb) {
 
 // Build Production Files
 gulp.task('build', function (cb) {
-	runSequence('copy', ['css', 'js', 'json', 'html'], 'zip', cb)
+	runSequence(['copy', 'css', 'js', 'json', 'html'], 'zip', cb)
 })
 
 // Default Task
