@@ -1,17 +1,42 @@
-'use strict';
+'use strict'
 
 // Include Gulp & Tools We'll Use
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
-var uglify = require('gulp-uglifyjs');
-var rimraf = require('rimraf');
-var runSequence = require('run-sequence');
-//var browserSync = require('browser-sync');
-//var reload = browserSync.reload;
+var gulp = require('gulp')
+var $ = require('gulp-load-plugins')()
+var uglify = require('gulp-uglifyjs')
+var rimraf = require('rimraf')
+var runSequence = require('run-sequence')
+var uglifyoption = {
+	mangle: {
+		toplevel: false,
+		screw_ie8: true
+	},
+	compress: {
+		screw_ie8: true,
+		sequences: true,
+		properties: true,
+		dead_code: false,
+		drop_debugger: true,
+		comparisons: true,
+		conditionals: true,
+		evaluate: true,
+		booleans: true,
+		loops: true,
+		unused: false,
+		hoist_funs: true,
+		if_return: true,
+		join_vars: true,
+		cascade: true,
+		negate_iife: true,
+		drop_console: true
+	}
+}
+//var browserSync = require('browser-sync')
+//var reload = browserSync.reload
 
 
-gulp.task('styles:pretty', function () {
-	//return gulp.src(['src/css/**', '!src/css/*.min.css']).pipe($.recess()).pipe(gulp.dest('dist/css'))
+gulp.task('css-minify', function () {
+	return gulp.src(['src/css/**', '!src/css/*.min.css']).pipe($.cssshrink()).pipe(gulp.dest('dist/css'))
 })
 
 gulp.task('copy-css', function () {
@@ -19,7 +44,9 @@ gulp.task('copy-css', function () {
 })
 
 // Output Final CSS Styles
-gulp.task('styles', ['styles:pretty', 'copy-css']);
+gulp.task('css', function () {
+	runSequence(['css-minify', 'copy-css'])
+})
 
 gulp.task('json', function () {
 	return gulp.src('src/**/**/*.json')
@@ -28,7 +55,7 @@ gulp.task('json', function () {
 		.pipe(gulp.dest('dist'))
 		.pipe($.size({
 			title: 'json'
-		}));
+		}))
 })
 
 gulp.task('zip', function () {
@@ -44,7 +71,7 @@ gulp.task('copy-img', function () {
 })
 
 gulp.task('copy-js', function () {
-	return gulp.src(['src/js/bootstrap.min.js', 'src/js/jquery.min.js']).pipe(gulp.dest('dist/js'))
+	return gulp.src(['src/js/bootstrap.min.js', 'src/js/jquery.min.js', 'jquery.sortable.min.js']).pipe(gulp.dest('dist/js'))
 })
 
 gulp.task('copy-fonts', function () {
@@ -54,86 +81,42 @@ gulp.task('copy-fonts', function () {
 // Scan Your HTML For Assets & Optimize Them
 gulp.task('html', function () {
 	return gulp.src('src/*.html')
-	.pipe($.useref.assets({
-		searchPath: '{.tmp,src}'
-	}))
-	// Concatenate And Minify JavaScript
-	.pipe($.if ('*.js', uglify('', {
-			mangle: {
-				toplevel: false,
-				screw_ie8: true
-			},
-			compress: {
-				screw_ie8: true,
-				sequences: true,
-				properties: true,
-				dead_code: false,
-				drop_debugger: true,
-				comparisons: true,
-				conditionals: true,
-				evaluate: true,
-				booleans: true,
-				loops: true,
-				unused: false,
-				hoist_funs: true,
-				if_return: true,
-				join_vars: true,
-				cascade: true,
-				negate_iife: true,
-				drop_console: true
-			}
-	})))
-	// Concatenate And Minify Styles
-	.pipe($.if ('*.css', $.cssshrink()))
-	// Remove Any Unused CSS
-	// .pipe($.if ('*.css', $.uncss({ html: ['app/index.html', 'app/styleguide/index.html'] })))
-	.pipe($.useref.restore())
-	.pipe($.useref())
 	// Minify Any HTML
 	.pipe($.minifyHtml())
 	// Output Files
 	.pipe(gulp.dest('dist'))
-	.pipe($.size({
-		title: 'html'
-	}));
-});
+	.pipe($.size({ title: 'html' }))
+})
+
+gulp.task('js', function () {
+	runSequence(['background-js', 'main-js', 'options-js'])
+})
+
+gulp.task('main-js', function () {
+	return gulp.src(['main.js'], { cwd: 'src/js' })
+	.pipe(uglify('main.js', uglifyoption))
+	.pipe($.replace('"use strict"', ''))
+	.pipe(gulp.dest('dist/js')).pipe($.size({ title: 'main js' }))
+})
 
 gulp.task('background-js', function () {
-	return gulp.src(['bglib.min.js', 'background.js'], {
-		cwd: 'src/js'
-	}).pipe(uglify('background.js', {
-		mangle: {
-			toplevel: true,
-			screw_ie8: true
-		},
-		compress: {
-			screw_ie8: true,
-			sequences: true,
-			//properties: true, <-- TEST!
-			dead_code: true,
-			drop_debugger: true,
-			comparisons: true,
-			conditionals: true,
-			evaluate: true,
-			booleans: true,
-			loops: true,
-			unused: false,
-			hoist_funs: true,
-			if_return: true,
-			join_vars: true,
-			cascade: true,
-			//negate_iife: true, <-- TEST!
-			drop_console: true
-		}
-	})).pipe($.replace('"use strict";', '')).pipe(gulp.dest('dist/js')).pipe($.size({
-		title: 'bg js'
-	}));
+	return gulp.src(['bglib.min.js', 'background.js'], { cwd: 'src/js' })
+	.pipe(uglify('background.js', uglifyoption))
+	.pipe($.replace('"use strict"', ''))
+	.pipe(gulp.dest('dist/js')).pipe($.size({ title: 'bg js' }))
+})
+
+gulp.task('options-js', function () {
+	return gulp.src(['options.js'], { cwd: 'src/js' })
+	.pipe(uglify('options.js', uglifyoption))
+	.pipe($.replace('"use strict"', ''))
+	.pipe(gulp.dest('dist/js')).pipe($.size({ title: 'options js' }))
 })
 
 // Clean Output Directory
 gulp.task('clean', function (cb) {
-	rimraf('dist', rimraf.bind({}, '.tmp', cb));
-});
+	rimraf('dist', rimraf.bind({}, '.tmp', cb))
+})
 
 // Watch Files For Changes & Reload
 /*gulp.task('serve', function () {
@@ -142,21 +125,21 @@ gulp.task('clean', function (cb) {
 			baseDir: ['app', '.tmp']
 		},
 		notify: false
-	});
+	})
 
-	gulp.watch(['app/**REMOVE/*.html'], reload);
-	gulp.watch(['app/styles/**REMVE/*.{css,scss}'], ['styles']);
-	gulp.watch(['.tmp/styles/**REMVE/*.css'], reload);
-	gulp.watch(['app/scripts/**REMOVE/*.js'], ['jshint']);
-	gulp.watch(['app/images/**REMOVE/*'], ['images']);
-});*/
+	gulp.watch(['app/**REMOVE/*.html'], reload)
+	gulp.watch(['app/styles/**REMVE/*.{css,scss}'], ['styles'])
+	gulp.watch(['.tmp/styles/**REMVE/*.css'], reload)
+	gulp.watch(['app/scripts/**REMOVE/*.js'], ['jshint'])
+	gulp.watch(['app/images/**REMOVE/*'], ['images'])
+})*/
 
 // Build Production Files
 gulp.task('build', function (cb) {
-	runSequence('copy', ['styles', 'background-js', 'json', 'html'], 'zip', cb);
-});
+	runSequence('copy', ['css', 'js', 'json', 'html'], 'zip', cb)
+})
 
 // Default Task
 gulp.task('default', ['clean'], function (cb) {
-	gulp.start('build', cb);
-});
+	gulp.start('build', cb)
+})
