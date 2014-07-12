@@ -71,7 +71,7 @@ gulp.task('copy-img', function () {
 })
 
 gulp.task('copy-js', function () {
-	return gulp.src(['src/js/bootstrap.min.js', 'src/js/jquery.min.js', 'jquery.sortable.min.js']).pipe(gulp.dest('dist/js'))
+	return gulp.src(['bootstrap.min.js', 'jquery.min.js', 'jquery.sortable.min.js'], { cwd: 'src/js' }).pipe(gulp.dest('dist/js'))
 })
 
 gulp.task('copy-fonts', function () {
