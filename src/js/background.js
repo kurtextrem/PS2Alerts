@@ -92,9 +92,10 @@
 				var server, length = Object.keys(data).length - 1
 				for (var i = 0; i < length; i++) {
 					server = data[i]
-					server.alert = data.Actives[i] || {}
 					server.id = +(server.ServerID)
+					if (server.id === 18) return; // Emerald fix
 					server.name = serverData[server.id]
+					server.alert = data.Actives[i] || {}
 					if (server.ServerStatus === 'ONLINE') {
 						this._updateServer(server)
 					} else {
