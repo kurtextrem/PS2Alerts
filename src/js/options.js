@@ -1,21 +1,20 @@
-+function(window) {
++function (window) {
 	'use strict';
 
 	var servers = [
-		{name: 'Briggs', id: 25, status: 0},
-		{name: 'Ceres', id: 11, status: 0},
-		{name: 'Cobalt', id: 13, status: 0},
-		{name: 'Connery', id: 1, status: 0},
-		{name: 'Emerald', id: 17, status: 0},
-		{name: 'Miller', id: 10, status: 0},
-		{name: 'Woodman', id: 9, status: 0},
+		{ name: 'Connery', id: 1, status: 0 },
+		{ name: 'Miller', id: 10, status: 0 },
+		{ name: 'Cobalt', id: 13, status: 0 },
+		{ name: 'Emerald', id: 17, status: 0 },
+		{ name: 'Briggs', id: 25, status: 0 },
+		{ name: 'Jaeger', id: 19, status: 0 }
 	]
 
 	var flares = {
-		0: ['Vanu', [128, 0, 255, .6]],
-		1: ['NC', [0, 200, 255, .6]],
-		2: ['TR', [219, 0, 0, .6]],
-		3: ['NS', [255, 238, 0, .6]]
+		0: ['Vanu', [128, 0, 255, 0.6]],
+		1: ['NC', [0, 200, 255, 0.6]],
+		2: ['TR', [219, 0, 0, 0.6]],
+		3: ['NS', [255, 238, 0, 0.6]]
 	}
 
 
@@ -50,6 +49,8 @@
 					$('#hide2').attr('checked', true)
 				if (data.alwaysRemind)
 					$('#alwaysRemind').attr('checked', true)
+				if (data.jaeger)
+					$('#jaeger').attr('checked', true)
 				$('#timeRemind').val(data.timeRemind)
 			})
 		},
