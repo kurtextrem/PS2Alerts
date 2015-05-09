@@ -1,10 +1,10 @@
-+function(window) {
++function (window) {
 	'use strict';
 
 	var VERSION = 0.4
 
-	var App = function() {
-		chrome.storage.local.get({servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null}, function(data) {
+	var App = function () {
+		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null }, function (data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
@@ -23,18 +23,18 @@
 			$('.alert-container').sortable({
 				handle: '.handle',
 				items: '.row'
-			}).on('sortupdate', function() {
+			}).on('sortupdate', function () {
 				var order = [], children = document.getElementsByClassName('alert-container')[0].children
 				for (var i = 0; i < children.length; i++) {
 					order.push(children[i].id)
 				}
-				chrome.storage.local.set({sortOrder: order})
-				$.each($('video'), function(i, vid) {
+				chrome.storage.local.set({ sortOrder: order })
+				$.each($('video'), function (i, vid) {
 					vid.play()
 				})
 			})
 
-			$('#refresh').click(function(e) {
+			$('#refresh').click(function (e) {
 				this.refresh()
 				e.stopImmediatePropagation()
 			}.bind(this)).attr({
@@ -43,11 +43,11 @@
 			}).tooltip()
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 		}.bind(this))
-		$('#options').click(function() {
+		$('#options').click(function () {
 			chrome.tabs.create({ url: 'settings.html' })
 		}).attr('title', 'v' + VERSION).parent().find('[data-tooltip]').tooltip()
-		window.setTimeout(function() {
-			$.each($('video'), function(i, vid) {
+		window.setTimeout(function () {
+			$.each($('video'), function (i, vid) {
 				vid.play()
 			})
 		}, 550)
@@ -57,7 +57,7 @@
 		interval: null,
 		constructor: App,
 
-		addHTML: function() {
+		addHTML: function () {
 			$.each(this.servers, function (index, server) {
 				if (this.hide2 && server.id !== this.main)
 					return
@@ -69,7 +69,7 @@
 			}.bind(this))
 		},
 
-		updateTable: function(server) {
+		updateTable: function (server) {
 			var $server = $('.server-' + server.id)
 
 			if (server.Status === 1) {
@@ -84,7 +84,7 @@
 				$server.find('.type').html(server.alert.type).attr({
 					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
 					'data-tooltip': true
-				}).tooltip({container: 'body'})
+				}).tooltip({ container: 'body' })
 
 				switch (server.alert.type) {
 					case 'Territory':
@@ -125,17 +125,17 @@
 			}
 		},
 
-		_addTerritory: function(server) {
-			var vanu = server.alert.TerritoryVS,
-			tr = server.alert.TerritoryTR,
-			nc = server.alert.TerritoryNC,
+		_addTerritory: function (server) {
+			var vanu = server.TerritoryVS,
+			tr = server.TerritoryTR,
+			nc = server.TerritoryNC,
 			count = 100 - nc - tr,
 			row = $('#collapse' + server.id + ' > .panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
 			return [row, vanu, tr, nc]
 		},
 
-		addType: function(which, server) {
+		addType: function (which, server) {
 			var data
 			$('#collapse' + server.id + ' > .panel-body').html('')
 			switch (which) {
@@ -171,7 +171,7 @@
 			container.append('<div class="' + add + '">' + append + '<br><a href="' + server.FullAlertLink + '" target="_blank">View this alert live on PS2Alerts</a></div>')
 		},
 
-		_addFacility: function(server) {
+		_addFacility: function (server) {
 			var row = $('#collapse' + server.id + ' > .panel-body').append('<div class="facilities"></div>'),
 			$container = $('#collapse' + server.id + ' > .panel-body'),
 			$facilities = $container.find('.facilities'),
@@ -180,7 +180,7 @@
 			nc = 0
 
 
-			$.each(server.alert, function(facility, status) {
+			$.each(server.alert, function (facility, status) {
 				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone' || status === null || facility === 'notified')
 					return
 				var add = 'progress-bar-purple'
@@ -200,25 +200,25 @@
 					default:
 						break
 				}
-				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility + ' (' + server.alert.type + ')">')
+				$facilities.append('<div class="facility ' + add + '" data-tooltip="true" title="' + facility + ' (' + server.type + ')">')
 			})
 			$facilities.find('[data-tooltip]').tooltip()
 
 			return [row, vanu, tr, nc]
 		},
 
-		updateTime: function(server) {
+		updateTime: function (server) {
 			if (!server) {
-				return $.each(this.servers, function(i, server) {
+				return $.each(this.servers, function (i, server) {
 					this.updateTime(server)
 				}.bind(this))
 			}
 			var current = Date.now()
 
-			if (server.Status === 1) {
-				var date = new Date(+server.alert.start - current)
+			if (server.status === 1) {
+				var date = new Date(+server.start - current)
 
-				if (server.alert.type === 'Territory' || server.alert.zone === 'Global') {
+				if (server.type === 'Territory' || server.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
 				} else {
 					date.setUTCHours(date.getUTCHours() + 1)
@@ -228,9 +228,9 @@
 				var m = ('0' + date.getUTCMinutes()).slice(-2)
 				var s = ('0' + date.getUTCSeconds()).slice(-2)
 
-				if (h < 2 && (h + +m + +s) > 0) {
+				if (h < 2 && (h + +m + +s) > 0)  {
 					if (server.id === this.main)
-						chrome.runtime.getBackgroundPage(function(w) {
+						chrome.runtime.getBackgroundPage(function (w) {
 							w.alert.init(false, w.alert.updateBadge(server))
 						})
 					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
@@ -239,26 +239,26 @@
 				//	w.alert.count--
 				//	w.alert.updateIcon()
 				//})
-				server.Status = 'INACTIVE'
+				server.status = 'INACTIVE'
 				//this.servers['s' + server.id].Status = 'INACTIVE'
 				//chrome.storage.local.set({servers: this.servers})
 				this.updateTable(server)
 			}
 		},
 
-		updated: function(server) {
+		updated: function (server) {
 			this.updateTable(server)
 		},
 
-		refresh: function() {
+		refresh: function () {
 			var $e = $('#refresh')
 			$e.attr('disabled', true)
-			chrome.runtime.getBackgroundPage(function(w) {
-				w.alert.init(true, function() {
-					chrome.storage.local.get({lastUpdate: 0, serverTimestamp: 0}, function(data) {
+			chrome.runtime.getBackgroundPage(function (w) {
+				w.alert.init(true, function () {
+					chrome.storage.local.get({ lastUpdate: 0, serverTimestamp: 0 }, function (data) {
 						$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
 					})
-					window.setTimeout(function() {
+					window.setTimeout(function () {
 						$e.removeAttr('disabled')
 					}, 120000)
 				})
@@ -269,6 +269,6 @@
 	window.App = App
 }(window)
 
-$.fn.ready(function() {
+$.fn.ready(function () {
 	App = new App()
 })

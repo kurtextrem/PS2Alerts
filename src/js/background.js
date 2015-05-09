@@ -9,13 +9,31 @@
 	}
 
 	var serverData = {
-		'25': 'Briggs',
-		'11': 'Ceres',
-		'13': 'Cobalt',
-		'1': 'Connery',
-		'17': 'Emerald',
-		'10': 'Miller',
-		'9': 'Woodman'
+		1: 'Connery',
+		10: 'Miller',
+		13: 'Cobalt',
+		17: 'Emerald',
+		25: 'Briggs',
+		19: 'Jaeger'
+	}
+
+	var zoneData = {
+		2: 'Indar',
+		4: 'Hossin',
+		6: 'Amerish',
+		8: 'Esamir'
+	}
+
+	/* by p3lim */
+	var typeData = {
+		1: 2, // Indar Territory
+		2: 8, // Esamir Territory
+		3: 6, // Amerish Territory
+		4: 4, // Hossin Territory
+		51: 2, // Indar Pumpkin Hunt
+		52: 8, // Esamir Pumpkin Hunt
+		53: 6, // Amerish Pumpkin Hunt
+		54: 4  // Hossin Pumpkin Hunt
 	}
 
 	var Alert = function () {
@@ -92,16 +110,14 @@
 				var server, length = Object.keys(data).length - 1
 				for (var i = 0; i < length; i++) {
 					server = data[i]
-					server.id = +(server.ServerID)
-					if (server.id === 18) return; // Emerald fix
-					server.name = serverData[server.id]
-					server.alert = data.Actives[i] || {}
-					if (server.ServerStatus === 'ONLINE') {
+					server.id = +(server.world)
+					server.name = serverData[server.id] || 'Unknown'
+					if (server.status === 'active') {
 						this._updateServer(server)
 					} else {
 						this.alert = false
 						chrome.storage.local.set({ alert: false })
-						server.alert.notified = false
+						server.notified = false
 						this.sendToPopup(server)
 					}
 				}
@@ -125,8 +141,8 @@
 		},
 
 		_updateServer: function (server) {
-			if (server.Status === 'INACTIVE') {
-				server.alert.notified = false
+			if (server.status === 'active') {
+				server.notified = false
 				if (server.id === this.main) {
 					this.alert = false
 					chrome.storage.local.set({ alert: false })
@@ -137,11 +153,10 @@
 			}
 
 			this.count++
-			server.Status = 1
-			server.alert = server.alert.Stats
-			server.alert.start = +(server.LastTimestamp + '000')
-			server.alert.type = server.Detail.type
-			server.alert.zone = server.Detail.cont
+			server.status = 1
+			server.started = +(server.started + '000')
+			server.type = typeData[server.type]
+			server.zone = zoneData[server.zone]
 
 			if (server.id === this.main) {
 				this.alert = true
@@ -150,11 +165,11 @@
 			}
 
 			if (server.id === this.notification || this.notification === 0) {
-				if (typeof this.servers['s' + server.id] !== 'undefined' && !this.servers['s' + server.id].alert.notified) {
-					server.alert.notified = true
+				if (typeof this.servers['s' + server.id] !== 'undefined' && !this.servers['s' + server.id].notified) {
+					server.notified = true
 					this.createNotification(server)
 				} else {
-					server.alert.notified = true
+					server.notified = true
 				}
 			}
 
@@ -200,15 +215,15 @@
 		updateBadge: function (server) {
 			if (server.status === 'INACTIVE')
 				this.clearBadgeAlarm()
-			if (server.Status === 1) {
+			if (server.status === 1) {
 				var current = Date.now(),
-				date = new Date(+server.alert.start - current)
+				date = new Date(server.started - current)
 
-				if (server.alert.type === 'Territory' || server.alert.zone === 'Global') {
+				/*if (server.type === 'Territory' || server.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
-				} else {
-					date.setUTCHours(date.getUTCHours() + 1)
-				}
+				} else {*/
+				date.setUTCHours(date.getUTCHours() + 1)
+				//}
 
 				var h = date.getUTCHours()
 				var m = ('0' + date.getUTCMinutes()).slice(-2)
