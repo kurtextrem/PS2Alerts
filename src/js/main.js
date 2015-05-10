@@ -72,7 +72,7 @@
 		updateTable: function (server) {
 			var $server = $('.server-' + server.id)
 
-			if (server.Status === 1) {
+			if (server.status === 1) {
 				$server.addClass('success')
 				$server.find('.info').removeClass('hide')
 				$server.find('.handle').css('height', '51px')
@@ -81,12 +81,12 @@
 				if (video.find('video').length === 0)
 					video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev()[0].play()
 
-				$server.find('.type').html(server.alert.type).attr({
+				$server.find('.type').html(server.type).attr({
 					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
 					'data-tooltip': true
 				}).tooltip({ container: 'body' })
 
-				switch (server.alert.type) {
+				/*switch (server.type) {
 					case 'Territory':
 						this.addType('territory', server)
 						break
@@ -101,9 +101,10 @@
 						break
 					default:
 						break
-				}
+				}*/
+				this.addType('territory', server)
 
-				$server.find('.continent').text(server.alert.zone)
+				$server.find('.continent').text(server.zone)
 				$server.find('.remaining').removeClass('inactive')
 
 				this.updateTime(server)
@@ -112,23 +113,23 @@
 				$server.find('video').remove()
 				$server.find('.type').empty()
 				$server.find('.continent').empty()
-				$server.find('.panel-body').html('<a href="' + server.FullAlertLink + '" target="_blank">View all alerts for this server</a>')
+				$server.find('.panel-body').html('<a href="http://ps2alerts.com/Alert/' + server.resultID + '" target="_blank">View all alerts for this server</a>')
 				$server.find('.remaining').addClass('inactive')
 				$server.find('.info').addClass('hide')
 				$server.find('.handle').css('height', 'auto')
 			}
 
-			if (typeof server.Status === 'string') {
-				$server.find('.remaining:not(".badge")').html(server.Status.charAt(0).toUpperCase() + server.Status.slice(1))
-				if (server.Status.indexOf('error') !== -1)
+			if (typeof server.status === 'string') {
+				$server.find('.remaining:not(".badge")').html(server.status.charAt(0).toUpperCase() + server.status.slice(1))
+				if (server.status.indexOf('error') !== -1)
 					$server.addClass('danger')
 			}
 		},
 
 		_addTerritory: function (server) {
-			var vanu = server.TerritoryVS,
-			tr = server.TerritoryTR,
-			nc = server.TerritoryNC,
+			var vanu = +server.controlVS,
+			tr = +server.controlTR,
+			nc = +server.controlNC,
 			count = 100 - nc - tr,
 			row = $('#collapse' + server.id + ' > .panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
@@ -168,9 +169,10 @@
 			}
 			if (this.flare === lead)
 				add = 'text-success'
-			container.append('<div class="' + add + '">' + append + '<br><a href="' + server.FullAlertLink + '" target="_blank">View this alert live on PS2Alerts</a></div>')
+			container.append('<div class="' + add + '">' + append + '<br><a href="http://ps2alerts.com/Alert/' + server.resultID + '" target="_blank">View this alert live on PS2Alerts</a></div>')
 		},
 
+		// obsolete atm
 		_addFacility: function (server) {
 			var row = $('#collapse' + server.id + ' > .panel-body').append('<div class="facilities"></div>'),
 			$container = $('#collapse' + server.id + ' > .panel-body'),
@@ -218,11 +220,11 @@
 			if (server.status === 1) {
 				var date = new Date(+server.start - current)
 
-				if (server.type === 'Territory' || server.zone === 'Global') {
+				//if (server.type === 'Territory' || server.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
-				} else {
-					date.setUTCHours(date.getUTCHours() + 1)
-				}
+				//} else {
+				//	date.setUTCHours(date.getUTCHours() + 1)
+				//}
 
 				var h = date.getUTCHours()
 				var m = ('0' + date.getUTCMinutes()).slice(-2)
@@ -239,7 +241,7 @@
 				//	w.alert.count--
 				//	w.alert.updateIcon()
 				//})
-				server.status = 'INACTIVE'
+				server.status = 'inactive'
 				//this.servers['s' + server.id].Status = 'INACTIVE'
 				//chrome.storage.local.set({servers: this.servers})
 				this.updateTable(server)
