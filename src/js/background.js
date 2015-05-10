@@ -107,10 +107,10 @@
 				}
 				this.errorCount =  0
 
-				var server, length = Object.keys(data).length - 1
-				for (var i = 0; i < length; i++) {
-					server = data[i]
-					server.id = +(server.world)
+				var server
+				Object.keys(data).map(function (key) {
+					server = data[key]
+					server.id = +key
 					server.name = serverData[server.id] || 'Unknown'
 					if (server.status === 'active') {
 						this._updateServer(server)
@@ -120,7 +120,7 @@
 						server.notified = false
 						this.sendToPopup(server)
 					}
-				}
+				}.bind(this))
 
 				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 				this.updateIcon()
@@ -141,21 +141,22 @@
 		},
 
 		_updateServer: function (server) {
-			if (server.status === 'active') {
+			if (server.status === 'active') { // used to skip notification, if servers' alert isn't 'new'
 				server.notified = false
 				if (server.id === this.main) {
 					this.alert = false
 					chrome.storage.local.set({ alert: false })
 					this.clearBadgeAlarm()
 				}
-				this.sendToPopup(server)
-				return false
+				//this.sendToPopup(server)
+				//return false
 			}
 
+			// baby faultier macht selfies
 			this.count++
 			server.status = 1
 			server.started = +(server.started + '000')
-			server.type = typeData[server.type]
+			server.type = server.type
 			server.zone = zoneData[server.zone]
 
 			if (server.id === this.main) {
@@ -213,16 +214,16 @@
 		},
 
 		updateBadge: function (server) {
-			if (server.status === 'INACTIVE')
+			if (server.status === 'inactive')
 				this.clearBadgeAlarm()
 			if (server.status === 1) {
 				var current = Date.now(),
 				date = new Date(server.started - current)
 
-				/*if (server.type === 'Territory' || server.zone === 'Global') {
+				//if (server.type === 'Territory' || server.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)
-				} else {*/
-				date.setUTCHours(date.getUTCHours() + 1)
+				//} else {
+				//date.setUTCHours(date.getUTCHours() + 1)
 				//}
 
 				var h = date.getUTCHours()
