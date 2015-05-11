@@ -59,7 +59,7 @@
 
 		addHTML: function () {
 			$.each(this.servers, function (index, server) {
-				if (this.hide2 && server.id !== this.main)
+				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19))
 					return
 				var add = ''
 				if (server.id === this.main)
