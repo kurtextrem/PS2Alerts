@@ -1,10 +1,10 @@
 +function (window) {
 	'use strict';
 
-	var VERSION = 0.4
+	var VERSION = 0.9
 
 	var App = function () {
-		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, serverTimestamp: 0, sortOrder: null }, function (data) {
+		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null }, function (data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
@@ -81,7 +81,7 @@
 				if (video.find('video').length === 0)
 					video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev()[0].play()
 
-				$server.find('.type').html(server.type).attr({
+				$server.find('.type').html('Territory').attr({ // server.type
 					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
 					'data-tooltip': true
 				}).tooltip({ container: 'body' })
@@ -218,7 +218,7 @@
 			var current = Date.now()
 
 			if (server.status === 1) {
-				var date = new Date(+server.start - current)
+				var date = new Date(server.started - current)
 
 				//if (server.type === 'Territory' || server.zone === 'Global') {
 					date.setUTCHours(date.getUTCHours() + 2)

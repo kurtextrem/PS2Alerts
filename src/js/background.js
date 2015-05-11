@@ -152,7 +152,6 @@
 				//return false
 			}
 
-			// baby faultier macht selfies
 			this.count++
 			server.status = 1
 			server.started = +(server.started + '000')
