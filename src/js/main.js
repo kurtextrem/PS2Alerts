@@ -1,14 +1,13 @@
 +function (window) {
 	'use strict';
 
-	var VERSION = 0.9
-
 	var App = function () {
-		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null }, function (data) {
+		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0 }, function (data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
 			this.hide2 = data.hide2
+			this.version = data.version
 			this.addHTML()
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
@@ -45,7 +44,7 @@
 		}.bind(this))
 		$('#options').click(function () {
 			chrome.tabs.create({ url: 'settings.html' })
-		}).attr('title', 'v' + VERSION).parent().find('[data-tooltip]').tooltip()
+		}).attr('title', 'v' + this.version).parent().find('[data-tooltip]').tooltip()
 		window.setTimeout(function () {
 			$.each($('video'), function (i, vid) {
 				vid.play()

@@ -1,6 +1,8 @@
 +function (window) {
 	'use strict';
 
+	var VERSION = 0.91
+
 	var flares = {
 		0: [128, 0, 255, 255], // Vanu
 		1: [0, 200, 255, 255], // NC
@@ -199,6 +201,11 @@
 
 		addListener: function () {
 			chrome.runtime.onInstalled.addListener(function () {
+				chrome.storage.local.get({ version: -1 }, function (data) {
+					if (VERSION > data.version) {
+						chrome.storage.local.set({ servers: {}, version: VERSION })
+					}
+				})
 				this.init()
 				this.registerUpdateAlarms()
 			}.bind(this))
