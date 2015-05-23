@@ -2,7 +2,7 @@
 	'use strict';
 
 	var App = function () {
-		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0 }, function (data) {
+		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0 }, function (data) {
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
@@ -27,7 +27,7 @@
 				for (var i = 0; i < children.length; i++) {
 					order.push(children[i].id)
 				}
-				chrome.storage.local.set({ sortOrder: order })
+				chrome.storage.sync.set({ sortOrder: order })
 				$.each($('video'), function (i, vid) {
 					vid.play()
 				})
@@ -43,6 +43,8 @@
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 		}.bind(this))
 		$('#options').click(function () {
+			if (chrome.runtime.openOptionsPage)
+				return chrome.runtime.openOptionsPage() // Chrome 42+
 			chrome.tabs.create({ url: 'settings.html' })
 		}).attr('title', 'v' + this.version).parent().find('[data-tooltip]').tooltip()
 		window.setTimeout(function () {
@@ -256,7 +258,7 @@
 			$e.attr('disabled', true)
 			chrome.runtime.getBackgroundPage(function (w) {
 				w.alert.init(true, function () {
-					chrome.storage.local.get({ lastUpdate: 0, serverTimestamp: 0 }, function (data) {
+					chrome.storage.sync.get({ lastUpdate: 0, serverTimestamp: 0 }, function (data) {
 						$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
 					})
 					window.setTimeout(function () {

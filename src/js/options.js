@@ -39,7 +39,7 @@
 			})
 		},
 		load: function () {
-			chrome.storage.local.get({ main: 13, flare: 0, notification: 13, hide: 0, hide2: 0, jaeger: 0, alwaysRemind: 0, timeRemind: 30 }, function (data) {
+			chrome.storage.sync.get({ main: 13, flare: 0, notification: 13, hide: 0, hide2: 0, jaeger: 0, alwaysRemind: 0, timeRemind: 30 }, function (data) {
 				$('#notification > option[value='+data.notification+']').attr('selected', 'selected')
 				$('#flare > option[value='+data.flare+']').attr('selected', 'selected')
 				$('#main > option[value='+data.main+']').attr('selected', 'selected')
@@ -64,7 +64,7 @@
 				if (e.target.id === 'hide' && !val)
 						chrome.browserAction.enable() // make sure it gets enabled
 				obj[e.target.id] = val
-				chrome.storage.local.set(obj, function () {
+				chrome.storage.sync.set(obj, function () {
 					chrome.runtime.getBackgroundPage(function (w) {
 						w.alert.init()
 					})

@@ -60,7 +60,7 @@
 		errorCount: 0,
 
 		init: function (force, callback) {
-			chrome.storage.local.get({
+			chrome.storage.sync.get({
 				main: 13,
 				flare: 0,
 				lastUpdate: 0,
@@ -83,7 +83,7 @@
 				this.alwaysRemind = data.alwaysRemind
 				this.count = 0
 
-				if (data.servers === '') {
+				if (!data.servers.s1) {
 					force = true
 				} else {
 					this.servers = data.servers
@@ -97,14 +97,11 @@
 		},
 
 		update: function () {
-			chrome.storage.local.set({ lastUpdate: Date.now() })
+			chrome.storage.sync.set({ lastUpdate: Date.now() })
 
-			qwest.get(this.url, {}, { dataType: 'json', headers: { Connection: 'close' }}).success(function (data) {
+			qwest.get(this.url, {}, { dataType: 'json', headers: { Connection: 'close' }}).success(function (data) { // @todo: replace with fetch chrome 42+
 				if (!data) {
-					if (!this.errorCount) {
-						this.errorCount++
-						return window.setTimeout(this.update.bind(this), 30000)
-					}
+					throw 'No data returned'
 					return
 				}
 				this.errorCount =  0
@@ -118,19 +115,23 @@
 						this._updateServer(server)
 					} else {
 						this.alert = false
-						chrome.storage.local.set({ alert: false })
+						chrome.storage.sync.set({ alert: false })
 						server.notified = false
 						this.sendToPopup(server)
 					}
 				}.bind(this))
 
-				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
+				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
 				this.updateIcon()
 			}.bind(this)).error(function () {
 				if (!this.errorCount) {
 					this.errorCount++
 					window.setTimeout(this.update.bind(this), 30000)
+					chrome.browserAction.setBadgeText({
+						text: 'ERROR'
+					})
 				}
+				// @todo: notify popup
 			}.bind(this))
 		},
 
@@ -147,7 +148,7 @@
 				server.notified = false
 				if (server.id === this.main) {
 					this.alert = false
-					chrome.storage.local.set({ alert: false })
+					chrome.storage.sync.set({ alert: false })
 					this.clearBadgeAlarm()
 				}
 				//this.sendToPopup(server)
@@ -162,7 +163,7 @@
 
 			if (server.id === this.main) {
 				this.alert = true
-				chrome.storage.local.set({ alert: true })
+				chrome.storage.sync.set({ alert: true })
 				this.setBadgeAlarm(server)
 			}
 
@@ -189,7 +190,7 @@
 
 		setBadgeAlarm: function (server) {
 			this.updateBadge(server)
-			chrome.storage.local.set({ server: server })
+			chrome.storage.sync.set({ server: server })
 			chrome.alarms.get('update-badge', function (alarm) {
 				if (alarm === undefined)
 					chrome.alarms.create('update-badge', {
@@ -201,9 +202,14 @@
 
 		addListener: function () {
 			chrome.runtime.onInstalled.addListener(function () {
-				chrome.storage.local.get({ version: -1 }, function (data) {
+				chrome.storage.sync.get({ version: -1 }, function (data) {
+					if (VERSION < 0.91) {
+						chrome.storage.local.get(null, function (data) {
+							chrome.storage.sync.set(data)
+						})
+					} // migrate to sync
 					if (VERSION > data.version) {
-						chrome.storage.local.set({ servers: {}, version: VERSION })
+						chrome.storage.sync.set({ servers: {}, version: VERSION })
 					}
 				})
 				this.init()
@@ -237,13 +243,13 @@
 
 				if (h > 2 || (h + +m) < 0) {
 					this.alert = false
-					chrome.storage.local.set({ alert: false })
+					chrome.storage.sync.set({ alert: false })
 					this.clearBadgeAlarm()
 				} else {
 					chrome.browserAction.enable()
 					if (this.remember && h < 1 && m <= this.timeRemind) {
 						this.remember = false
-						chrome.storage.local.set({ remember: false })
+						chrome.storage.sync.set({ remember: false })
 						this.createNotification(server, true)
 					}
 					if (m === '00')
@@ -280,11 +286,11 @@
 			chrome.notifications.create(server.id + '-alert-' + !!reminder, opt, function (id) {
 				if (!reminder && this.alwaysRemind) {
 					this.remember = true
-					chrome.storage.local.set({ remember: true })
+					chrome.storage.sync.set({ remember: true })
 				}
 				chrome.notifications.onButtonClicked.addListener(function (id, index) {
 					this.remember = true
-					chrome.storage.local.set({ remember: true })
+					chrome.storage.sync.set({ remember: true })
 				}.bind(this))
 			}.bind(this))
 		},
