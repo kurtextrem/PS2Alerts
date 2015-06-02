@@ -95,21 +95,18 @@ gulp.task('js', function (cb) {
 gulp.task('main-js', function () {
 	return gulp.src(['main.js'], { cwd: 'src/js' })
 	.pipe(uglify('main.js', uglifyoption))
-	.pipe($.replace('"use strict"', ''))
 	.pipe(gulp.dest('dist/js')).pipe($.size({ title: 'main js' }))
 })
 
 gulp.task('background-js', function () {
 	return gulp.src(['bglib.min.js', 'background.js'], { cwd: 'src/js' })
 	.pipe(uglify('background.js', uglifyoption))
-	.pipe($.replace('"use strict"', ''))
 	.pipe(gulp.dest('dist/js')).pipe($.size({ title: 'bg js' }))
 })
 
 gulp.task('options-js', function () {
 	return gulp.src(['options.js'], { cwd: 'src/js' })
 	.pipe(uglify('options.js', uglifyoption))
-	.pipe($.replace('"use strict"', ''))
 	.pipe(gulp.dest('dist/js')).pipe($.size({ title: 'options js' }))
 })
 
