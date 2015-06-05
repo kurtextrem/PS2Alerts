@@ -13,7 +13,7 @@ class App {
 	 * @date   	2015-06-05
 	 */
 	public function __construct() {
-		if (!isset($_GET['data']) && !isset($_GET['updateKey'])) {
+		if (!isset($_GET['updateKey'])) { // !isset($_GET['data']) &&
 			exit($this->setHeader('404'));
 		}
 
@@ -31,13 +31,13 @@ class App {
 	}
 
 	/**
-	 * Updates the cache file.
+	 * Updates the cache file and adds a javascript timestamp.
 	 *
 	 * @author 	Jacob Groß
 	 * @date   	2015-06-05
 	 */
 	private function update() {
-		return @file_put_contents(self::FILE_NAME, preg_replace('{',  '{"timestamp":' . time() . '000,', @file_get_contents(URL), 1));
+		return @file_put_contents(self::FILE_NAME, preg_replace('/{/',  '{"timestamp":' . time() . '000,', @file_get_contents(URL), 1));
 	}
 
 	/**
