@@ -19,7 +19,8 @@ class App {
 	}
 
 	function update() {
-		$data = str_replace('{', '{"timestamp":' . time() . '000,', @file_get_contents(URL), 1);
+		$count = 1;
+		$data = str_replace('{',  '{"timestamp":' . time() . '000,', @file_get_contents(URL), $count);
 		@file_put_contents(self::FILE_NAME, $data);
 	}
 }
