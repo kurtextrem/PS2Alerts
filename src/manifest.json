@@ -30,7 +30,7 @@
 	"options_page": "settings.html",
 	"options_ui": {
    		"page": "settings.html",
-    		"chrome_style": true,
+    		"chrome_style": true
 	},
 
 	"permissions": ["http://kurtextrem.de/PS2/*", "*://ps2alerts.com/*", "storage", "alarms", "notifications"]
