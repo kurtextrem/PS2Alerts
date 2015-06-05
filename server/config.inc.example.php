@@ -1,6 +1,12 @@
 <?php
-// Remove .example to make that work
+// Remove .example
 
-//define('ID', 'Census API Key');
+/**
+ * Key for manual / cronjob updating.
+ */
 define('UPDATE_KEY', 'Update Key');
-define('API_KEY', 'ps2alertschromemonitorkurtextrem');
+
+/**
+ * Key for the PS2Alerts website.
+ */
+define('API_KEY', 'PS2Alerts Key');
