@@ -7,7 +7,6 @@
 			this.main = data.main
 			this.flare = data.flare
 			this.hide2 = data.hide2
-			this.version = data.version
 			this.addHTML()
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
@@ -41,17 +40,17 @@
 				'data-tooltip': true
 			}).tooltip()
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
-		}.bind(this))
-		$('#options').click(function () {
-			if (chrome.runtime.openOptionsPage)
-				return chrome.runtime.openOptionsPage() // Chrome 42+
-			chrome.tabs.create({ url: 'settings.html' })
-		}).attr('title', 'v' + this.version).parent().find('[data-tooltip]').tooltip()
-		window.setTimeout(function () {
+
+			$('#options').click(function () {
+				if (chrome.runtime.openOptionsPage)
+					return chrome.runtime.openOptionsPage() // Chrome 42+
+				chrome.tabs.create({ url: 'settings.html' })
+			}).attr('title', 'v' + data.version).parent().find('[data-tooltip]').tooltip()
+
 			$.each($('video'), function (i, vid) {
 				vid.play()
 			})
-		}, 550)
+		}.bind(this))
 	}
 	App.prototype = {
 		servers: {},

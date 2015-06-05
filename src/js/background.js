@@ -1,7 +1,7 @@
 +function (window) {
 	'use strict';
 
-	var VERSION = 0.91
+	var VERSION = 0.92
 
 	var flares = {
 		0: [128, 0, 255, 255], // Vanu
