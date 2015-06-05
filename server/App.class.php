@@ -23,7 +23,7 @@ class App {
 		define('URL', 'http://api.ps2alerts.com/v1/servers/active/all?apikey=' . API_KEY);
 
 		if (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY) {
-			exit($this->update());
+			exit($this->update() ? 'Done' : 'Error');
 		}
 
 		// wrong key
@@ -54,7 +54,7 @@ class App {
 				exit();
 
 			default:
-				return false;
+				return;
 		}
 	}
 }
