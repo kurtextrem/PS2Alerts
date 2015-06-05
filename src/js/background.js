@@ -121,7 +121,7 @@
 					}
 				}.bind(this))
 
-				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: Date.now() })
+				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: data.timestamp })
 				this.updateIcon()
 			}.bind(this)).error(function () {
 				if (!this.errorCount) {

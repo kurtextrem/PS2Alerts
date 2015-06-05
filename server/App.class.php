@@ -19,6 +19,7 @@ class App {
 	}
 
 	function update() {
-		@file_put_contents(self::FILE_NAME, @file_get_contents(URL));
+		$data = str_replace('{', '{"timestamp":' . time() . '000,', @file_get_contents(URL), 1);
+		@file_put_contents(self::FILE_NAME, $data);
 	}
 }
