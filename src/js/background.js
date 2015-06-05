@@ -108,6 +108,8 @@
 
 				var server
 				Object.keys(data).map(function (key) {
+					if (key === 'timestamp') return
+
 					server = data[key]
 					server.id = +key
 					server.name = serverData[server.id] || 'Unknown'
