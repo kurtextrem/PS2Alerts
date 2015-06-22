@@ -1,7 +1,10 @@
 +function (window) {
 	'use strict';
 
-	var VERSION = 0.92
+	var chrome = window.chrome,
+		document = window.document
+
+	var VERSION = 0.99
 
 	var flares = {
 		0: [128, 0, 255, 255], // Vanu
@@ -99,11 +102,12 @@
 		update: function () {
 			chrome.storage.sync.set({ lastUpdate: Date.now() })
 
-			qwest.get(this.url, {}, { dataType: 'json', headers: { Connection: 'close' }}).success(function (data) { // @todo: replace with fetch chrome 42+
-				if (!data) {
-					throw 'No data returned'
-					return
-				}
+			window.fetch(this.url, { headers: { Connection: 'close' }})
+			.then(function (response) {
+				if (!response) throw 'No data returned'
+				return response.json()
+			})
+			.then(function (data) {
 				this.errorCount =  0
 
 				var server
@@ -125,7 +129,8 @@
 
 				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: data.timestamp })
 				this.updateIcon()
-			}.bind(this)).error(function () {
+			}.bind(this))
+			.catch(function (err) {
 				if (!this.errorCount) {
 					this.errorCount++
 					window.setTimeout(this.update.bind(this), 30000)

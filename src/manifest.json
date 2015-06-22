@@ -1,7 +1,7 @@
 {
 	"name": "PlanetSide 2 Alerts",
 	"short_name": "PS2 Alerts",
-	"version": "0.9.2",
+	"version": "0.9.9",
 	"manifest_version": 2,
 
 	"description": "Easy overview over PlanetSide2 Alerts in Chrome.",
@@ -14,7 +14,7 @@
 	"author": "Jacob Groß (kurtextrem)",
 
 	"background": {
-	    	"scripts": ["js/bglib.min.js", "js/background.js"],
+	    	"scripts": ["js/background.js"],
 	    	"persistent": false
 	},
 
@@ -32,6 +32,8 @@
    		"page": "settings.html",
     		"chrome_style": true
 	},
+
+	"minimum_chrome_version": "42",
 
 	"permissions": ["http://kurtextrem.de/PS2/*", "*://ps2alerts.com/*", "storage", "alarms", "notifications"]
 
