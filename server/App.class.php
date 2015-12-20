@@ -13,16 +13,16 @@ class App {
 	 * @date   	2015-06-05
 	 */
 	public function __construct() {
-		if (!isset($_GET['updateKey'])) { // !isset($_GET['data']) &&
+		if (!isset($_GET['updateKey']) && php_sapi_name() != 'cli') { // !isset($_GET['data']) &&
 			exit($this->setHeader('404'));
 		}
 
 		// get config
 		require_once 'config.inc.php';
 		// set url according to conf
-		define('URL', 'http://api.ps2alerts.com/v1/servers/active/all?apikey=' . API_KEY);
+		define('URL', 'http://api.ps2alerts.com/v2/alert/active?apikey=' . API_KEY);
 
-		if (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY) {
+		if (php_sapi_name() == 'cli' || (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY)) {
 			exit($this->update() ? 'Done' : 'Error');
 		}
 
@@ -34,10 +34,17 @@ class App {
 	 * Updates the cache file and adds a javascript timestamp.
 	 *
 	 * @author 	Jacob Groß
-	 * @date   	2015-06-05
+	 * @date   	2015-12-20
 	 */
 	private function update() {
-		return @file_put_contents(self::FILE_NAME, preg_replace('/{/',  '{"timestamp":' . time() . '000,', @file_get_contents(URL), 1));
+		$data = @file_get_contents(URL);
+		$data = @utf8_encode($data);
+		$data = @json_decode($data);
+		$data = array(
+			'timestamp' => time() . '000',
+			'data' => $data
+		);
+		return @file_put_contents(self::FILE_NAME, @json_encode($data));
 	}
 
 	/**

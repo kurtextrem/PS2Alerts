@@ -11,7 +11,7 @@
 		"16": "img/alert.png",
 		"48": "img/alert.png"
 	},
-	"author": "Jacob Groß (kurtextrem)",
+	"author": "Jacob „kurtextrem\" Groß",
 
 	"background": {
 	    	"scripts": ["js/background.js"],
