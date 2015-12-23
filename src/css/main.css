@@ -16,7 +16,6 @@ body {
 
 .sortable-placeholder {
 	margin-bottom: 15px;
-	height: 70px;
 
 	border: 1px dashed #CCC;
 	background: none;
@@ -92,6 +91,6 @@ video {
 	border-radius: 25px;
 }
 
-.error--message + .alert-container:not(:empty) {
+.alert-container:not(:empty) + .error--message {
 	display: none;
 }

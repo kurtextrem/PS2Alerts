@@ -24,7 +24,8 @@
 
 			$('.alert-container').sortable({
 				handle: '.handle',
-				items: '.row'
+				items: '.row',
+				forcePlaceholderSize: true
 			}).on('sortupdate', function () {
 				var order = [], children = document.getElementsByClassName('alert-container')[0].children
 				for (var i = 0; i < children.length; i++) {

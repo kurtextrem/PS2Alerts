@@ -119,9 +119,8 @@
 				return data
 			}.bind(this))
 			.then(function (data) {
-				var server
-				Object.keys(data.data).map(function (key) {
-					server = data.data[key]
+				for (var i = data.data.length - 1; i != -1; i--) {
+					var server = data.data[i]
 					server.id = server.ResultServer
 					server.name = serverData[server.id] || 'Unknown'
 					server.status = server.InProgress ? 'active' : 'inactive'
@@ -134,12 +133,14 @@
 						server.notified = false
 						this.sendToPopup(server)
 					}
-				}.bind(this))
+				}
 
 				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: data.timestamp })
 				this.updateIcon()
-			})
+			}.bind(this))
 			.catch(function (err) {
+				console.error(err)
+
 				window.setTimeout(this.update.bind(this), 30000)
 				chrome.browserAction.setBadgeText({
 					text: 'ERROR'

@@ -1,4 +1,6 @@
 <?php
+require_once 'config.inc.php';
+
 error_reporting(ERROR);
 set_error_handler('App::error');
 set_exception_handler('App::error');
@@ -22,8 +24,6 @@ class App {
 			exit($this->setHeader('404'));
 		}
 
-		// get config
-		require_once 'config.inc.php';
 		// set url according to conf
 		define('URL', self::DOMAIN . 'alert/active?apikey=' . API_KEY);
 
@@ -60,8 +60,7 @@ class App {
 		if (!$data)
 			throw new Exception('No PS2Alerts API Result found.');
 
-		$data = json_encode($data);
-
+		$data = $this->parseData($data, true);
 		foreach($data as &$server) {
 			$map = file_get_contents(self::DOMAIN . 'metrics/map/' . $server['ResultID'] . '/latest');
 			$server['data'] = $this->parseData($map, true)[0];
