@@ -46,9 +46,7 @@
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 
 			$('#options').click(function () {
-				if (chrome.runtime.openOptionsPage)
-					return chrome.runtime.openOptionsPage() // Chrome 42+
-				chrome.tabs.create({ url: 'settings.html' })
+				return chrome.runtime.openOptionsPage()
 			}).attr('title', 'v' + data.version).parent().find('[data-tooltip]').tooltip()
 
 			$.each($('video'), function (i, vid) {
