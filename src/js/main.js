@@ -12,6 +12,7 @@
 			this.flare = data.flare
 			this.hide2 = data.hide2
 			this.addHTML()
+
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
 			if (data.sortOrder !== null && !this.hide2) {
@@ -61,9 +62,12 @@
 		constructor: App,
 
 		addHTML: function () {
-			$.each(this.servers, function (index, server) {
+			Object.keys(this.servers).map(function (key) {
+				var server = this.servers[key]
+
 				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19))
 					return
+
 				var add = ''
 				if (server.id === this.main)
 					add = ' in'
@@ -271,9 +275,7 @@
 		}
 	}
 
-	window.App = App
+	$.fn.ready(function () {
+		window.App = new App()
+	})
 }(window)
-
-$.fn.ready(function () {
-	App = new App()
-})
