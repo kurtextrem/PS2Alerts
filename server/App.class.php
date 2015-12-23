@@ -1,5 +1,7 @@
 <?php
 error_reporting(ERROR);
+set_error_handler('App::error');
+set_exception_handler('App::error');
 
 class App {
 	/**
@@ -55,6 +57,11 @@ class App {
 	 * @return 	array
 	 */
 	private function completeData($data) {
+		if (!$data)
+			throw new Exception('No PS2Alerts API Result found.');
+
+		$data = json_encode($data);
+
 		foreach($data as &$server) {
 			$map = file_get_contents(self::DOMAIN . 'metrics/map/' . $server['ResultID'] . '/latest');
 			$server['data'] = $this->parseData($map, true)[0];
@@ -97,5 +104,37 @@ class App {
 			default:
 				return;
 		}
+	}
+
+	public static function error($errno, $errstr) {
+		switch ($errno) {
+			case E_USER_ERROR:
+				$errstr = 'Error while receiving API.';
+				break;
+
+			case E_USER_WARNING:
+				$errstr = 'Error while parsing API.';
+				break;
+
+			case E_USER_NOTICE:
+				$errstr = 'Error while parsing API.';
+				break;
+
+			default:
+				break;
+		}
+
+		if (is_callable($errno)) {
+			$errstr = $errno->getMessage();
+		}
+
+		@file_put_contents(self::FILE_NAME, json_encode(array(
+			'timestamp' => time() . '000',
+			'data' => array(),
+			'error' => $errstr
+		)));
+
+		// prevent PHP from throwing it
+		return true;
 	}
 }
