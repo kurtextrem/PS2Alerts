@@ -111,12 +111,12 @@
 				this.errorCount =  0
 
 				var server
-				Object.keys(data).map(function (key) {
-					if (key === 'timestamp') return
-
-					server = data[key]
-					server.id = +key
+				Object.keys(data.data).map(function (key) {
+					server = data.data[key]
+					server.id = server.ResultServer
 					server.name = serverData[server.id] || 'Unknown'
+					server.status = server.InProgress ? 'active' : 'inactive'
+
 					if (server.status === 'active') {
 						this._updateServer(server)
 					} else {
@@ -165,8 +165,8 @@
 			this.count++
 			server.status = 1
 			server.started = +(server.started + '000')
-			server.type = server.type
-			server.zone = zoneData[server.zone]
+			server.type = server.ResultAlertType
+			server.zone = zoneData[server.ResultAlertCont]
 
 			if (server.id === this.main) {
 				this.alert = true
