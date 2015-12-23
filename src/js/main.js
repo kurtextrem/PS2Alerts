@@ -2,7 +2,11 @@
 	'use strict';
 
 	var App = function () {
-		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0 }, function (data) {
+		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '' }, function (data) {
+			if (data.error) {
+				return $('.error--message').find('small').text(data.error)
+			}
+
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare

@@ -104,12 +104,21 @@
 
 			window.fetch(this.url, { headers: { Connection: 'close' }})
 			.then(function (response) {
-				if (!response) throw 'No data returned'
-				return response.json()
+				if (response.status >= 200 && response.status < 300) {
+					return response.json()
+				}
+				var error = new Error(response.statusText)
+				error.response = response
+				throw error
 			})
 			.then(function (data) {
-				this.errorCount =  0
-
+				if (data.error) {
+					chrome.storage.sync.set({ error: data.error, serverTimestamp: data.timestamp })
+					throw 'PS2Alerts API error'
+				}
+				return data
+			}.bind(this))
+			.then(function (data) {
 				var server
 				Object.keys(data.data).map(function (key) {
 					server = data.data[key]
@@ -129,16 +138,13 @@
 
 				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: data.timestamp })
 				this.updateIcon()
-			}.bind(this))
+			})
 			.catch(function (err) {
-				if (!this.errorCount) {
-					this.errorCount++
-					window.setTimeout(this.update.bind(this), 30000)
-					chrome.browserAction.setBadgeText({
-						text: 'ERROR'
-					})
-				}
-				// @todo: notify popup
+				window.setTimeout(this.update.bind(this), 30000)
+				chrome.browserAction.setBadgeText({
+					text: 'ERROR'
+				})
+				// @todo: Notify popup, differentiate between error messages
 			}.bind(this))
 		},
 

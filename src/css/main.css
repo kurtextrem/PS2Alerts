@@ -91,3 +91,7 @@ video {
 	height: 17px;
 	border-radius: 25px;
 }
+
+.error--message + .alert-container:not(:empty) {
+	display: none;
+}
