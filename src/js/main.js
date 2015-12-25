@@ -62,7 +62,7 @@
 		constructor: App,
 
 		addHTML: function () {
-			Object.keys(this.servers).map(function (key) {
+			Object.keys(this.servers).forEach(function (key) {
 				var server = this.servers[key]
 
 				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19))
@@ -86,7 +86,7 @@
 
 				var video = $server.find('.server-name')
 				if (video.find('video').length === 0)
-					video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev()[0].play()
+					video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev().get(0).play()
 
 				$server.find('.type').html('Territory').attr({ // server.type
 					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
