@@ -7,6 +7,7 @@
 				return $('.error--message').find('small').text(data.error)
 			}
 
+			this.$container = $('.alert-container').detach()
 			this.servers = data.servers
 			this.main = data.main
 			this.flare = data.flare
@@ -16,19 +17,20 @@
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
 
 			if (data.sortOrder !== null && !this.hide2) {
-				var $detach = $('.alert-container').detach()
 				for (var i = 0; i < data.sortOrder.length; i++) {
-					data.sortOrder[i] = $detach.find('#' + data.sortOrder[i])
+					data.sortOrder[i] = this.$container.find('#' + data.sortOrder[i]).detach()
 				}
-				$('body').prepend('<div class="alert-container container-fluid"></div>').find('.alert-container').prepend(data.sortOrder)
+				this.$container.prepend(data.sortOrder)
 			}
 
-			$('.alert-container').sortable({
+			this.$container.insertBefore('.error--message')
+
+			this.$container.sortable({
 				handle: '.handle',
 				items: '.row',
 				forcePlaceholderSize: true
-			}).on('sortupdate', function () {
-				var order = [], children = document.getElementsByClassName('alert-container')[0].children
+			}).on('sortupdate', function (e, ui) {
+				var order = [], children = ui.startparent.children
 				for (var i = 0; i < children.length; i++) {
 					order.push(children[i].id)
 				}
@@ -39,8 +41,7 @@
 			})
 
 			$('#refresh').click(function (e) {
-				this.refresh()
-				e.stopImmediatePropagation()
+				this.refresh(e.currentTarget)
 			}.bind(this)).attr({
 				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
 				'data-tooltip': true
@@ -62,6 +63,8 @@
 		constructor: App,
 
 		addHTML: function () {
+
+
 			Object.keys(this.servers).forEach(function (key) {
 				var server = this.servers[key]
 
@@ -71,13 +74,13 @@
 				var add = ''
 				if (server.id === this.main)
 					add = ' in'
-				$('.alert-container').append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
+				this.$container.append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
 			}.bind(this))
 		},
 
 		updateTable: function (server) {
-			var $server = $('.server-' + server.id)
+			var $server = this.$container.find('.server-' + server.id)
 
 			if (server.status === 1) {
 				$server.addClass('success')
@@ -116,7 +119,7 @@
 
 				this.updateTime(server)
 			} else {
-				//$server.removeClass()
+				// $server.removeClass()
 				$server.find('video').remove()
 				$server.find('.type').empty()
 				$server.find('.continent').empty()
@@ -138,14 +141,15 @@
 			tr = +server.controlTR,
 			nc = +server.controlNC,
 			count = 100 - nc - tr,
-			row = $('#collapse' + server.id + ' > .panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
+			row = this.$container.find('#collapse' + server.id).find('.panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
 			return [row, vanu, tr, nc]
 		},
 
 		addType: function (which, server) {
 			var data
-			$('#collapse' + server.id + ' > .panel-body').html('')
+			this.$container.find('#collapse' + server.id).find('.panel-body').html('')
+
 			switch (which) {
 				case 'territory':
 					data = this._addTerritory(server)
@@ -181,9 +185,8 @@
 
 		// obsolete atm
 		_addFacility: function (server) {
-			var row = $('#collapse' + server.id + ' > .panel-body').append('<div class="facilities"></div>'),
-			$container = $('#collapse' + server.id + ' > .panel-body'),
-			$facilities = $container.find('.facilities'),
+			var row = this.$container.find('#collapse' + server.id).find('.panel-body').append('<div class="facilities"></div>'),
+			$facilities = row.find('.facilities'),
 			vanu = 0,
 			tr = 0,
 			nc = 0
@@ -242,7 +245,7 @@
 						chrome.runtime.getBackgroundPage(function (w) {
 							w.alert.init(false, w.alert.updateBadge(server))
 						})
-					return $('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
+					return this.$container.find('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
 				//chrome.runtime.getBackgroundPage(function(w) {
 				//	w.alert.count--
@@ -259,16 +262,15 @@
 			this.updateTable(server)
 		},
 
-		refresh: function () {
-			var $e = $('#refresh')
-			$e.attr('disabled', true)
+		refresh: function (e) {
+			e.disabled = true
 			chrome.runtime.getBackgroundPage(function (w) {
 				w.alert.init(true, function () {
 					chrome.storage.sync.get({ lastUpdate: 0, serverTimestamp: 0 }, function (data) {
-						$e.attr('title', new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')')
+						e.title = new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')'
 					})
 					window.setTimeout(function () {
-						$e.removeAttr('disabled')
+						e.disabled = false
 					}, 120000)
 				})
 			})

@@ -119,6 +119,8 @@
 				return data
 			}.bind(this))
 			.then(function (data) {
+				this.clearBadgeAlarm()
+
 				for (var i = data.data.length - 1; i != -1; i--) {
 					var server = data.data[i]
 					server.id = server.ResultServer
@@ -229,14 +231,16 @@
 				this.init()
 				this.registerUpdateAlarms()
 			}.bind(this))
-			chrome.alarms.onAlarm.addListener(function (alarm) {
-				this.init(false, function () {
-					if (alarm.name === 'update-badge')
-						return this.updateBadge(this.servers['s' + this.main])
+			chrome.alarms.onAlarm.addListener(this.alarmListener.bind(this))
+		},
+
+		alarmListener: function (alarm) {
+			this.init(false, function () {
+				if (alarm.name === 'update-badge')
+					return this.updateBadge(this.servers['s' + this.main])
 					//if (alarm.name === 'update') // Updates anyway, if required
 					//	return this.update()
-				}.bind(this))
-			}.bind(this))
+			})
 		},
 
 		updateBadge: function (server) {
@@ -341,8 +345,8 @@
 		}
 	}
 
-	// speedier .bind
-	+function(n,t){"use strict";var e=n.bind;t.defineProperty(n,"bind",{value:function(n){var t=this;return 1===arguments.length?function(){return t.apply(n,arguments)}:e.apply(t,arguments)}})}(Function.prototype,Object);
-
 	window.alert = new Alert()
-}(window)
+}(window);
+
+// speedier .bind
++function(n,t){"use strict";var e=n.bind;t.defineProperty(n,"bind",{value:function(n){var t=this;return 1===arguments.length?function(){return t.apply(n,arguments)}:e.apply(t,arguments)}})}(Function.prototype,Object);
