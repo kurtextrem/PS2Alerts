@@ -23,6 +23,7 @@ var shell = require('shelljs'),
 		this.copyFonts()
 		this.copyCSS()
 		this.copyJS()
+		this.copyHTML()
 	}
 
 	Build.prototype.copyLocales = function () {
@@ -76,6 +77,10 @@ var shell = require('shelljs'),
 
 	Build.prototype.copyFonts = function () {
 		shell.cp('-r', 'src/fonts', 'dist')
+	}
+
+	Build.prototype.copyHTML = function () {
+		shell.cp('-r', 'src/*.html', 'dist')
 	}
 
 	Build.prototype.buildZip = function () {

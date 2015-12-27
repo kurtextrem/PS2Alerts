@@ -5,7 +5,7 @@
 		"json-minify": "latest",
 		"shelljs": "latest",
 		"zip-dir": "latest",
-		"cssnano": "latest"
+		"cssnano-cli": "latest"
 	},
 	"scripts": {
 		"clean": "rimraf dist && mkdir dist",
