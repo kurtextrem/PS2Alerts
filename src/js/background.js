@@ -121,7 +121,7 @@
 			.then(function (data) {
 				this.clearBadgeAlarm()
 
-				for (var i = data.data.length - 1; i != -1; i--) {
+				for (var i = data.data.length; i != -1; i--) {
 					var server = data.data[i]
 					server.id = server.ResultServer
 					server.name = serverData[server.id] || 'Unknown'
