@@ -129,19 +129,19 @@
 			.then(function (data) {
 				this.clearBadgeAlarm()
 
-				for (var i = data.data.length; i != -1; i--) {
-					var server = data.data[i]
-					server.id = server.ResultServer
-					server.name = serverData[server.id] || 'Unknown'
-					server.status = server.InProgress ? 'active' : 'inactive'
+				for (var server in serverData) {
+					var obj = data.data[server] || {}
+					obj.id = server
+					obj.name = serverData[server.id] || 'Unknown'
+					obj.status = obj.InProgress ? 'active' : 'inactive'
 
-					if (server.status === 'active') {
-						this._updateServer(server)
+					if (obj.status === 'active') {
+						this._updateServer(obj)
 					} else {
 						this.alert = false
 						chrome.storage.sync.set({ alert: false })
-						server.notified = false
-						this.sendToPopup(server)
+						obj.notified = false
+						this.sendToPopup(obj)
 					}
 				}
 

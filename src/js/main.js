@@ -63,12 +63,9 @@
 		constructor: App,
 
 		addHTML: function () {
+			for (var server in this.servers) {
+				server = this.servers[server]
 
-
-			Object.keys(this.servers).forEach(function (key) {
-				var server = this.servers[key]
-
-				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19))
 				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19) || (!this.ps4 && server.id > 999))
 					return
 
@@ -77,7 +74,7 @@
 					add = ' in'
 				this.$container.append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
-			}.bind(this))
+			}
 		},
 
 		updateTable: function (server) {

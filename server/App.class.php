@@ -61,14 +61,17 @@ class App {
 			throw new Exception('No PS2Alerts API Result found.');
 
 		$data = $this->parseData($data, true);
-		foreach($data as &$server) {
+		$new = array();
+		foreach($data as $server) {
 			$map = file_get_contents(self::DOMAIN . 'metrics/map/' . $server['ResultID'] . '/latest');
 			$server['data'] = $this->parseData($map, true)[0];
+			$new['' . $server['ResultServer']] = $server;
 		}
 
 		return array(
 			'timestamp' => time() . '000',
-			'data' => $data
+			'data' => $new,
+			'error' => false
 		);
 	}
 
