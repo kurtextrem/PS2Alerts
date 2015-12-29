@@ -1,16 +1,16 @@
 +function (window) {
-	'use strict';
+	'use strict'
 
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 0.99
+	var VERSION = 0.991
 
 	var flares = {
-		0: [128, 0, 255, 255], // Vanu
-		1: [0, 200, 255, 255], // NC
-		2: [219, 0, 0, 255], // TR
-		3: [255, 238, 0, 255] // NS
+		0: ['Vanu', [128, 0, 255, 0.6]],
+		1: ['NC', [0, 200, 255, 0.6]],
+		2: ['TR', [219, 0, 0, 0.6]],
+		3: ['NS', [255, 238, 0, 0.6]]
 	}
 
 	var serverData = {
@@ -19,7 +19,15 @@
 		13: 'Cobalt',
 		17: 'Emerald',
 		25: 'Briggs',
-		19: 'Jaeger'
+		19: 'Jaeger (Events)',
+		1000: 'Genudine (PS4US)',
+		1001: 'Palos (PS4US)',
+		1002: 'Crux (PS4US)',
+		1003: 'Searhus (PS4US)',
+		1004: 'Xelas (PS4US)',
+		2000: 'Ceres (PS4EU)',
+		2001: 'Lithcorp (PS4EU)',
+		2002: 'Rashnu (PS4EU)'
 	}
 
 	var zoneData = {
@@ -276,7 +284,7 @@
 						text: h + ':' + m
 					})
 					chrome.browserAction.setBadgeBackgroundColor({
-						color: flares[this.flare]
+						color: flares[this.flare][1]
 					})
 				}
 			}
@@ -342,6 +350,10 @@
 			}.bind(this)
 			imageObj.src = path
 			chrome.browserAction.setTitle({ title: this.count + ' Alerts running' })
+		},
+
+		returnOptions: function () {
+			return [serverData, flares]
 		}
 	}
 

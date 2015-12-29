@@ -1,8 +1,8 @@
 +function (window) {
-	'use strict';
+	'use strict'
 
 	var App = function () {
-		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '' }, function (data) {
+		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
 			if (data.error) {
 				return $('.error--message').find('small').text(data.error)
 			}
@@ -69,6 +69,7 @@
 				var server = this.servers[key]
 
 				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19))
+				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19) || (!this.ps4 && server.id > 999))
 					return
 
 				var add = ''
