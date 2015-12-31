@@ -131,8 +131,8 @@
 
 				for (var server in serverData) {
 					var obj = data.data[server] || {}
-					obj.id = server
-					obj.name = serverData[server.id] || 'Unknown'
+					obj.id = +server
+					obj.name = serverData[obj.id] || 'Unknown'
 					obj.status = obj.InProgress ? 'active' : 'inactive'
 
 					if (obj.status === 'active') {
@@ -145,7 +145,7 @@
 					}
 				}
 
-				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: data.timestamp })
+				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp })
 				this.updateIcon()
 			}.bind(this))
 			.catch(function (err) {

@@ -67,7 +67,7 @@
 				server = this.servers[server]
 
 				if ((this.hide2 && server.id !== this.main) || (!this.jaeger && server.id === 19) || (!this.ps4 && server.id > 999))
-					return
+					continue
 
 				var add = ''
 				if (server.id === this.main)
