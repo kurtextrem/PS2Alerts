@@ -27,6 +27,12 @@ class App {
 		// set url according to conf
 		define('URL', self::DOMAIN . 'alert/active?apikey=' . API_KEY);
 
+		$this->ctx = stream_context_create(array(
+			'http' => array(
+				'timeout' => 5
+			)
+		));
+
 		if (php_sapi_name() == 'cli' || (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY)) {
 			exit($this->update() ? 'Done' : 'Error');
 		}
@@ -42,7 +48,8 @@ class App {
 	 * @date   	2015-12-20
 	 */
 	private function update() {
-		$data = file_get_contents(URL);
+		$data = file_get_contents(URL, 0, $this->ctx);
+		if (!$data) throw new Exception('PS2Alerts API does not respond correctly.');
 		$data = $this->completeData($data);
 
 		return @file_put_contents(self::FILE_NAME, json_encode($data));
@@ -63,7 +70,9 @@ class App {
 		$data = $this->parseData($data, true);
 		$new = array();
 		foreach($data as $server) {
-			$map = file_get_contents(self::DOMAIN . 'metrics/map/' . $server['ResultID'] . '/latest');
+			$map = file_get_contents(self::DOMAIN . 'metrics/map/' . $server['ResultID'] . '/latest', 0, $this->ctx);
+			if (!$map) throw new Exception('PS2Alerts API does not respond correctly.');
+
 			$server['data'] = $this->parseData($map, true)[0];
 			$new['' . $server['ResultServer']] = $server;
 		}
