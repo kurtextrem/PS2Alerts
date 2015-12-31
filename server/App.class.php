@@ -2,8 +2,8 @@
 require_once 'config.inc.php';
 
 error_reporting(ERROR);
-set_error_handler('App::error');
-set_exception_handler('App::error');
+set_error_handler('App::error_handler');
+set_exception_handler('App::exception_handler');
 
 class App {
 	/**
@@ -117,7 +117,7 @@ class App {
 		}
 	}
 
-	public static function error($errno, $errstr) {
+	public static function error_hadler($errno, $errstr) {
 		switch ($errno) {
 			case E_USER_ERROR:
 				$errstr = 'Error while receiving API.';
@@ -132,17 +132,25 @@ class App {
 				break;
 
 			default:
+				$errstr = '';
 				break;
 		}
+		return $errstr;
+	}
 
-		if (is_callable($errno)) {
-			$errstr = $errno->getMessage();
+	public static function exception_handler ($e) {
+		return self::error($e->getMessage());
+	}
+
+	public static function error($str = '') {
+		if (empty($str)) {
+			$str = 'Something went wrong.';
 		}
 
 		@file_put_contents(self::FILE_NAME, json_encode(array(
 			'timestamp' => time() . '000',
 			'data' => array(),
-			'error' => $errstr
+			'error' => $str
 		)));
 
 		// prevent PHP from throwing it
