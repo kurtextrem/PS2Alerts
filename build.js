@@ -50,7 +50,7 @@ var shell = require('shelljs'),
 
 			folder.forEach(function (name) {
 				if (name !== '.' && name !== '..') {
-					if (name.indexOf('.min') !== -1)
+					if (name.indexOf('.min') === -1)
 						shell.exec('cssnano src/css/' + name + ' dist/css/' + name)
 					else
 						shell.cp('src/css/' + name, 'dist/css/' + name)
@@ -66,7 +66,7 @@ var shell = require('shelljs'),
 
 			folder.forEach(function (name) {
 				if (name !== '.' && name !== '..') {
-					if (name.indexOf('.min') !== -1)
+					if (name.indexOf('.min') === -1)
 						shell.exec('uglifyjs -c drop_console=true src/js/' + name + ' > dist/js/' + name)
 					else
 						shell.cp('src/js/' + name, 'dist/js/' + name)
