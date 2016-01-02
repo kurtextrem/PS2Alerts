@@ -55,7 +55,7 @@
 		updateTime: 2,
 		servers: {},
 		main: 13,
-		flare: 0,
+		flare: 1,
 		notification: 13,
 		hide: 0,
 		remember: false,
@@ -229,13 +229,15 @@
 		addListener: function () {
 			chrome.runtime.onInstalled.addListener(function () {
 				chrome.storage.sync.get({ version: -1 }, function (data) {
-					if (VERSION < 0.91) {
-						chrome.storage.local.get(null, function (data) {
-							chrome.storage.sync.set(data)
+					if (VERSION < 1.0) {
+						chrome.storage.sync.get({ flare: 0 }, function (data) {
+							if (data.flare === 3)
+								data.flare = -1
+							chrome.storage.sync.set({ flare: data.flare + 1 })
 						})
 					} // migrate to sync
 					if (VERSION > data.version) {
-						chrome.storage.sync.set({ servers: {}, version: VERSION })
+						chrome.storage.sync.set({ servers: {}, version: VERSION, error: false })
 					}
 				})
 				this.init()
