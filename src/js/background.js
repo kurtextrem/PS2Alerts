@@ -4,13 +4,14 @@
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 0.993
+	var VERSION = 0.994
 
 	var flares = {
-		0: ['Vanu', [128, 0, 255, 255]],
-		1: ['NC', [0, 200, 255, 255]],
-		2: ['TR', [219, 0, 0, 255]],
-		3: ['NS', [255, 238, 0, 255]]
+		0: ['NS', [255, 238, 0, 255]],
+		1: ['Vanu', [128, 0, 255, 255]],
+		2: ['NC', [0, 200, 255, 255]],
+		3: ['TR', [219, 0, 0, 255]]
+
 	}
 
 	var serverData = {
@@ -67,7 +68,7 @@
 		init: function (force, callback) {
 			chrome.storage.sync.get({
 				main: 13,
-				flare: 0,
+				flare: 1,
 				lastUpdate: 0,
 				servers: {},
 				notification: 13,
@@ -181,6 +182,10 @@
 			server.started = +(server.ResultStartTime + '000')
 			server.type = typeData[server.ResultAlertType]
 			server.zone = zoneData[server.ResultAlertCont]
+			server.data.facilityOwnerID = server.data.facilityOwner
+			server.data.facilityOldOwnerID = server.data.facilityOldOwner
+			server.data.facilityOwner = flares[server.data.facilityOwner][0]
+			server.data.facilityOldOwner = flares[server.data.facilityOldOwner][0]
 
 			if (server.id === this.main) {
 				this.alert = true

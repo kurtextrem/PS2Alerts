@@ -25,7 +25,7 @@
 			}
 		},
 		load: function () {
-			chrome.storage.sync.get({ main: 13, flare: 0, notification: 13, hide: 0, hide2: 0, jaeger: 0, alwaysRemind: 0, timeRemind: 30, ps4: 0 }, function (data) {
+			chrome.storage.sync.get({ main: 13, flare: 1, notification: 13, hide: 0, hide2: 0, jaeger: 0, alwaysRemind: 0, timeRemind: 30, ps4: 0 }, function (data) {
 				$('#notification > option[value=' + data.notification + ']').prop('selected', true)
 				$('#flare > option[value=' + data.flare + ']').prop('selected', true)
 				$('#main > option[value=' + data.main + ']').prop('selected', true)

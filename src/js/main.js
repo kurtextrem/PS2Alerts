@@ -1,8 +1,14 @@
 +function (window) {
 	'use strict'
 
+	var clsToID = {
+		1: 'progress-bar-purple',
+		2: 'progress-bar-danger',
+		3: 'progress-bar-info'
+	}
+
 	var App = function () {
-		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 0, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
+		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 1, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
 			if (data.error) {
 				return $('.error--message').find('small').text(data.error)
 			}
@@ -144,9 +150,17 @@
 			row = this.$container.find('#collapse' + server.id)
 
 			row.find('.facility--name').text(server.data.facilityID)
-			row.find('.facility--owner-curent').text(server.data.facilityOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass('progress-bar-purple')
-			row.find('.facility--owner-past').text(server.data.facilityOldOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass('progress-bar-purple')
-			row.find('.facility--defended').text(server.data.defence).removeClass('text-success text-danger').addClass('text-success')
+			row.find('.facility--owner-curent').text(server.data.facilityOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass(clsToID[server.data.facilityOwnerID])
+			row.find('.facility--owner-past').text(server.data.facilityOldOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass(clsToID[server.data.facilityOldOwnerID])
+			var cls = '',
+			text = 'Conquered!'
+			if (server.data.defence) {
+				cls = 'text-danger'
+				if (server.data.facilityOwnerID === this.flare)
+					cls = 'text-success'
+				text = 'Defended!'
+			}
+			row.find('.facility--defended').text(text).removeClass('text-success text-danger').addClass(cls)
 			row = row.find('.panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
 			return [row, vanu, tr, nc]
