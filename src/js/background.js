@@ -4,7 +4,7 @@
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 0.994
+	var VERSION = 1.0
 
 	var flares = {
 		0: ['NS', [255, 238, 0, 255]],

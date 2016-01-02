@@ -9,6 +9,17 @@
 
 	var App = function () {
 		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 1, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
+			$('#refresh').click(function (e) {
+				this.refresh(e.currentTarget)
+			}.bind(this)).attr({
+				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
+				'data-tooltip': true
+			}).tooltip()
+
+			$('#options').click(function () {
+				return chrome.runtime.openOptionsPage()
+			}).attr('title', 'v' + data.version).parent().find('[data-tooltip]').tooltip()
+
 			if (data.error) {
 				return $('.error--message').find('small').text(data.error)
 			}
@@ -48,17 +59,7 @@
 				})
 			})
 
-			$('#refresh').click(function (e) {
-				this.refresh(e.currentTarget)
-			}.bind(this)).attr({
-				title: 'Last updates<br>Client: ' + new Date(data.lastUpdate) + '<br>Server: ' + new Date(data.serverTimestamp),
-				'data-tooltip': true
-			}).tooltip()
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
-
-			$('#options').click(function () {
-				return chrome.runtime.openOptionsPage()
-			}).attr('title', 'v' + data.version).parent().find('[data-tooltip]').tooltip()
 
 			$.each($('video'), function (i, vid) {
 				vid.play()
