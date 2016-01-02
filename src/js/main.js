@@ -78,7 +78,7 @@
 		},
 
 		updateTable: function (server) {
-			var $server = this.$container.find('.server-' + server.id)
+			var $server = this.$container.find('#server-' + server.id)
 
 			if (server.status === 1) {
 				$server.addClass('success')

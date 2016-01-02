@@ -4,7 +4,7 @@
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 0.991
+	var VERSION = 0.992
 
 	var flares = {
 		0: ['Vanu', [128, 0, 255, 255]],
