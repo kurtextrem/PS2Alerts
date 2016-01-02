@@ -114,10 +114,8 @@
 				throw error
 			})
 			.then(function (data) {
-				if (data.error) {
-					chrome.storage.sync.set({ error: data.error, serverTimestamp: data.timestamp })
-					throw 'PS2Alerts API error'
-				}
+				if (data.error)
+					return chrome.storage.sync.set({ error: data.error, serverTimestamp: data.timestamp })
 				return data
 			}.bind(this))
 			.then(function (data) {
@@ -139,7 +137,7 @@
 					}
 				}
 
-				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp })
+				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp, error: false })
 				this.updateIcon()
 			}.bind(this))
 			.catch(function (err) {
@@ -149,6 +147,7 @@
 				chrome.browserAction.setBadgeText({
 					text: 'ERROR'
 				})
+				chrome.storage.sync.set({ error: err, serverTimestamp: Date.now() })
 				// @todo: Notify popup, differentiate between error messages
 			}.bind(this))
 		},
