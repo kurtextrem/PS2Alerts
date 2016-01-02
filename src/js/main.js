@@ -74,7 +74,7 @@
 				var add = ''
 				if (server.id === this.main)
 					add = ' in'
-				this.$container.append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr></tbody></table></div></div></div></div>')
+				this.$container.append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr><tr><td class="facility--name"></td><td class="facility--owner"><span class="label facility--owner-curent"></span>&nbsp;<span class="label facility--owner-past"></span></td><td class="facility--defended"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
 			}
 		},
@@ -141,7 +141,13 @@
 			tr = server.data.controlTR,
 			nc = server.data.controlNC,
 			count = 100 - nc - tr,
-			row = this.$container.find('#collapse' + server.id).find('.panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
+			row = this.$container.find('#collapse' + server.id)
+
+			row.find('.facility--name').text(server.data.facilityID)
+			row.find('.facility--owner-curent').text(server.data.facilityOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass('progress-bar-purple')
+			row.find('.facility--owner-past').text(server.data.facilityOldOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass('progress-bar-purple')
+			row.find('.facility--defended').text(server.data.defence).removeClass('text-success text-danger').addClass('text-success')
+			row = row.find('.panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
 			return [row, vanu, tr, nc]
 		},
@@ -227,17 +233,13 @@
 			var current = Date.now()
 
 			if (server.status === 1) {
-				var date = new Date(server.started - current)
+				var end = new Date(server.started)
+				end.setMinutes(end.getMinutes() + 90)
+				end = new Date(end - Date.now())
 
-				//if (server.type === 'Territory' || server.zone === 'Global') {
-					date.setUTCHours(date.getUTCHours() + 2)
-				//} else {
-				//	date.setUTCHours(date.getUTCHours() + 1)
-				//}
-
-				var h = date.getUTCHours()
-				var m = ('0' + date.getUTCMinutes()).slice(-2)
-				var s = ('0' + date.getUTCSeconds()).slice(-2)
+				var h = end.getUTCHours()
+				var m = ('0' + end.getUTCMinutes()).slice(-2)
+				var s = ('0' + end.getUTCSeconds()).slice(-2)
 
 				if (h < 2 && (h + +m + +s) > 0)  {
 					if (server.id === this.main)

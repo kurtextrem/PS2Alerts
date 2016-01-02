@@ -4,7 +4,7 @@
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 0.992
+	var VERSION = 0.993
 
 	var flares = {
 		0: ['Vanu', [128, 0, 255, 255]],
@@ -115,7 +115,7 @@
 			})
 			.then(function (data) {
 				if (data.error)
-					return chrome.storage.sync.set({ error: data.error, serverTimestamp: data.timestamp })
+					return this._error(data.error, data.timestamp)
 				return data
 			}.bind(this))
 			.then(function (data) {
@@ -143,13 +143,17 @@
 			.catch(function (err) {
 				console.error(err)
 
-				window.setTimeout(this.update.bind(this), 30000)
-				chrome.browserAction.setBadgeText({
-					text: 'ERROR'
-				})
-				chrome.storage.sync.set({ error: err, serverTimestamp: Date.now() })
+				this._error('Error while receiving data.', Date.now())
 				// @todo: Notify popup, differentiate between error messages
 			}.bind(this))
+		},
+
+		_error: function (text, timestamp) {
+			chrome.storage.sync.set({ error: text, serverTimestamp: timestamp })
+			window.setTimeout(this.update.bind(this), 30000)
+			chrome.browserAction.setBadgeText({
+				text: 'Error'
+			})
 		},
 
 		sendToPopup: function (server) {
@@ -248,17 +252,12 @@
 			if (server.status === 'inactive')
 				this.clearBadgeAlarm()
 			if (server.status === 1) {
-				var current = Date.now(),
-				date = new Date(server.started - current)
+				var end = new Date(server.started)
+				end.setMinutes(end.getMinutes() + 90)
+				end = new Date(end - Date.now())
 
-				//if (server.type === 'Territory' || server.zone === 'Global') {
-					date.setUTCHours(date.getUTCHours() + 2)
-				//} else {
-				//date.setUTCHours(date.getUTCHours() + 1)
-				//}
-
-				var h = date.getUTCHours()
-				var m = ('0' + date.getUTCMinutes()).slice(-2)
+				var h = end.getUTCHours()
+				var m = ('0' + end.getUTCMinutes()).slice(-2)
 
 				if (h > 2 || (h + +m) < 0) {
 					this.alert = false
