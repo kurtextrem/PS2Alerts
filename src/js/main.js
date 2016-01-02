@@ -80,7 +80,7 @@
 				var add = ''
 				if (server.id === this.main)
 					add = ' in'
-				this.$container.append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr><tr><td class="facility--name"></td><td class="facility--owner"><span class="label facility--owner-curent"></span>&nbsp;<span class="label facility--owner-past"></span></td><td class="facility--defended"></td></tr></tbody></table></div></div></div></div>')
+				this.$container.append('<div class="row" id="server-' + server.id + '"><div class="col-xs-1"><button type="button" class="btn btn-default btn-lg handle"><span class="glyphicon glyphicon-align-justify"></span></button></div><div class="col-xs-11"><div class="panel panel-default server-' + server.id + '"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse"  href="#collapse' + server.id + '"><span class="server-name">' + server.name + '</span></a><span class="pull-right badge remaining"></span></h4><table class="table info text-center hide"><tbody><tr><td class="type"></td><td class="continent"></td></tr></tbody></table></div><div id="collapse' + server.id + '" class="panel-collapse collapse' + add + '"><div class="panel-body text-center"></div><table class="table"><tbody><tr><td class="remaining"></td><td class="type"></td><td class="continent"></td></tr><tr class="facility--row"><td class="facility--name"></td><td class="facility--owner"><span class="label facility--owner-curent"></span>&nbsp;<span class="label facility--owner-past"></span></td><td class="facility--defended"></td></tr></tbody></table></div></div></div></div>')
 				this.updateTable(server)
 			}
 		},
@@ -91,6 +91,7 @@
 			if (server.status === 1) {
 				$server.addClass('success')
 				$server.find('.info').removeClass('hide')
+				$server.find('.facility--row').removeClass('hide')
 				$server.find('.handle').css('height', '51px')
 
 				var video = $server.find('.server-name')
@@ -132,6 +133,7 @@
 				$server.find('.panel-body').html('<a href="http://ps2alerts.com/allalerts" target="_blank">View all alerts for this server</a>')
 				$server.find('.remaining').addClass('inactive')
 				$server.find('.info').addClass('hide')
+				$server.find('.facility--row').addClass('hide')
 				$server.find('.handle').css('height', 'auto')
 			}
 
