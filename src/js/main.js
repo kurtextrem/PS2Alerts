@@ -12,6 +12,8 @@
 			this.main = data.main
 			this.flare = data.flare
 			this.hide2 = data.hide2
+			this.jaeger = data.jaeger
+			this.ps4 = data.ps4
 			this.addHTML()
 
 			this.interval = window.setInterval(this.updateTime.bind(this), 1000)
@@ -135,9 +137,9 @@
 		},
 
 		_addTerritory: function (server) {
-			var vanu = +server.controlVS,
-			tr = +server.controlTR,
-			nc = +server.controlNC,
+			var vanu = server.data.controlVS,
+			tr = server.data.controlTR,
+			nc = server.data.controlNC,
 			count = 100 - nc - tr,
 			row = this.$container.find('#collapse' + server.id).find('.panel-body').append('<div class="progress"><div class="progress-bar progress-bar-danger" style="width:' + tr  + '%">' + Math.floor(tr) + '%</div><div class="progress-bar progress-bar-info" style="width:' + nc  + '%">' + Math.floor(nc) + '%</div><div class="progress-bar progress-bar-purple" style="width:' +  count  + '%" >' + Math.floor(vanu) + '%</div></div>')
 
@@ -188,7 +190,6 @@
 			vanu = 0,
 			tr = 0,
 			nc = 0
-
 
 			$.each(server.alert, function (facility, status) {
 				if (facility === 'dataID' || facility === 'dataTimestamp' || facility === 'resultID' || facility === 'start' || facility === 'type' || facility === 'zone' || status === null || facility === 'notified')

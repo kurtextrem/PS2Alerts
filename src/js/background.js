@@ -175,8 +175,8 @@
 
 			this.count++
 			server.status = 1
-			server.started = +(server.started + '000')
-			server.type = server.ResultAlertType
+			server.started = +(server.ResultStartTime + '000')
+			server.type = typeData[server.ResultAlertType]
 			server.zone = zoneData[server.ResultAlertCont]
 
 			if (server.id === this.main) {
@@ -242,7 +242,7 @@
 					return this.updateBadge(this.servers['s' + this.main])
 					//if (alarm.name === 'update') // Updates anyway, if required
 					//	return this.update()
-			})
+			}.bind(this))
 		},
 
 		updateBadge: function (server) {
