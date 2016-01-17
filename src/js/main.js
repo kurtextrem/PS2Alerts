@@ -146,20 +146,20 @@
 		},
 
 		_addTerritory: function (server) {
-			var vanu = server.data.controlVS,
-			tr = server.data.controlTR,
-			nc = server.data.controlNC,
+			var vanu = server.data.map.controlVS,
+			tr = server.data.map.controlTR,
+			nc = server.data.map.controlNC,
 			count = 100 - nc - tr,
 			row = this.$container.find('#collapse' + server.id)
 
-			row.find('.facility--name').text(server.data.facilityID)
-			row.find('.facility--owner-curent').text(server.data.facilityOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass(clsToID[server.data.facilityOwnerID])
-			row.find('.facility--owner-past').text(server.data.facilityOldOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass(clsToID[server.data.facilityOldOwnerID])
+			row.find('.facility--name').text(server.data.map.facilityID)
+			row.find('.facility--owner-curent').text(server.data.map.facilityOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass(clsToID[server.data.map.facilityOwnerID])
+			row.find('.facility--owner-past').text(server.data.map.facilityOldOwner).removeClass('progress-bar-purple progress-bar-danger progress-bar-info').addClass(clsToID[server.data.map.facilityOldOwnerID])
 			var cls = '',
 			text = 'Conquered!'
-			if (server.data.defence) {
+			if (server.data.map.isDefence) {
 				cls = 'text-danger'
-				if (server.data.facilityOwnerID === this.flare)
+				if (server.data.map.facilityOwnerID === this.flare)
 					cls = 'text-success'
 				text = 'Defended!'
 			}

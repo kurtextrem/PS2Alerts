@@ -4,7 +4,7 @@
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 1.0
+	var VERSION = 1.01
 
 	var flares = {
 		0: ['NS', [255, 238, 0, 255]],
@@ -30,18 +30,6 @@
 		4: 'Hossin',
 		6: 'Amerish',
 		8: 'Esamir'
-	}
-
-	/* by p3lim */
-	var typeData = {
-		1: 2, // Indar Territory
-		2: 8, // Esamir Territory
-		3: 6, // Amerish Territory
-		4: 4, // Hossin Territory
-		51: 2, // Indar Pumpkin Hunt
-		52: 8, // Esamir Pumpkin Hunt
-		53: 6, // Amerish Pumpkin Hunt
-		54: 4  // Hossin Pumpkin Hunt
 	}
 
 	var Alert = function () {
@@ -126,7 +114,7 @@
 					var obj = data.data[server] || {}
 					obj.id = +server
 					obj.name = serverData[obj.id] || 'Unknown'
-					obj.status = obj.InProgress ? 'active' : 'inactive'
+					obj.status = obj.inProgress ? 'active' : 'inactive'
 
 					if (obj.status === 'active') {
 						this._updateServer(obj)
@@ -179,13 +167,15 @@
 
 			this.count++
 			server.status = 1
-			server.started = +(server.ResultStartTime + '000')
-			server.type = typeData[server.ResultAlertType]
-			server.zone = zoneData[server.ResultAlertCont]
-			server.data.facilityOwnerID = server.data.facilityOwner
-			server.data.facilityOldOwnerID = server.data.facilityOldOwner
-			server.data.facilityOwner = flares[server.data.facilityOwner][0]
-			server.data.facilityOldOwner = flares[server.data.facilityOldOwner][0]
+			server.started = +(server.started + '000')
+			server.zone = zoneData[server.zone]
+			if (server.data.map && server.data.map[0]) {
+				server.data.map[0].facilityOwner = flares[server.data.map[0].facilityNewFaction][0]
+				server.data.map[0].facilityOwnerID = server.data.map[0].facilityNewFaction
+				server.data.map[0].facilityOldOwnerID = server.data.map[0].facilityOldFaction
+				server.data.map[0].facilityOldOwner = flares[server.data.map[0].facilityOldFaction][0]
+				server.data.map = server.data.map[0]
+			}
 
 			if (server.id === this.main) {
 				this.alert = true
@@ -194,7 +184,7 @@
 			}
 
 			if (server.id === this.notification || this.notification === 0) {
-				if (typeof this.servers['s' + server.id] !== 'undefined' && !this.servers['s' + server.id].notified) {
+				if (this.servers['s' + server.id] !== undefined && !this.servers['s' + server.id].notified) {
 					server.notified = true
 					this.createNotification(server)
 				} else {

@@ -25,13 +25,9 @@ class App {
 		}
 
 		// set url according to conf
-		define('URL', self::DOMAIN . 'alert/active?apikey=' . API_KEY);
+		define('URL', self::DOMAIN . 'alerts/active?embed=maps&apikey=' . API_KEY);
 
-		$this->ctx = stream_context_create(array(
-			'http' => array(
-				'timeout' => 5
-			)
-		));
+		$this->ctx = stream_context_create(array('http' => array('timeout' => 10)));
 
 		if (php_sapi_name() == 'cli' || (isset($_GET['updateKey']) && $_GET['updateKey'] === UPDATE_KEY)) {
 			exit($this->update() ? 'Done' : 'Error');
@@ -56,7 +52,7 @@ class App {
 	}
 
 	/**
-	 * Requests details for a specific alert.
+	 * Modifies the data attribute of the response object.
 	 *
 	 * @author 	Jacob Groß
 	 * @date          	2015-12-21
@@ -64,17 +60,21 @@ class App {
 	 * @return 	array
 	 */
 	private function completeData($data) {
-		if (!$data)
-			throw new Exception('No PS2Alerts API Result found.');
+		$data = $this->parseData($data, true)['data'];
 
-		$data = $this->parseData($data, true);
 		$new = array();
 		foreach($data as $server) {
-			$map = file_get_contents(self::DOMAIN . 'metrics/map/' . $server['ResultID'] . '/latest', 0, $this->ctx);
-			if (!$map) throw new Exception('PS2Alerts API does not respond correctly.');
-
-			$server['data'] = $this->parseData($map, true)[0];
-			$new['' . $server['ResultServer']] = $server;
+			$nData = array();
+			if (isset($server['maps']) && isset($server['maps']['data'])) {
+				$nData['map'] = $server['maps']['data'];
+				unset($server['maps']);
+			}
+			if (isset($server['combat']) && isset($server['combat']['data'])) {
+				$nData['combat'] = $server['combat']['data'];
+				unset($server['combat']);
+			}
+			$server['data'] = $nData;
+			$new['' . $server['server']] = $server;
 		}
 
 		return array(
