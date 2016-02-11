@@ -117,7 +117,7 @@ class App {
 		}
 	}
 
-	public static function error_hadler($errno, $errstr) {
+	public static function error_handler($errno, $errstr) {
 		switch ($errno) {
 			case E_USER_ERROR:
 				$errstr = 'Error while receiving API.';
