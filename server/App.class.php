@@ -135,7 +135,7 @@ class App {
 				$errstr = '';
 				break;
 		}
-		return $errstr;
+		return self::error($errstr);
 	}
 
 	public static function exception_handler ($e) {
