@@ -53,7 +53,6 @@
 		alert: false,
 		timeRemind: 30,
 		alwaysRemind: false,
-		errorCount: 0,
 
 		init: function (force, callback) {
 			chrome.storage.local.get({
@@ -128,9 +127,9 @@
 					}
 				}
 
-				tries = 0
 				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp, error: false })
 				this.updateIcon()
+				tries = 0 // when an error happens in the two lines above, don't reset the counter
 			}.bind(this))
 			.catch(function (err) {
 				console.error(err)

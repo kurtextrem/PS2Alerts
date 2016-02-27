@@ -8,7 +8,7 @@
 	}
 
 	var App = function () {
-		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 1, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
+		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 1, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 1 }, function (data) {
 			$('#refresh').click(function (e) {
 				this.refresh(e.currentTarget)
 			}.bind(this)).attr({
