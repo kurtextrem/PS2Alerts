@@ -32,6 +32,8 @@
 		8: 'Esamir'
 	}
 
+	var tries = 0
+
 	var Alert = function () {
 		this.addListener()
 	}
@@ -126,6 +128,7 @@
 					}
 				}
 
+				tries = 0
 				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp, error: false })
 				this.updateIcon()
 			}.bind(this))
@@ -139,7 +142,7 @@
 
 		_error: function (text, timestamp) {
 			chrome.storage.sync.set({ error: text, serverTimestamp: timestamp })
-			window.setTimeout(this.update.bind(this), 30000)
+			window.setTimeout(this.update.bind(this), ++tries * 30000)
 			chrome.browserAction.setBadgeText({
 				text: 'Error'
 			})
@@ -149,7 +152,7 @@
 			this.servers['s' + server.id] = server
 
 			var popups = chrome.extension.getViews({ type: 'popup' })
-			if (0 < popups.length)
+			if (popups.length > 0)
 				popups[0].App.updated(server)
 		},
 
