@@ -58,7 +58,9 @@
 
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 
-			$('video').find('source').prop('src', 'img/AlertAnim2.mp4')
+			window.onload = function () {
+				$('video').append('<source type="video/mp4" src="img/AlertAnim2.mp4">')
+			}
 		}.bind(this))
 	}
 	App.prototype = {
@@ -92,7 +94,7 @@
 
 				var video = $server.find('.server-name')
 				if (!video.parent().find('video').length) {
-					video.before('<video width="30" height="30" autoplay loop><source type="video/mp4"></video>')
+					video.before('<video width="30" height="30" autoplay loop></video>')
 				}
 
 				$server.find('.type').html('Territory').attr({ // server.type
