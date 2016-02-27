@@ -96,8 +96,11 @@
 				$server.find('.handle').css('height', '51px')
 
 				var video = $server.find('.server-name')
-				if (video.find('video').length === 0)
-					video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev().get(0).play()
+				if (!video.find('video').length) {
+					video = video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev('video')
+					if (video.length)
+						video.get(0).play()
+				}
 
 				$server.find('.type').html('Territory').attr({ // server.type
 					//title: 'EXP Bonus: ' + server.alert.experience_bonus + '%',
@@ -259,10 +262,6 @@
 				var s = ('0' + end.getUTCSeconds()).slice(-2)
 
 				if (h < 2 && (h + +m + +s) > 0)  {
-					if (server.id === this.main)
-						chrome.runtime.getBackgroundPage(function (w) {
-							w.alert.init(false, w.alert.updateBadge(server))
-						})
 					return this.$container.find('.server-' + server.id + ' .remaining').html(h + 'h ' + m + 'm ' + s + 's')
 				}
 				//chrome.runtime.getBackgroundPage(function(w) {

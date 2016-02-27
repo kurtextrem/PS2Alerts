@@ -233,6 +233,8 @@
 						chrome.storage.sync.set({ flare: data.flare + 1 })
 					})
 				} // migrate to sync
+				if (VERSION < 1.1)
+					this.syncSettings()
 				if (VERSION > data.version) {
 					chrome.storage.local.set({ servers: {}, version: VERSION, error: false })
 				}
@@ -268,7 +270,7 @@
 				chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
 			}.bind(this))
 			chrome.alarms.clear('sync-settings', function () {
-				chrome.alarms.create('sync-settings', { delayInMinutes: 0, periodInMinutes: 30 })
+				chrome.alarms.create('sync-settings', { delayInMinutes: 30, periodInMinutes: 30 })
 			})
 		},
 
@@ -372,6 +374,3 @@
 
 	window.alert = new Alert()
 }(window);
-
-// speedier .bind
-+function(n,t){"use strict";var e=n.bind;t.defineProperty(n,"bind",{value:function(n){var t=this;return 1===arguments.length?function(){return t.apply(n,arguments)}:e.apply(t,arguments)}})}(Function.prototype,Object);
