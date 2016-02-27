@@ -1,13 +1,17 @@
 .help {
-	border-bottom: 1px dashed gray;
-	cursor: help;
+	border-bottom: 1px dashed gray;
 }
 
 .popover {
-	left: inherit;
+	left: inherit;
+
 	min-width: 100%;
 }
 
 .form-horizontal .checkbox {
 	padding-top: 3.5px;
+}
+
+body {
+	width: 500px;
 }
