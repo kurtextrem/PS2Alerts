@@ -79,7 +79,7 @@
 				this.alwaysRemind = data.alwaysRemind
 				this.count = 0
 
-				if (!data.servers.s1) {
+				if (!data.servers.length) {
 					force = true
 				} else {
 					this.servers = data.servers
@@ -87,7 +87,7 @@
 				if (force || Date.now() - data.lastUpdate >= this.updateTime * 60000) {
 					this.update()
 				}
-				if (callback !== undefined)
+				if (callback)
 					callback()
 			}.bind(this))
 		},
@@ -152,7 +152,7 @@
 			this.servers['s' + server.id] = server
 
 			var popups = chrome.extension.getViews({ type: 'popup' })
-			if (popups.length > 0)
+			if (popups.length)
 				popups[0].App.updated(server)
 		},
 
@@ -253,8 +253,9 @@
 		},
 
 		updateBadge: function (server) {
-			if (server.status === 'inactive')
+			if (server.status === 'inactive') {
 				this.clearBadgeAlarm()
+			}
 			if (server.status === 1) {
 				var end = new Date(server.started)
 				end.setMinutes(end.getMinutes() + 90)
@@ -325,7 +326,7 @@
 				path = 'img/notification_tray_attention.png'
 
 			var canvas = document.getElementsByTagName('canvas')
-			if (canvas.length < 1) {
+			if (!canvas.length) {
 				canvas = document.createElement('canvas')
 				canvas.setAttribute('width', '19')
 				canvas.setAttribute('height', '19')

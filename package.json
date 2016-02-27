@@ -1,21 +1,21 @@
 {
-	"devDependencies": {
-		"uglify-js": "latest",
-		"rimraf": "latest",
-		"json-minify": "latest",
-		"shelljs": "latest",
-		"zip-dir": "latest",
-		"cssnano-cli": "latest"
-	},
-	"scripts": {
-		"clean": "rimraf dist && mkdir dist",
+  "devDependencies": {
+    "cssnano-cli": "^1.0.3",
+    "json-minify": "^1.0.0",
+    "rimraf": "^2.5.2",
+    "shelljs": "^0.6.0",
+    "uglify-js": "^2.6.2",
+    "zip-dir": "^1.0.2"
+  },
+  "scripts": {
+    "clean": "rimraf dist && mkdir dist",
 
-		"json": "json-minify src/manifest.json > dist/manifest.json",
+    "json": "json-minify src/manifest.json > dist/manifest.json",
 
-		"copy": "node build.js copy",
+    "copy": "node build.js copy",
 
-		"build": "npm run clean & npm run json & npm run copy",
-		"postjs": "node build.js replaceJS",
-		"postbuild": "node build.js buildZip"
-	}
+    "build": "npm run clean & npm run json & npm run copy",
+    "postjs": "node build.js replaceJS",
+    "postbuild": "node build.js buildZip"
+  }
 }

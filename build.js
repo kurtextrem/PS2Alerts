@@ -80,7 +80,7 @@ var shell = require('shelljs'),
 	}
 
 	Build.prototype.copyHTML = function () {
-		shell.cp('-r', 'src/*.html', 'dist')
+		shell.cp('src/*.html', 'dist')
 	}
 
 	Build.prototype.buildZip = function () {
