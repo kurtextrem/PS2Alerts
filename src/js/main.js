@@ -54,16 +54,11 @@
 					order.push(children[i].id)
 				}
 				chrome.storage.local.set({ sortOrder: order })
-				$.each($('video'), function (i, vid) {
-					vid.play()
-				})
 			})
 
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 
-			$.each($('video'), function (i, vid) {
-				vid.play()
-			})
+			$('video').find('source').prop('src', 'img/AlertAnim2.mp4')
 		}.bind(this))
 	}
 	App.prototype = {
@@ -96,10 +91,8 @@
 				$server.find('.handle').css('height', '51px')
 
 				var video = $server.find('.server-name')
-				if (!video.find('video').length) {
-					video = video.before('<video width="30" height="30" autoplay loop><source src="img/AlertAnim2.mp4" type="video/mp4"></video>').prev('video')
-					if (video.length)
-						video.get(0).play()
+				if (!video.parent().find('video').length) {
+					video.before('<video width="30" height="30" autoplay loop><source type="video/mp4"></video>')
 				}
 
 				$server.find('.type').html('Territory').attr({ // server.type
