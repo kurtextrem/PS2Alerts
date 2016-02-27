@@ -268,7 +268,7 @@
 				chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
 			}.bind(this))
 			chrome.alarms.clear('sync-settings', function () {
-				chrome.alarms.create('sync-settings', { delayInMinutes: 30, periodInMinutes: 30 })
+				chrome.alarms.create('sync-settings', { delayInMinutes: 0, periodInMinutes: 30 })
 			})
 		},
 
