@@ -207,42 +207,46 @@
 		setBadgeAlarm: function (server) {
 			this.updateBadge(server)
 			chrome.storage.sync.set({ server: server })
-			chrome.alarms.get('update-badge', function (alarm) {
-				if (alarm === undefined)
-					chrome.alarms.create('update-badge', {
-						delayInMinutes: 1,
-						periodInMinutes: 1
-					})
+			chrome.alarms.clear('update-badge', function () {
+				chrome.alarms.create('update-badge', {
+					delayInMinutes: 1,
+					periodInMinutes: 1
+				})
 			})
+
 		},
 
 		addListener: function () {
-			chrome.runtime.onInstalled.addListener(function () {
-				chrome.storage.sync.get({ version: -1 }, function (data) {
-					if (VERSION < 1.0) {
-						chrome.storage.sync.get({ flare: 0 }, function (data) {
-							if (data.flare === 3)
-								data.flare = -1
-							chrome.storage.sync.set({ flare: data.flare + 1 })
-						})
-					} // migrate to sync
-					if (VERSION > data.version) {
-						chrome.storage.sync.set({ servers: {}, version: VERSION, error: false })
-					}
-				})
-				this.init()
-				this.registerUpdateAlarms()
-			}.bind(this))
+			chrome.runtime.onInstalled.addListener(this.installedListener.bind(this))
 			chrome.alarms.onAlarm.addListener(this.alarmListener.bind(this))
 		},
 
+		installedListener: function () {
+			chrome.storage.sync.get({ version: -1 }, function (data) {
+				if (VERSION < 1.0) {
+					chrome.storage.sync.get({ flare: 0 }, function (data) {
+						if (data.flare === 3)
+							data.flare = -1
+						chrome.storage.sync.set({ flare: data.flare + 1 })
+					})
+				} // migrate to sync
+				if (VERSION > data.version) {
+					chrome.storage.sync.set({ servers: {}, version: VERSION, error: false })
+				}
+			})
+			this.init()
+			this.registerUpdateAlarms()
+		},
+
 		alarmListener: function (alarm) {
-			this.init(false, function () {
-				if (alarm.name === 'update-badge')
+			switch (alarm) {
+				case 'update-badge':
 					return this.updateBadge(this.servers['s' + this.main])
-					//if (alarm.name === 'update') // Updates anyway, if required
-					//	return this.update()
-			}.bind(this))
+
+				default:
+				case 'update':
+					return this.init(false)
+			}
 		},
 
 		updateBadge: function (server) {
@@ -280,7 +284,9 @@
 		},
 
 		registerUpdateAlarms: function () {
-			chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
+			chrome.alarms.clear('update', function () {
+				chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
+			}.bind(this))
 		},
 
 		createNotification: function (server, reminder) {
