@@ -129,7 +129,7 @@
 				$server.find('video').remove()
 				$server.find('.type').empty()
 				$server.find('.continent').empty()
-				$server.find('.panel-body').html('<a href="http://ps2alerts.com/allalerts" target="_blank">View all alerts for this server</a>')
+				$server.find('.panel-body').html('<a href="http://www.ps2alerts.com/alert-history" target="_blank">View all alerts for this server</a>')
 				$server.find('.remaining').addClass('inactive')
 				$server.find('.info').addClass('hide')
 				$server.find('.facility--row').addClass('hide')
