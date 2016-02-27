@@ -8,7 +8,7 @@
 	}
 
 	var App = function () {
-		chrome.storage.sync.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 1, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
+		chrome.storage.local.get({ servers: {}, main: 13, lastUpdate: 0, order: [], flare: 1, hide2: 0, jaeger: 0, serverTimestamp: 0, sortOrder: null, version: 0, error: '', ps4: 0 }, function (data) {
 			$('#refresh').click(function (e) {
 				this.refresh(e.currentTarget)
 			}.bind(this)).attr({
@@ -53,7 +53,7 @@
 				for (var i = 0; i < children.length; i++) {
 					order.push(children[i].id)
 				}
-				chrome.storage.sync.set({ sortOrder: order })
+				chrome.storage.local.set({ sortOrder: order })
 				$.each($('video'), function (i, vid) {
 					vid.play()
 				})
@@ -284,7 +284,7 @@
 			e.disabled = true
 			chrome.runtime.getBackgroundPage(function (w) {
 				w.alert.init(true, function () {
-					chrome.storage.sync.get({ lastUpdate: 0, serverTimestamp: 0 }, function (data) {
+					chrome.storage.local.get({ lastUpdate: 0, serverTimestamp: 0 }, function (data) {
 						e.title = new Date(data.lastUpdate) + '(' +new Date(data.serverTimestamp) + ')'
 					})
 					window.setTimeout(function () {

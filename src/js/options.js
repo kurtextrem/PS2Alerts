@@ -53,6 +53,7 @@
 						chrome.browserAction.enable() // make sure it gets enabled
 				obj[e.target.id] = val
 				chrome.storage.sync.set(obj, function () {
+					chrome.storage.local.set(obj)
 					chrome.runtime.getBackgroundPage(function (w) {
 						w.alert.init()
 					})

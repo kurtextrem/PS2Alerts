@@ -4,7 +4,7 @@
 	var chrome = window.chrome,
 		document = window.document
 
-	var VERSION = 1.01
+	var VERSION = 1.1
 
 	var flares = {
 		0: ['NS', [255, 238, 0, 255]],
@@ -56,7 +56,7 @@
 		errorCount: 0,
 
 		init: function (force, callback) {
-			chrome.storage.sync.get({
+			chrome.storage.local.get({
 				main: 13,
 				flare: 1,
 				lastUpdate: 0,
@@ -93,7 +93,7 @@
 		},
 
 		update: function () {
-			chrome.storage.sync.set({ lastUpdate: Date.now() })
+			chrome.storage.local.set({ lastUpdate: Date.now() })
 
 			window.fetch(this.url, { headers: { Connection: 'close' }})
 			.then(function (response) {
@@ -122,14 +122,14 @@
 						this._updateServer(obj)
 					} else {
 						this.alert = false
-						chrome.storage.sync.set({ alert: false })
+						chrome.storage.local.set({ alert: false })
 						obj.notified = false
 						this.sendToPopup(obj)
 					}
 				}
 
 				tries = 0
-				chrome.storage.sync.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp, error: false })
+				chrome.storage.local.set({ servers: this.servers, count: this.count, serverTimestamp: +data.timestamp, error: false })
 				this.updateIcon()
 			}.bind(this))
 			.catch(function (err) {
@@ -141,7 +141,7 @@
 		},
 
 		_error: function (text, timestamp) {
-			chrome.storage.sync.set({ error: text, serverTimestamp: timestamp })
+			chrome.storage.local.set({ error: text, serverTimestamp: timestamp })
 			window.setTimeout(this.update.bind(this), ++tries * 30000)
 			chrome.browserAction.setBadgeText({
 				text: 'Error'
@@ -161,7 +161,7 @@
 				server.notified = false
 				if (server.id === this.main) {
 					this.alert = false
-					chrome.storage.sync.set({ alert: false })
+					chrome.storage.local.set({ alert: false })
 					this.clearBadgeAlarm()
 				}
 				//this.sendToPopup(server)
@@ -182,7 +182,7 @@
 
 			if (server.id === this.main) {
 				this.alert = true
-				chrome.storage.sync.set({ alert: true })
+				chrome.storage.local.set({ alert: true })
 				this.setBadgeAlarm(server)
 			}
 
@@ -209,7 +209,7 @@
 
 		setBadgeAlarm: function (server) {
 			this.updateBadge(server)
-			chrome.storage.sync.set({ server: server })
+			chrome.storage.local.set({ server: server })
 			chrome.alarms.clear('update-badge', function () {
 				chrome.alarms.create('update-badge', {
 					delayInMinutes: 1,
@@ -225,7 +225,7 @@
 		},
 
 		installedListener: function () {
-			chrome.storage.sync.get({ version: -1 }, function (data) {
+			chrome.storage.local.get({ version: -1 }, function (data) {
 				if (VERSION < 1.0) {
 					chrome.storage.sync.get({ flare: 0 }, function (data) {
 						if (data.flare === 3)
@@ -234,7 +234,7 @@
 					})
 				} // migrate to sync
 				if (VERSION > data.version) {
-					chrome.storage.sync.set({ servers: {}, version: VERSION, error: false })
+					chrome.storage.local.set({ servers: {}, version: VERSION, error: false })
 				}
 			})
 			this.init()
@@ -243,13 +243,33 @@
 
 		alarmListener: function (alarm) {
 			switch (alarm) {
+				case 'sync-settings':
+					return this.syncSettings()
+					break
+
 				case 'update-badge':
 					return this.updateBadge(this.servers['s' + this.main])
+					break
 
 				default:
 				case 'update':
 					return this.init(false)
 			}
+		},
+
+		syncSettings: function () {
+			chrome.storage.sync.get({ main: 13, flare: 1, notification: 13, hide: 0, hide2: 0, jaeger: 0, alwaysRemind: 0, timeRemind: 30, ps4: 0 }, function (data) {
+				chrome.storage.local.set(data)
+			})
+		},
+
+		registerUpdateAlarms: function () {
+			chrome.alarms.clear('update', function () {
+				chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
+			}.bind(this))
+			chrome.alarms.clear('sync-settings', function () {
+				chrome.alarms.create('sync-settings', { delayInMinutes: 30, periodInMinutes: 30 })
+			})
 		},
 
 		updateBadge: function (server) {
@@ -266,13 +286,13 @@
 
 				if (h > 2 || (h + +m) < 0) {
 					this.alert = false
-					chrome.storage.sync.set({ alert: false })
+					chrome.storage.local.set({ alert: false })
 					this.clearBadgeAlarm()
 				} else {
 					chrome.browserAction.enable()
 					if (this.remember && h < 1 && m <= this.timeRemind) {
 						this.remember = false
-						chrome.storage.sync.set({ remember: false })
+						chrome.storage.local.set({ remember: false })
 						this.createNotification(server, true)
 					}
 					if (m === '00')
@@ -285,12 +305,6 @@
 					})
 				}
 			}
-		},
-
-		registerUpdateAlarms: function () {
-			chrome.alarms.clear('update', function () {
-				chrome.alarms.create('update', { delayInMinutes: this.updateTime, periodInMinutes: this.updateTime })
-			}.bind(this))
 		},
 
 		createNotification: function (server, reminder) {
@@ -311,11 +325,11 @@
 			chrome.notifications.create(server.id + '-alert-' + !!reminder, opt, function (id) {
 				if (!reminder && this.alwaysRemind) {
 					this.remember = true
-					chrome.storage.sync.set({ remember: true })
+					chrome.storage.local.set({ remember: true })
 				}
 				chrome.notifications.onButtonClicked.addListener(function (id, index) {
 					this.remember = true
-					chrome.storage.sync.set({ remember: true })
+					chrome.storage.local.set({ remember: true })
 				}.bind(this))
 			}.bind(this))
 		},
