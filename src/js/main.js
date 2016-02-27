@@ -201,7 +201,7 @@
 			}
 			if (this.flare === lead)
 				add = 'text-success'
-			container.append('<div class="' + add + '">' + append + '<br><a href="http://ps2alerts.com/Alert/' + server.resultID + '" target="_blank">View this alert live on PS2Alerts</a></div>')
+			container.append('<div class="' + add + '">' + append + '<br><a href="http://www.ps2alerts.com/alert/' + server.resultID + '" target="_blank">View this alert live on PS2Alerts</a></div>')
 		},
 
 		// obsolete atm

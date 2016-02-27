@@ -113,6 +113,7 @@
 
 				for (var server in serverData) {
 					var obj = data.data[server] || {}
+					obj.resultID = obj.id
 					obj.id = +server
 					obj.name = serverData[obj.id] || 'Unknown'
 					obj.status = obj.inProgress ? 'active' : 'inactive'
