@@ -1,7 +1,7 @@
 {
 	"name": "PlanetSide 2 Alerts",
 	"short_name": "PS2 Alerts",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"manifest_version": 2,
 
 	"description": "Easy overview over PlanetSide2 Alerts in Chrome.",
