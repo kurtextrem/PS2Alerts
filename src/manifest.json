@@ -27,9 +27,9 @@
 	    	"default_popup": "popup.html"
 	},
 
-	"options_page": "settings.html",
+	"options_page": "options.html",
 	"options_ui": {
-   		"page": "settings.html",
+   		"page": "options.html",
     		"chrome_style": true
 	},
 
