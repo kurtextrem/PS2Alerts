@@ -1,5 +1,7 @@
 .help {
 	border-bottom: 1px dashed gray;
+
+	cursor: help;
 }
 
 .popover {
@@ -14,4 +16,9 @@
 
 body {
 	width: 500px;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
 }
