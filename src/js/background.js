@@ -143,6 +143,9 @@
 		_error: function (text, timestamp) {
 			chrome.storage.local.set({ error: text, serverTimestamp: timestamp })
 			window.setTimeout(this.update.bind(this), ++tries * 30000)
+			chrome.browserAction.setBadgeBackgroundColor({
+				color: '#FF0000'
+			})
 			chrome.browserAction.setBadgeText({
 				text: 'Error'
 			})
