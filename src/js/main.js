@@ -58,9 +58,10 @@
 
 			$('.server-' + this.main).addClass('panel-info').removeClass('panel-default')
 
-			window.onload = function () {
+			if (document.readyState === 'complete')
 				$('video').append('<source type="video/mp4" src="img/AlertAnim2.mp4">')
-			}
+			else
+				window.onload = function () { $('video').append('<source type="video/mp4" src="img/AlertAnim2.mp4">') }
 		}.bind(this))
 	}
 	App.prototype = {

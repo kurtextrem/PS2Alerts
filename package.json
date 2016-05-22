@@ -3,7 +3,7 @@
     "cssnano-cli": "^1.0.3",
     "json-minify": "^1.0.0",
     "rimraf": "^2.5.2",
-    "shelljs": "^0.6.0",
+    "shelljs": "^0.7.0",
     "uglify-js": "^2.6.2",
     "zip-dir": "^1.0.2"
   },
